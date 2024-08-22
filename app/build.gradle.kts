@@ -172,7 +172,7 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
     // gson
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.11.0")
     //添加 documentfile 依赖（SDK自带的那个版本有问题）：
     implementation("androidx.documentfile:documentfile:1.0.1")
 
@@ -180,7 +180,7 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     // Retrofit
@@ -193,7 +193,7 @@ dependencies {
     implementation("com.github.omicronapps:7-Zip-JBinding-4Android:Release-16.02-2.02")
 
     // 系统UI控制库，实现沉浸式状态栏
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
 }
 
 // 计算apk的md5
