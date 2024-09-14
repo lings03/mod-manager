@@ -142,7 +142,7 @@ object ModTools {
             flags.add(flag)
             progressUpdateListener?.onProgressUpdate("${index + 1}/${modBean.modFiles.size}")
         }
-       return flags.all { it }
+        return flags.all { it }
 
     }
 
@@ -650,7 +650,7 @@ object ModTools {
         modFiles: List<String>,
         password: String?,
 
-    ): Boolean {
+        ): Boolean {
         val checkPermission = PermissionTools.checkPermission(gameModPath)
         Log.d(TAG, "copyModsByStream: $checkPermission")
         when (checkPermission) {
@@ -665,6 +665,7 @@ object ModTools {
             PathType.FILE -> {
                 return copyModStreamByFile(path, gameModPath, modFiles, password)
             }
+
             else -> {
                 return false
             }
@@ -1073,7 +1074,7 @@ object ModTools {
     fun specialOperationScanMods(packageName: String, modFileName: String): Boolean {
         for (specialGame in SpecialGame.entries) {
             if (packageName.contains(specialGame.packageName)) {
-                return  specialGame.baseSpecialGameTools.specialOperationScanMods(
+                return specialGame.baseSpecialGameTools.specialOperationScanMods(
                     packageName,
                     modFileName
                 )

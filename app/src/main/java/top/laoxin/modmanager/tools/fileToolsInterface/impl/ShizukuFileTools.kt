@@ -2,7 +2,6 @@ package top.laoxin.modmanager.tools.fileToolsInterface.impl
 
 import android.util.Log
 import top.laoxin.modmanager.tools.LogTools.logRecord
-import top.laoxin.modmanager.tools.ModTools
 import top.laoxin.modmanager.tools.fileToolsInterface.BaseFileTools
 import top.laoxin.modmanager.useservice.IFileExplorerService
 import java.io.InputStream
@@ -92,17 +91,17 @@ object ShizukuFileTools : BaseFileTools {
         }
     }
 
-    override fun changDictionaryName(path: String, name: String) :Boolean {
+    override fun changDictionaryName(path: String, name: String): Boolean {
         Log.d(TAG, "changDictionaryName: $path==$name")
-       return try {
+        return try {
             iFileExplorerService?.changDictionaryName(path, name) ?: false
         } catch (e: Exception) {
             Log.e(TAG, "changDictionaryName: $e")
-           false
+            false
         }
     }
 
-    override fun createDictionary(path : String): Boolean {
+    override fun createDictionary(path: String): Boolean {
         return try {
             iFileExplorerService?.createDictionary(path) ?: false
         } catch (e: Exception) {

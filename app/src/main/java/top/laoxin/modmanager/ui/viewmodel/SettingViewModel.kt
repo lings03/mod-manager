@@ -417,7 +417,7 @@ class SettingViewModel(
                 ModManagerApi.retrofitService.getInfo()
             }.onFailure {
                 Log.e("SettingViewModel", "checkInformation: $it")
-            }.onSuccess {info->
+            }.onSuccess { info ->
                 _uiState.update {
                     it.copy(infoBean = info)
                 }

@@ -24,7 +24,7 @@ interface BaseFileTools {
     fun getFilesNames(path: String): MutableList<String>
 
     // 写入文件
-    fun writeFile(path: String,filename : String, content: String): Boolean
+    fun writeFile(path: String, filename: String, content: String): Boolean
 
     // 移动文件
     fun moveFile(srcPath: String, destPath: String): Boolean
@@ -97,7 +97,7 @@ interface BaseFileTools {
         return uriBuilder.build()
     }
 
-    fun copyFileByFD(srcPath: String, destPath: String): Boolean{
+    fun copyFileByFD(srcPath: String, destPath: String): Boolean {
         if (!File(srcPath).exists()) return false
         return try {
             val app = App.get()
@@ -113,8 +113,8 @@ interface BaseFileTools {
                 pathToUri(parentFile!!)
             )
             Log.d("FileTools", "copyFileByFD: 开始创建文件")
-           
-            parentDocumentFile!!.createFile("application/octet-stream",File(destPath).name)!!.let {
+
+            parentDocumentFile!!.createFile("application/octet-stream", File(destPath).name)!!.let {
                 Log.d("FileTools", "copyFileByFD: 开始创建文件")
 
                 destDocumentFile = it
@@ -152,7 +152,7 @@ interface BaseFileTools {
         return path.contains("${ModTools.ROOT_PATH}/Android/obb/")
     }
 
-    abstract fun changDictionaryName(path: String, name: String) : Boolean
+    abstract fun changDictionaryName(path: String, name: String): Boolean
     abstract fun createDictionary(path: String): Boolean
 
     /**

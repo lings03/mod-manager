@@ -1,13 +1,12 @@
 package top.laoxin.modmanager.observer
 
 import android.os.FileObserver
-import top.laoxin.modmanager.tools.ModTools
-import java.io.File
 
-class FlashModsObserver(val path : String) : FileObserver(path, ALL_EVENTS) {
+class FlashModsObserver(val path: String) : FileObserver(path, ALL_EVENTS) {
     companion object {
-        var flashObserver : FlashObserverInterface? = null
+        var flashObserver: FlashObserverInterface? = null
     }
+
     override fun onEvent(event: Int, path: String?) {
 
         when (event) {

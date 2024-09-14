@@ -71,8 +71,8 @@ fun RequestStoragePermission(
 
                 val intent: Intent =
                     Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(
-                            Uri.parse("package:" + context.packageName)
-                        )
+                        Uri.parse("package:" + context.packageName)
+                    )
 
                 DialogCommon(
                     title = stringResource(id = R.string.dialog_storage_title),
