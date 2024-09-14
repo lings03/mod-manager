@@ -262,7 +262,7 @@ fun GeneralTopBar(viewModel: ModViewModel, uiState: ModUiState) {
                     stringResource(id = uiState.modsView.title),
                     style = MaterialTheme.typography.titleLarge
                 )
-                Box() {
+                Box {
                     Row(
                         modifier = Modifier.padding(top = 40.dp),
                     ) {

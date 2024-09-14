@@ -10,19 +10,19 @@ class FlashModsObserver(val path: String) : FileObserver(path, ALL_EVENTS) {
     override fun onEvent(event: Int, path: String?) {
 
         when (event) {
-            FileObserver.CREATE -> {
+            CREATE -> {
                 flashObserver?.onFlash()
             }
 
-            FileObserver.DELETE -> {
+            DELETE -> {
                 flashObserver?.onFlash()
             }
 
-            FileObserver.MOVED_FROM -> {
+            MOVED_FROM -> {
                 flashObserver?.onFlash()
             }
 
-            FileObserver.MOVED_TO -> {
+            MOVED_TO -> {
                 flashObserver?.onFlash()
             }
             // Add more cases if you want to handle more events

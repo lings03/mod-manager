@@ -100,11 +100,11 @@ class FileExplorerService : IFileExplorerService.Stub() {
             val command = "chmod 777 " + path
             Log.i(TAG, "command = $command g = $g h = $h")
             val runtime = Runtime.getRuntime()
-            val proc = runtime.exec(command)
+            runtime.exec(command)
             true
         } catch (e: IOException) {
-            Log.i("TAG", "chmod fail!!!!");
-            e.printStackTrace();
+            Log.i("TAG", "chmod fail!!!!")
+            e.printStackTrace()
             false
         }
     }

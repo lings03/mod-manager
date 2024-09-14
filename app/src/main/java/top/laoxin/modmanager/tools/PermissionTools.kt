@@ -103,8 +103,8 @@ object PermissionTools {
 
     fun hasUriPermission(path: String): Boolean {
         var noRootPath = path
-        if (path.contains(ModTools.ROOT_PATH)) noRootPath =
-            noRootPath.replace("${ModTools.ROOT_PATH}/", "")
+        if (path.contains(ROOT_PATH)) noRootPath =
+            noRootPath.replace("${ROOT_PATH}/", "")
         val uriPermissions = App.get().contentResolver.persistedUriPermissions
         for (uriPermission: UriPermission in uriPermissions) {
             val itemPath = uriPermission.uri.path
@@ -232,7 +232,7 @@ object PermissionTools {
 
     fun isFromMyPackageNamePath(path: String): Boolean {
         return ("$path/").contains(
-            (ModTools.ROOT_PATH + "/Android/data/" + (App.get().packageName ?: "")).toString() + "/"
+            (ROOT_PATH + "/Android/data/" + (App.get().packageName ?: "")).toString() + "/"
         )
     }
 }

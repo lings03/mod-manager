@@ -136,7 +136,7 @@ object DocumentFileTools : BaseFileTools {
         return try {
             val pathUri = pathToUri(path)
             val documentFile = DocumentFile.fromTreeUri(app, pathUri)
-            documentFile?.exists() ?: false
+            documentFile?.exists() == true
         } catch (e: Exception) {
             Log.e(TAG, "isFileExist: $e")
             false
@@ -148,7 +148,7 @@ object DocumentFileTools : BaseFileTools {
         return try {
             val pathUri = pathToUri(filename)
             val documentFile = DocumentFile.fromTreeUri(app, pathUri)
-            documentFile?.isFile ?: false
+            documentFile?.isFile == true
         } catch (e: Exception) {
             Log.e(TAG, "isFile: $e")
             false
@@ -187,7 +187,7 @@ object DocumentFileTools : BaseFileTools {
     override fun changDictionaryName(path: String, name: String): Boolean {
         try {
             val file = DocumentFile.fromTreeUri(app, pathToUri(path))
-            return file?.renameTo(name) ?: false
+            return file?.renameTo(name) == true
         } catch (e: Exception) {
             Log.e(TAG, "changDictionaryName: $e")
             return false

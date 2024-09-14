@@ -220,7 +220,7 @@ object ArchiveUtil {
             password?.let {
                 zipFile.setPassword(it.toCharArray())
             }
-            zipFile.isRunInThread = true;
+            zipFile.isRunInThread = true
             zipFile.extractAll(destDir)
             val progressMonitor = zipFile.progressMonitor
             while (true) {

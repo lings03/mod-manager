@@ -45,7 +45,7 @@ interface BaseFileTools {
     fun copyFileByDF(srcPath: String, destPath: String): Boolean {
         return try {
             val app = App.get()
-            val srcPathUri = DocumentFileTools.pathToUri(srcPath)
+            val srcPathUri = pathToUri(srcPath)
             val inputStream = app.contentResolver.openInputStream(srcPathUri)
             val file = File(destPath)
             if (file.parentFile?.exists() == false) file.parentFile?.mkdirs()
@@ -101,7 +101,7 @@ interface BaseFileTools {
         if (!File(srcPath).exists()) return false
         return try {
             val app = App.get()
-            val destPathUri = DocumentFileTools.pathToUri(destPath)
+            val destPathUri = pathToUri(destPath)
             var destDocumentFile = DocumentFile.fromTreeUri(app, destPathUri)
 
             if (destDocumentFile?.exists() == true) {
@@ -152,8 +152,8 @@ interface BaseFileTools {
         return path.contains("${ModTools.ROOT_PATH}/Android/obb/")
     }
 
-    abstract fun changDictionaryName(path: String, name: String): Boolean
-    abstract fun createDictionary(path: String): Boolean
+    fun changDictionaryName(path: String, name: String): Boolean
+    fun createDictionary(path: String): Boolean
 
     /**
      * 如果字符串是应用包名，返回字符串，反之返回null
