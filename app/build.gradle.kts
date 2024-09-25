@@ -98,10 +98,11 @@ dependencies {
     testImplementation(libs.junit)
     implementation(platform(libs.compose.bom))
     androidTestImplementation(platform(libs.compose.bom))
-    // Choose one of the following:
-    // Material Design 3
+    // Material Design
     implementation(libs.material3)
-    // Material Design 2
+    // Material Design Components
+    implementation(libs.material)
+    // Compose UI
     implementation(libs.androidx.compose.ui.ui)
     // Android Studio Preview support
     implementation(libs.androidx.compose.ui.ui.tooling.preview)
@@ -164,7 +165,7 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     // Glide实现预览图压缩
     implementation(libs.glide)
-
+    // ViewPager2
     implementation(libs.accompanist.pager)
 }
 
