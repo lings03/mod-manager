@@ -33,6 +33,17 @@ android {
 
     namespace = "top.laoxin.modmanager"
     compileSdk = 35
+    buildFeatures {
+        compose = true
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+
 
     defaultConfig {
         applicationId = "com.mod.manager"
@@ -55,6 +66,12 @@ android {
         externalNativeBuild {
             cmake {
                 arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+            }
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags("")
             }
         }
     }
