@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import rikka.shizuku.Shizuku
 import top.laoxin.modmanager.tools.PermissionTools
@@ -58,6 +60,11 @@ class MainActivity : ComponentActivity() {
         }
 
         // 同意许可，加载 MainActivity 的内容
+        // 初始化Python环境
+        if (!Python.isStarted()) {
+            Python.start(AndroidPlatform(this));
+        }
+
         setContent {
             // 使用 Material3 主题适配深色模式
             ModManagerTheme {
