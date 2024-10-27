@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import rikka.shizuku.Shizuku
 import top.laoxin.modmanager.tools.PermissionTools
@@ -41,6 +43,11 @@ class MainActivity : ComponentActivity() {
 
         // 设置全屏模式，使内容可以扩展到状态栏和导航栏区域
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // 初始化Python环境
+        if (!Python.isStarted()) {
+            Python.start(AndroidPlatform(this));
+        }
 
         setContent {
             ModManagerTheme {

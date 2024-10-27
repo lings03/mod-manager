@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
+    id("com.chaquo.python")
 }
 
 val supportedAbis = arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
@@ -74,6 +75,7 @@ android {
         }
 
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -88,6 +90,7 @@ android {
         buildConfig = true
         compose = true
         aidl = true
+        viewBinding = true
     }
 
     composeOptions {
@@ -100,6 +103,19 @@ android {
         }
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    buildToolsVersion = "35.0.0"
+    ndkVersion = "27.1.12297006"
+}
+
+chaquopy {
+    defaultConfig {
+        version = "3.8"
+    }
+    sourceSets {
+        getByName("main") {
+            srcDir("src/main/python/Ark-Unpacker")
         }
     }
 }
@@ -192,7 +208,6 @@ dependencies {
     implementation(libs.accompanist.pager)
     // 依赖注入
     coreLibraryDesugaring(libs.desugar)
-
 }
 
 
