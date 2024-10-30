@@ -39,8 +39,8 @@ android {
         applicationId = "com.mod.manager"
         minSdk = 28
         targetSdk = 35
-        versionCode = 28
-        versionName = "3.1.4"
+        versionCode = 29
+        versionName = "3.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -68,12 +68,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "NONE"
+            }
             signingConfig = signingConfigs.getByName("release")
         }
         getByName("debug") {
             signingConfig = signingConfigs.getByName("release")
         }
-
     }
 
     compileOptions {
@@ -102,6 +104,10 @@ android {
             useLegacyPackaging = false
         }
         resources {
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/LICENSE"
+            excludes += "/META-INF/NOTICE"
+            excludes += "/META-INF/ASL2.0"
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
