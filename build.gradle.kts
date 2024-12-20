@@ -18,6 +18,8 @@ buildscript {
         classpath(libs.okhttp3.okhttp)
     }
     repositories{
+        google()
+        mavenCentral()
         maven { url = uri("https://jitpack.io") }
     }
 
