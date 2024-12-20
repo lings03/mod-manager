@@ -2,27 +2,31 @@
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
-   // id("com.android.library") version "8.1.4" apply false
+    // id("com.android.library") version "8.1.4" apply false
 }
 
 buildscript {
-
     extra.apply {
         set("room_version", "2.6.0")
     }
-   /* dependencies {
-        val kotlin_version
-        classpath ("org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version")
+    /* dependencies {
+         val kotlin_version
+         classpath ("org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version")
     }*/
     dependencies {
         classpath(libs.okhttp3.okhttp)
     }
-    repositories{
+    repositories {
         google()
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
     }
-
 }
 
-
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
