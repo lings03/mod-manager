@@ -91,6 +91,7 @@ android {
         buildConfig = true
         compose = true
         aidl = true
+        viewBinding = true
     }
 
     composeOptions {
@@ -109,6 +110,8 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    ndkVersion = "28.0.12433566 rc1"
+    buildToolsVersion = "35.0.0 rc4"
 }
 
 kotlin {
