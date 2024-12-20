@@ -111,7 +111,6 @@ android {
         }
     }
     ndkVersion = "28.0.12433566 rc1"
-    buildToolsVersion = "35.0.0 rc4"
 }
 
 kotlin {
