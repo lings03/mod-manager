@@ -1,6 +1,9 @@
 package top.laoxin.modmanager.tools.specialGameTools
 
 import android.util.Log
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import top.laoxin.modmanager.di.SpecialGameToolsModule
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -11,16 +14,16 @@ class SpecialGameToolsManager @Inject constructor(
     @SpecialGameToolsModule.ProjectSnowToolsImpl private val projectSnowTools: BaseSpecialGameTools
 ) {
 
-
-
-    private val specialGameTools : Map<String, BaseSpecialGameTools>  = mapOf(
+    private val specialGameTools: Map<String, BaseSpecialGameTools> = mapOf(
         "hypergryph.arknights" to arknightsTools,
         "com.mrfz" to arknightsTools,
         "projectsnow" to projectSnowTools,
         "snowbreak" to projectSnowTools
     )
+
     companion object {
-       const val TAG = "SpecialGameToolsManager"
+        const val TAG = "SpecialGameToolsManager"
+
     }
 
     fun getSpecialGameTools(packageName: String): BaseSpecialGameTools? {
@@ -45,4 +48,10 @@ class SpecialGameToolsManager @Inject constructor(
         return projectSnowTools
     }
 
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface SpecialGameToolsManagerEntryPoint {
+    fun specialGameToolsManager(): SpecialGameToolsManager
 }
