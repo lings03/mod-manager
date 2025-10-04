@@ -213,4 +213,6 @@
     <string name="show_lincence">查看开源许可证</string>
     <string name="mod_page_no_game">还没有选择游戏(QWQ)</string>
     <string name="mod_page_initializing">正在初始化...</string>
+    <string name="uninstall_title">你真的要卸载 MOD管理器 吗？</string>
+    <string name="uninstall_summary">卸载MOD管理器不会自动关闭已打开的MOD，并且由于数据库丢失，重新安装也会无法识别与关闭已开启MOD，需要卸载重装游戏解决。</string>
 </resources>
