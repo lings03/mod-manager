@@ -102,7 +102,7 @@ fun ModListItem(
     val onClick = remember(mod.id, isMultiSelect) {
         { if (isMultiSelect) onMultiSelectClick(mod) else openModDetail(mod, true) }
     }
-    val onCheckedChange = remember(mod.id, mod.isEnable) {
+    val onCheckedChange = remember(mod.id) {
         { isChecked: Boolean -> enableMod(mod, isChecked) }
     }
 
