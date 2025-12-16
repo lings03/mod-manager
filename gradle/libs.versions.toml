@@ -1,9 +1,9 @@
 [versions]
 # Build Tools
 agp = "8.13.2"
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 ksp = "2.3.3"
-serialization = "2.2.21"
+serialization = "2.3.0"
 
 # Compose
 composeUi = "1.10.0"
