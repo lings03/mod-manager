@@ -72,7 +72,7 @@ provider = "13.1.5"
 
 # UI & Markdown
 markwon = "0.5.8"
-aboutLibraries = "13.1.0"
+aboutLibraries = "13.2.1"
 
 # Testing
 junit = "4.13.2"
