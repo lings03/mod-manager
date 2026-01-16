@@ -58,7 +58,7 @@ coilCompose = "2.7.0"
 glide = "5.0.5"
 
 # Dependency Injection
-hilt = "2.57.2"
+hilt = "2.58"
 
 # Compression & Archives
 commonsCompress = "1.28.0"
