@@ -14,7 +14,8 @@ sealed class EnableEvent {
     data class Processing(val modName: String, val current: Int, val total: Int) : EnableEvent()
 
     /** 单个 MOD 完成 */
-    data class ModComplete(val mod: ModBean, val success: Boolean, val error: String? = null) : EnableEvent()
+    data class ModComplete(val mod: ModBean, val success: Boolean, val error: String? = null) :
+        EnableEvent()
 
     /** 全部完成 */
     data class Complete(val result: EnableResult) : EnableEvent()

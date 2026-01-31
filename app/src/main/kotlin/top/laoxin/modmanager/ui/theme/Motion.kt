@@ -23,17 +23,17 @@ object MotionSpec {
         durationMillis = MotionDuration.Medium,
         easing = MotionEasing.Standard
     )
-    
+
     val emphasized = tween<Float>(
         durationMillis = MotionDuration.Long,
         easing = MotionEasing.Emphasized
     )
-    
+
     val quick = tween<Float>(
         durationMillis = MotionDuration.Short,
         easing = MotionEasing.Standard
     )
-    
+
     val spring = spring<Float>(
         dampingRatio = Spring.DampingRatioMediumBouncy,
         stiffness = Spring.StiffnessLow

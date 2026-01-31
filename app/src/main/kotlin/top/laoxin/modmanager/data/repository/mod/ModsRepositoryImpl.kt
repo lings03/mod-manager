@@ -1,16 +1,15 @@
 package top.laoxin.modmanager.data.repository.mod
 
-import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import top.laoxin.modmanager.domain.bean.ModBean
 import top.laoxin.modmanager.data.repository.ModManagerDatabase
+import top.laoxin.modmanager.domain.bean.ModBean
 import top.laoxin.modmanager.domain.repository.ModRepository
+import javax.inject.Inject
 
 class ModsRepositoryImpl
 @Inject
 constructor(
-        private val database: ModManagerDatabase,
+    private val database: ModManagerDatabase,
 ) : ModRepository {
     private val modDao = database.modDao()
     override fun getAllIModsStream(): Flow<List<ModBean>> {
@@ -66,8 +65,8 @@ constructor(
     }
 
     override fun getModsByPathAndGamePackageName(
-            path: String,
-            gamePackageName: String
+        path: String,
+        gamePackageName: String
     ): Flow<List<ModBean>> {
         return modDao.getModsByPathAndGamePackageName(path, gamePackageName)
     }

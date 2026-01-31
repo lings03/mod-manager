@@ -680,7 +680,7 @@ fun DeleteCheckConfirmDialog(
 
         checkState?.let { state ->
             val checkResult = state.checkResult
-                // 跟踪已关闭的MOD数量
+            // 跟踪已关闭的MOD数量
             var disabledCount by remember { mutableStateOf(0) }
             val totalEnabledMods = checkResult.allEnabledMods.size
             Box(
@@ -773,7 +773,7 @@ fun DeleteCheckConfirmDialog(
                                         checkResult.singleMods,
                                         checkResult.singleEnabledMods,
                                         {
-                                            disabledCount ++
+                                            disabledCount++
                                             onDisableMod(it)
                                         },
                                         showAllDisableButtonState
@@ -790,7 +790,7 @@ fun DeleteCheckConfirmDialog(
                                             packageInfo,
                                         onDisableMod =
                                             {
-                                                disabledCount ++
+                                                disabledCount++
                                                 onDisableMod(it)
                                             },
                                         showAllDisableButtonState

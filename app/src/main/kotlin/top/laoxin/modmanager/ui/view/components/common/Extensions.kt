@@ -27,10 +27,10 @@ fun Context.openAppInStore(packageName: String = this.packageName) {
     } catch (e: Exception) {
         // 回退到网页版
         startActivity(
-                Intent(
-                        Intent.ACTION_VIEW,
-                        "https://play.google.com/store/apps/details?id=$packageName".toUri()
-                )
+            Intent(
+                Intent.ACTION_VIEW,
+                "https://play.google.com/store/apps/details?id=$packageName".toUri()
+            )
         )
     }
 }
@@ -42,10 +42,10 @@ fun Context.openAppInStore(packageName: String = this.packageName) {
  */
 fun Context.shareText(text: String, title: String = "") {
     val intent =
-            Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, text)
-            }
+        Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
     startActivity(Intent.createChooser(intent, title.ifEmpty { null }))
 }
 
@@ -57,14 +57,13 @@ fun Context.shareText(text: String, title: String = "") {
  */
 fun Context.sendEmail(email: String, subject: String = "", body: String = "") {
     val intent =
-            Intent(Intent.ACTION_SENDTO).apply {
-                data = "mailto:$email".toUri()
-                putExtra(Intent.EXTRA_SUBJECT, subject)
-                putExtra(Intent.EXTRA_TEXT, body)
-            }
+        Intent(Intent.ACTION_SENDTO).apply {
+            data = "mailto:$email".toUri()
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+        }
     startActivity(intent)
 }
-
 
 
 fun String.fuzzyContains(pattern: String): Boolean {

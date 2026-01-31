@@ -20,39 +20,42 @@ import top.laoxin.modmanager.ui.viewmodel.ConsoleViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 fun ConsoleTopBar(viewModel: ConsoleViewModel, modifier: Modifier = Modifier, configuration: Int) {
     TopAppBar(
-            colors =
-                    TopAppBarDefaults.topAppBarColors(
-                            containerColor =
-                                    if (configuration == Configuration.ORIENTATION_LANDSCAPE)
-                                            MaterialTheme.colorScheme.surface
-                                    else MaterialTheme.colorScheme.surfaceContainer,
-                            // titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            // navigationIconContentColor =
-                            // MaterialTheme.colorScheme.onSecondaryContainer,
-                            ),
-            modifier = modifier,
-            title = {
-                if (configuration != Configuration.ORIENTATION_LANDSCAPE) {
-                    Text(stringResource(id = R.string.console), style = MaterialTheme.typography.titleLarge)
-                }
-            },
-            actions = {
-                Text(text = stringResource(R.string.console_top_bar_start_game))
-                IconButton(
-                        onClick = {
-                            // 在这里处理图标按钮的点击事件
-                            viewModel.startGame()
-                        }
-                ) {
-                    // Text(text = "启动游戏")
-                    Icon(
-                            imageVector = Icons.Default.PlayArrow, // 使用信息图标
-                            contentDescription = "Start", // 为辅助功能提供描述
-                            // tint = MaterialTheme.colorScheme.primaryContainer
-                            )
-                }
-
-                // 添加更多的菜单项
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor =
+                    if (configuration == Configuration.ORIENTATION_LANDSCAPE)
+                        MaterialTheme.colorScheme.surface
+                    else MaterialTheme.colorScheme.surfaceContainer,
+                // titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                // navigationIconContentColor =
+                // MaterialTheme.colorScheme.onSecondaryContainer,
+            ),
+        modifier = modifier,
+        title = {
+            if (configuration != Configuration.ORIENTATION_LANDSCAPE) {
+                Text(
+                    stringResource(id = R.string.console),
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
+        },
+        actions = {
+            Text(text = stringResource(R.string.console_top_bar_start_game))
+            IconButton(
+                onClick = {
+                    // 在这里处理图标按钮的点击事件
+                    viewModel.startGame()
+                }
+            ) {
+                // Text(text = "启动游戏")
+                Icon(
+                    imageVector = Icons.Default.PlayArrow, // 使用信息图标
+                    contentDescription = "Start", // 为辅助功能提供描述
+                    // tint = MaterialTheme.colorScheme.primaryContainer
+                )
+            }
+
+            // 添加更多的菜单项
+        }
     )
 }

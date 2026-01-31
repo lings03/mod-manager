@@ -42,6 +42,7 @@ object PathConstants {
     /** 扫描 Mod 目录 */
     val SCAN_PATH_QQ = "$ROOT_PATH/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv/"
     val SCAN_PATH_DOWNLOAD = "$ROOT_PATH/Download/"
+
     /** Android 数据目录 */
     val ANDROID_DATA = "$ROOT_PATH/Android/data/"
 

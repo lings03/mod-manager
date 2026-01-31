@@ -79,7 +79,7 @@ private fun HandleScrollEvents(state: UserAgreementState) {
 private fun HandleCountdown(state: UserAgreementState) {
     // 开发环境跳过等待
     val requiredTime = if (BuildConfig.DEBUG) 0 else 20
-    
+
     LaunchedEffect(Unit) {
         if (requiredTime == 0) {
             // Debug 模式直接确认

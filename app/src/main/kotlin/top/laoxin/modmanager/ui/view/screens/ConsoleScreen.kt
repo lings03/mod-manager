@@ -38,15 +38,14 @@ import top.laoxin.modmanager.constant.FileAccessType
 import top.laoxin.modmanager.constant.GameInfoConstant
 import top.laoxin.modmanager.constant.PathConstants
 import top.laoxin.modmanager.domain.bean.GameInfoBean
+import top.laoxin.modmanager.ui.state.ConsoleUiState
+import top.laoxin.modmanager.ui.theme.ExpressiveSwitch
+import top.laoxin.modmanager.ui.theme.ExpressiveTextButton
 import top.laoxin.modmanager.ui.view.components.common.DialogCommon
 import top.laoxin.modmanager.ui.view.components.common.DialogCommonForUpdate
 import top.laoxin.modmanager.ui.view.components.common.DialogType
 import top.laoxin.modmanager.ui.view.components.common.PermissionHandler
 import top.laoxin.modmanager.ui.view.components.common.openUrl
-import top.laoxin.modmanager.ui.state.ConsoleUiState
-import top.laoxin.modmanager.ui.theme.ExpressiveSwitch
-import top.laoxin.modmanager.ui.theme.ExpressiveTextButton
-
 import top.laoxin.modmanager.ui.viewmodel.ConsoleViewModel
 
 @SuppressLint("NewApi")
@@ -57,58 +56,59 @@ fun ConsoleScreen(viewModel: ConsoleViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
     DialogCommon(
-            title = stringResource(id = R.string.console_scan_directory_mods),
-            type = DialogType.WARNING,
-            content = stringResource(id = R.string.console_scan_directory_mods_content),
-            onConfirm = { viewModel.switchScanDirectoryMods(false) },
-            onCancel = { viewModel.setShowScanDirectoryModsDialog(false) },
-            showDialog = uiState.showScanDirectoryModsDialog
+        title = stringResource(id = R.string.console_scan_directory_mods),
+        type = DialogType.WARNING,
+        content = stringResource(id = R.string.console_scan_directory_mods_content),
+        onConfirm = { viewModel.switchScanDirectoryMods(false) },
+        onCancel = { viewModel.setShowScanDirectoryModsDialog(false) },
+        showDialog = uiState.showScanDirectoryModsDialog
     )
 
     // Upgrade Dialog
     uiState.updateInfo?.let {
         DialogCommonForUpdate(
-                title = stringResource(id = R.string.console_upgrade_title),
-                content = it.changelog,
-                onConfirm = { context.openUrl(it.downloadUrl) },
-                onDismiss = { viewModel.setShowUpgradeDialog(false) },
-                showDialog = uiState.showUpgradeDialog
+            title = stringResource(id = R.string.console_upgrade_title),
+            content = it.changelog,
+            onConfirm = { context.openUrl(it.downloadUrl) },
+            onDismiss = { viewModel.setShowUpgradeDialog(false) },
+            showDialog = uiState.showUpgradeDialog
         )
     }
 
     // Permission Handler
     PermissionHandler(
-            permissionStateFlow = viewModel.permissionState,
-            onPermissionGranted = viewModel::onPermissionGranted,
-            onPermissionDenied = viewModel::onPermissionDenied,
-            onRequestShizuku = viewModel::requestShizukuPermission,
-            isShizukuAvailable = viewModel.isShizukuAvailable()
+        permissionStateFlow = viewModel.permissionState,
+        onPermissionGranted = viewModel::onPermissionGranted,
+        onPermissionDenied = viewModel::onPermissionDenied,
+        onRequestShizuku = viewModel::requestShizukuPermission,
+        isShizukuAvailable = viewModel.isShizukuAvailable()
     )
 
     // Info Dialog
     uiState.infoBean?.let {
         DialogCommon(
-                title = stringResource(id = R.string.console_info_title),
-                content = it.msg,
-                onConfirm = { viewModel.setShowInfoDialog(false) },
-                onCancel = { viewModel.setShowInfoDialog(false) },
-                showDialog = uiState.showInfoDialog
+            title = stringResource(id = R.string.console_info_title),
+            content = it.msg,
+            onConfirm = { viewModel.setShowInfoDialog(false) },
+            onCancel = { viewModel.setShowInfoDialog(false) },
+            showDialog = uiState.showInfoDialog
         )
     }
 
     Column(
-            modifier =
-                    Modifier.padding(start = 16.dp, end = 16.dp)
-                            .padding(0.dp)
-                            .fillMaxSize()
-                            .verticalScroll(scrollState)
+        modifier =
+            Modifier
+                .padding(start = 16.dp, end = 16.dp)
+                .padding(0.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
         GameInformationCard(
-                viewModel,
-                uiState.gameInfo,
-                Modifier.align(Alignment.CenterHorizontally)
+            viewModel,
+            uiState.gameInfo,
+            Modifier.align(Alignment.CenterHorizontally)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -125,19 +125,23 @@ fun ConsoleScreen(viewModel: ConsoleViewModel = hiltViewModel()) {
 
 @Composable
 fun GameInformationCard(
-        viewModel: ConsoleViewModel,
-        gameInfo: GameInfoBean,
-        modifier: Modifier = Modifier
+    viewModel: ConsoleViewModel,
+    gameInfo: GameInfoBean,
+    modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier, shape = MaterialTheme.shapes.large) {
         Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                    bitmap = viewModel.getGameIcon(),
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp).clip(MaterialTheme.shapes.extraLarge)
+                bitmap = viewModel.getGameIcon(),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(MaterialTheme.shapes.extraLarge)
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -145,43 +149,43 @@ fun GameInformationCard(
             if (gameInfo == GameInfoConstant.NO_GAME) {
                 Column {
                     Text(
-                            text = App.get().getString(R.string.toast_please_select_game),
-                            style = typography.titleLarge
+                        text = App.get().getString(R.string.toast_please_select_game),
+                        style = typography.titleLarge
                     )
                 }
             } else {
                 Column {
                     Text(
-                            text =
-                                    stringResource(
-                                            id = R.string.console_game_name,
-                                            gameInfo.gameName
-                                    ),
-                            style = typography.labelLarge
+                        text =
+                            stringResource(
+                                id = R.string.console_game_name,
+                                gameInfo.gameName
+                            ),
+                        style = typography.labelLarge
                     )
                     Text(
-                            text =
-                                    stringResource(
-                                            id = R.string.console_game_packegname,
-                                            gameInfo.packageName
-                                    ),
-                            style = typography.labelLarge
+                        text =
+                            stringResource(
+                                id = R.string.console_game_packegname,
+                                gameInfo.packageName
+                            ),
+                        style = typography.labelLarge
                     )
                     Text(
-                            text =
-                                    stringResource(
-                                            id = R.string.console_game_version,
-                                            viewModel.getGameVersion(gameInfo)
-                                    ),
-                            style = typography.labelLarge
+                        text =
+                            stringResource(
+                                id = R.string.console_game_version,
+                                viewModel.getGameVersion(gameInfo)
+                            ),
+                        style = typography.labelLarge
                     )
                     Text(
-                            text =
-                                    stringResource(
-                                            id = R.string.console_game_service,
-                                            gameInfo.serviceName
-                                    ),
-                            style = typography.labelLarge
+                        text =
+                            stringResource(
+                                id = R.string.console_game_service,
+                                gameInfo.serviceName
+                            ),
+                        style = typography.labelLarge
                     )
                 }
             }
@@ -195,25 +199,25 @@ fun SettingInformationCard(viewModel: ConsoleViewModel, uiState: ConsoleUiState)
         Card(modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.large) {
             Column(Modifier.padding(16.dp)) {
                 Text(
-                        text = stringResource(id = R.string.console_setting_info_mod),
-                        style = typography.titleLarge
+                    text = stringResource(id = R.string.console_setting_info_mod),
+                    style = typography.titleLarge
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                        text =
-                                stringResource(
-                                        id = R.string.console_setting_info_mod_total,
-                                        uiState.modCount.toString()
-                                ),
-                        style = typography.labelLarge
+                    text =
+                        stringResource(
+                            id = R.string.console_setting_info_mod_total,
+                            uiState.modCount.toString()
+                        ),
+                    style = typography.labelLarge
                 )
                 Text(
-                        text =
-                                stringResource(
-                                        id = R.string.console_setting_info_mod_enable,
-                                        uiState.enableModCount.toString()
-                                ),
-                        style = typography.labelLarge
+                    text =
+                        stringResource(
+                            id = R.string.console_setting_info_mod_enable,
+                            uiState.enableModCount.toString()
+                        ),
+                    style = typography.labelLarge
                 )
             }
         }
@@ -223,39 +227,42 @@ fun SettingInformationCard(viewModel: ConsoleViewModel, uiState: ConsoleUiState)
         Card(modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.large) {
             Column(Modifier.padding(16.dp)) {
                 Text(
-                        text = stringResource(id = R.string.console_setting_info_configuration),
-                        style = typography.titleLarge
+                    text = stringResource(id = R.string.console_setting_info_configuration),
+                    style = typography.titleLarge
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
                 val fileAccessType: FileAccessType = viewModel.checkFileAccessType()
                 Text(
-                        when (fileAccessType) {
-                            FileAccessType.STANDARD_FILE ->
-                                    stringResource(id = R.string.permission, "FILE")
-                            FileAccessType.DOCUMENT_FILE ->
-                                    stringResource(id = R.string.permission, "DOCUMENT")
-                            FileAccessType.SHIZUKU ->
-                                    stringResource(id = R.string.permission, "SHIZUKU")
-                            FileAccessType.NONE -> stringResource(id = R.string.permission, "NONE")
-                        },
-                        style = typography.labelLarge
+                    when (fileAccessType) {
+                        FileAccessType.STANDARD_FILE ->
+                            stringResource(id = R.string.permission, "FILE")
+
+                        FileAccessType.DOCUMENT_FILE ->
+                            stringResource(id = R.string.permission, "DOCUMENT")
+
+                        FileAccessType.SHIZUKU ->
+                            stringResource(id = R.string.permission, "SHIZUKU")
+
+                        FileAccessType.NONE -> stringResource(id = R.string.permission, "NONE")
+                    },
+                    style = typography.labelLarge
                 )
                 Text(
-                        stringResource(
-                                id = R.string.console_setting_info_configuration_install_loction,
-                                if (uiState.canInstallMod)
-                                        stringResource(
-                                                R.string
-                                                        .console_setting_info_configuration_can_install
-                                        )
-                                else
-                                        stringResource(
-                                                R.string
-                                                        .console_setting_info_configuration_not_install
-                                        )
-                        ),
-                        style = typography.labelLarge
+                    stringResource(
+                        id = R.string.console_setting_info_configuration_install_loction,
+                        if (uiState.canInstallMod)
+                            stringResource(
+                                R.string
+                                    .console_setting_info_configuration_can_install
+                            )
+                        else
+                            stringResource(
+                                R.string
+                                    .console_setting_info_configuration_not_install
+                            )
+                    ),
+                    style = typography.labelLarge
                 )
             }
         }
@@ -265,131 +272,133 @@ fun SettingInformationCard(viewModel: ConsoleViewModel, uiState: ConsoleUiState)
 @Composable
 fun ConfigurationCard(viewModel: ConsoleViewModel, uiState: ConsoleUiState) {
     val openDirectoryLauncher =
-            rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.OpenDocumentTree()
-            ) { uri: Uri? ->
-                if (uri != null) {
-                    val path =
-                            uri.path?.split(":")?.last()?.replace("${PathConstants.ROOT_PATH}/", "")
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenDocumentTree()
+        ) { uri: Uri? ->
+            if (uri != null) {
+                val path =
+                    uri.path?.split(":")?.last()?.replace("${PathConstants.ROOT_PATH}/", "")
 
-                    viewModel.setSelectedDirectory(
-                            path
-                                    ?: (PathConstants.ROOT_PATH +
-                                            "/" +
-                                            PathConstants.DOWNLOAD_MOD_PATH)
-                    )
-                }
+                viewModel.setSelectedDirectory(
+                    path
+                        ?: (PathConstants.ROOT_PATH +
+                                "/" +
+                                PathConstants.DOWNLOAD_MOD_PATH)
+                )
             }
+        }
 
     Card {
-        Column(Modifier.padding(16.dp).fillMaxWidth()) {
+        Column(Modifier
+            .padding(16.dp)
+            .fillMaxWidth()) {
             Text(
-                    text = stringResource(id = R.string.console_configuration_title),
-                    style = typography.titleLarge
+                text = stringResource(id = R.string.console_configuration_title),
+                style = typography.titleLarge
             )
             Spacer(modifier = Modifier.height(14.dp))
 
             if (uiState.gameInfo.antiHarmonyFile.isNotEmpty() ||
-                            uiState.gameInfo.antiHarmonyContent.isNotEmpty()
+                uiState.gameInfo.antiHarmonyContent.isNotEmpty()
             ) {
                 Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                            text = stringResource(id = R.string.console_configuration_anti_harmony),
-                            style = typography.titleMedium
+                        text = stringResource(id = R.string.console_configuration_anti_harmony),
+                        style = typography.titleMedium
                     )
                     ExpressiveSwitch(
-                            checked = uiState.antiHarmony,
-                            onCheckedChange = { viewModel.openAntiHarmony(it) }
+                        checked = uiState.antiHarmony,
+                        onCheckedChange = { viewModel.openAntiHarmony(it) }
                     )
                 }
             }
 
             Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                        text =
-                                stringResource(
-                                        id = R.string.console_configuration_disable_scan_dictionary
-                                ),
-                        style = typography.titleMedium
+                    text =
+                        stringResource(
+                            id = R.string.console_configuration_disable_scan_dictionary
+                        ),
+                    style = typography.titleMedium
                 )
                 ExpressiveSwitch(
-                        checked = uiState.scanDirectoryMods,
-                        onCheckedChange = { viewModel.switchScanDirectoryMods(it) }
+                    checked = uiState.scanDirectoryMods,
+                    onCheckedChange = { viewModel.switchScanDirectoryMods(it) }
                 )
             }
 
             Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                        text = stringResource(id = R.string.console_configuration_scanQQ),
-                        style = typography.titleMedium
+                    text = stringResource(id = R.string.console_configuration_scanQQ),
+                    style = typography.titleMedium
                 )
                 ExpressiveSwitch(
-                        checked = uiState.scanQQDirectory,
-                        onCheckedChange = { viewModel.switchScanQQDirectory(it) }
+                    checked = uiState.scanQQDirectory,
+                    onCheckedChange = { viewModel.switchScanQQDirectory(it) }
                 )
             }
 
             Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                        text = stringResource(id = R.string.console_configuration_scan_download),
-                        style = typography.titleMedium
+                    text = stringResource(id = R.string.console_configuration_scan_download),
+                    style = typography.titleMedium
                 )
                 ExpressiveSwitch(
-                        checked = uiState.scanDownload,
-                        onCheckedChange = { viewModel.switchScanDownloadDirectory(it) }
+                    checked = uiState.scanDownload,
+                    onCheckedChange = { viewModel.switchScanDownloadDirectory(it) }
                 )
             }
 
             Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                        text =
-                                stringResource(
-                                        id = R.string.console_configuration_conflict_detection
-                                ),
-                        style = typography.titleMedium
+                    text =
+                        stringResource(
+                            id = R.string.console_configuration_conflict_detection
+                        ),
+                    style = typography.titleMedium
                 )
                 ExpressiveSwitch(
-                        checked = uiState.conflictDetectionEnabled,
-                        onCheckedChange = { viewModel.switchConflictDetection(it) }
+                    checked = uiState.conflictDetectionEnabled,
+                    onCheckedChange = { viewModel.switchConflictDetection(it) }
                 )
             }
 
             Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 ExpressiveTextButton(
-                        onClick = { openDirectoryLauncher.launch(null) },
-                        contentPadding = PaddingValues(0.dp)
+                    onClick = { openDirectoryLauncher.launch(null) },
+                    contentPadding = PaddingValues(0.dp)
                 ) {
                     Text(
-                            text =
-                                    stringResource(
-                                            id = R.string.console_configuration_select_mod_directory
-                                    ),
-                            modifier = Modifier.padding(0.dp),
-                            style = typography.titleMedium
+                        text =
+                            stringResource(
+                                id = R.string.console_configuration_select_mod_directory
+                            ),
+                        modifier = Modifier.padding(0.dp),
+                        style = typography.titleMedium
                     )
                 }
                 Text(text = uiState.selectedDirectory)

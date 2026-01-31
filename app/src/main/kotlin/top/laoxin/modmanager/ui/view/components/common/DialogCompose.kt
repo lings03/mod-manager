@@ -62,16 +62,19 @@ private fun getDialogTypeConfig(type: DialogType): DialogTypeConfig {
             iconColor = MaterialTheme.colorScheme.primary,
             backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
         )
+
         DialogType.SUCCESS -> DialogTypeConfig(
             icon = Icons.Default.CheckCircle,
             iconColor = Color(0xFF4CAF50),
             backgroundColor = Color(0xFF4CAF50).copy(alpha = 0.1f)
         )
+
         DialogType.WARNING -> DialogTypeConfig(
             icon = Icons.Default.Warning,
             iconColor = Color(0xFFFF9800),
             backgroundColor = Color(0xFFFF9800).copy(alpha = 0.1f)
         )
+
         DialogType.ERROR -> DialogTypeConfig(
             icon = Icons.Default.Error,
             iconColor = Color(0xFFF44336),
@@ -169,7 +172,8 @@ fun DialogCommon(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    text = cancelText ?: stringResource(id = R.string.dialog_button_request_close),
+                                    text = cancelText
+                                        ?: stringResource(id = R.string.dialog_button_request_close),
                                     style = MaterialTheme.typography.labelLarge
                                 )
                             }
@@ -180,7 +184,8 @@ fun DialogCommon(
                             modifier = if (showCancelButton) Modifier.weight(1f) else Modifier
                         ) {
                             Text(
-                                text = confirmText ?: stringResource(id = R.string.dialog_button_confirm),
+                                text = confirmText
+                                    ?: stringResource(id = R.string.dialog_button_confirm),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.SemiBold
                             )

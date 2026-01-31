@@ -1,7 +1,6 @@
 package top.laoxin.modmanager.domain.usercase.app
 
 import kotlinx.coroutines.flow.first
-import top.laoxin.modmanager.domain.model.AppError
 import top.laoxin.modmanager.domain.repository.UpdateInfo
 import top.laoxin.modmanager.domain.repository.UserPreferencesRepository
 import top.laoxin.modmanager.domain.repository.VersionRepository
@@ -20,22 +19,22 @@ class CheckUpdateUserCase @Inject constructor(
     suspend operator fun invoke(currentVersion: String, autoCheck: Boolean = true): UpdateInfo? {
         val updateInfo = versionRepository.getNewUpdateInfo().getOrNull()
 
-         return if (updateInfo != null) {
-             if (updateInfo.versionName != currentVersion) {
-                 userPreferencesRepository.saveCachedVersionName(updateInfo.versionName)
-                 userPreferencesRepository.saveCachedChangelog(updateInfo.changelog)
-                 userPreferencesRepository.saveCachedDownloadUrl(updateInfo.downloadUrl)
-                 userPreferencesRepository.saveCachedUniversalUrl(updateInfo.universalUrl)
-                 //versionRepository.saveUpdateInfo(updateInfo)
-                 updateInfo
-             }else{
-                 if (!autoCheck) {
-                     // 从缓存中获取
-                     updateInfo
-                 } else {
-                     null
-                 }
-             }
+        return if (updateInfo != null) {
+            if (updateInfo.versionName != currentVersion) {
+                userPreferencesRepository.saveCachedVersionName(updateInfo.versionName)
+                userPreferencesRepository.saveCachedChangelog(updateInfo.changelog)
+                userPreferencesRepository.saveCachedDownloadUrl(updateInfo.downloadUrl)
+                userPreferencesRepository.saveCachedUniversalUrl(updateInfo.universalUrl)
+                //versionRepository.saveUpdateInfo(updateInfo)
+                updateInfo
+            } else {
+                if (!autoCheck) {
+                    // 从缓存中获取
+                    updateInfo
+                } else {
+                    null
+                }
+            }
         } else {
             // 从缓存中获取
             val cachedVersion = userPreferencesRepository.cachedVersionName.first()

@@ -2,57 +2,65 @@ package top.laoxin.modmanager.ui.view.components.mod
 
 import android.util.Log
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import top.laoxin.modmanager.R
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.ui.res.painterResource
-import java.io.File
 import top.laoxin.modmanager.domain.bean.ModBean
-import top.laoxin.modmanager.ui.viewmodel.ModernModBrowserViewModel
-import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModDetailViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModOperationViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModSearchViewModel
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
+import top.laoxin.modmanager.ui.viewmodel.ModernModBrowserViewModel
+import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
+import java.io.File
 
 @Composable
 fun ModernModsBrowser(
@@ -109,13 +117,13 @@ fun ModernModsBrowser(
         modBrowserViewModel.getScrollState("${currentPath}_GRID")
     }
     // Need to remember grid state as well
-    val gridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState(
+    val gridState = rememberLazyGridState(
         initialFirstVisibleItemIndex = gridInitIndex,
         initialFirstVisibleItemScrollOffset = gridInitOffset
     )
 
     // Save scroll state when path changes or composable is disposed (e.g. Tab Switch)
-    androidx.compose.runtime.DisposableEffect(currentPath) {
+    DisposableEffect(currentPath) {
         onDispose {
             modBrowserViewModel.saveScrollState(
                 "${currentPath}_LIST",
@@ -186,8 +194,8 @@ fun ModernModsBrowser(
 private fun ModernFileListContent(
     files: List<File>,
     modList: List<ModBean>,
-    listState: androidx.compose.foundation.lazy.LazyListState,
-    gridState: androidx.compose.foundation.lazy.grid.LazyGridState, // Added
+    listState: LazyListState,
+    gridState: LazyGridState, // Added
     isMultiSelect: Boolean,
     modsSelected: Set<Int>,
     modSwitchEnable: Boolean,
@@ -202,11 +210,9 @@ private fun ModernFileListContent(
     AnimatedContent(
         targetState = isGridView,
         transitionSpec = {
-            (fadeIn(tween(300)) +
-                    scaleIn(initialScale = 0.95f, animationSpec = tween(300)))
+            fadeIn(tween(200))
                 .togetherWith(
-                    fadeOut(tween(300)) +
-                            scaleOut(targetScale = 0.95f, animationSpec = tween(300))
+                    fadeOut(tween(200))
                 )
         },
         label = "BrowserViewModeTransition"
@@ -269,7 +275,10 @@ private fun ModernFileListContent(
                                 enableMod = { modBean, enable ->
                                     modOperationViewModel.switchMod(modBean, enable)
                                 },
-                                modDetailViewModel = modDetailViewModel
+                                onUnlockClick = { modBean ->
+                                    modOperationViewModel.requestUnlockMod(modBean)
+                                },
+                                modDetailViewModel = modDetailViewModel,
                             )
                         }
 
@@ -389,6 +398,9 @@ private fun ModernFileListContent(
                             enableMod = { modBean, enable ->
                                 modOperationViewModel.switchMod(modBean, enable)
                             },
+                            onUnlockClick = { modBean ->
+                                modOperationViewModel.requestUnlockMod(modBean)
+                            },
                             modDetailViewModel = modDetailViewModel
                         )
                     }
@@ -418,6 +430,7 @@ private fun ModernFileListContent(
 
 
 }
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FileListItem(
@@ -436,12 +449,13 @@ fun FileListItem(
             if (isSelected) CardDefaults.cardElevation(2.dp)
             else CardDefaults.cardElevation(0.dp),
         modifier =
-            modifier.combinedClickable(
-                onClick = {
-                    if (isMultiSelect) onMultiSelectClick() else onClick()
-                },
-                onLongClick = onLongClick
-            )
+            modifier
+                .combinedClickable(
+                    onClick = {
+                        if (isMultiSelect) onMultiSelectClick() else onClick()
+                    },
+                    onLongClick = onLongClick
+                )
                 .animateContentSize(),
         colors =
             if (!isSelected) CardDefaults.cardColors()
@@ -453,13 +467,15 @@ fun FileListItem(
     ) {
         Row(
             modifier =
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .padding(16.dp)
                     .sizeIn(minHeight = 30.dp, maxHeight = 80.dp)
         ) {
             Box(
                 modifier =
-                    Modifier.size(40.dp)
+                    Modifier
+                        .size(40.dp)
                         .clip(MaterialTheme.shapes.extraSmall)
                         .align(Alignment.CenterVertically)
             ) {
@@ -519,7 +535,8 @@ fun FolderGridItem(
             // 图标区域 - 1:1比例
             Box(
                 modifier =
-                    Modifier.fillMaxWidth()
+                    Modifier
+                        .fillMaxWidth()
                         .aspectRatio(1f)
                         .clip(MaterialTheme.shapes.large),
                 contentAlignment = Alignment.Center
@@ -527,7 +544,8 @@ fun FolderGridItem(
                 // 背景渐变
                 Box(
                     modifier =
-                        Modifier.fillMaxSize()
+                        Modifier
+                            .fillMaxSize()
                             .background(
                                 MaterialTheme.colorScheme.surfaceVariant.copy(
                                     alpha = 0.5f
@@ -544,7 +562,9 @@ fun FolderGridItem(
             }
 
             // 底部信息区域
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp)) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp)) {
                 // 文件夹/压缩包名称
                 Text(
                     text = name,

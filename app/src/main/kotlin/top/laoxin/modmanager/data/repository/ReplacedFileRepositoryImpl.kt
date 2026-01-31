@@ -1,15 +1,15 @@
 package top.laoxin.modmanager.data.repository
 
+import top.laoxin.modmanager.data.dao.ReplacedFileDao
+import top.laoxin.modmanager.domain.bean.ReplacedFileBean
+import top.laoxin.modmanager.domain.repository.ReplacedFileRepository
 import javax.inject.Inject
 import javax.inject.Singleton
-import top.laoxin.modmanager.domain.bean.ReplacedFileBean
-import top.laoxin.modmanager.data.dao.ReplacedFileDao
-import top.laoxin.modmanager.domain.repository.ReplacedFileRepository
 
 /** 被替换文件记录 Repository 实现 */
 @Singleton
-class ReplacedFileRepositoryImpl @Inject constructor(private val database: ModManagerDatabase,) :
-        ReplacedFileRepository {
+class ReplacedFileRepositoryImpl @Inject constructor(private val database: ModManagerDatabase) :
+    ReplacedFileRepository {
     val replacedFileDao: ReplacedFileDao = database.replacedFileDao()
     override suspend fun saveReplacedFiles(files: List<ReplacedFileBean>) {
         replacedFileDao.insertAll(files)

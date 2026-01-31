@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "mods")
 data class ModBean(
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
-        // 非空字段
+    // 非空字段
     val name: String = "",
     val description: String = "",
     val date: Long = 0L,
@@ -22,7 +22,7 @@ data class ModBean(
     val modType: String = "",
     val isEnable: Boolean = false,
     val isZipFile: Boolean = true,
-        // 可空字段
+    // 可空字段
     val version: String? = null,
     val virtualPaths: String? = null,
     val icon: String? = null,
@@ -32,7 +32,7 @@ data class ModBean(
     val author: String? = null,
     val modConfig: String? = null,
     /** 压缩包内的相对路径，用于整合包中定位具体 MOD 位置 */
-        val modRelativePath: String? = null,
+    val modRelativePath: String? = null,
     /** 最后更新时间，用于触发 UI 重组和图片缓存刷新 */
-        val updateAt: Long = System.currentTimeMillis(),
+    val updateAt: Long = System.currentTimeMillis(),
 )

@@ -1,7 +1,5 @@
 package top.laoxin.modmanager.data.service.specialgame
 
-import java.io.InputStream
-import java.security.MessageDigest
 import top.laoxin.modmanager.domain.bean.BackupBean
 import top.laoxin.modmanager.domain.bean.GameInfoBean
 import top.laoxin.modmanager.domain.bean.ModBean
@@ -9,6 +7,8 @@ import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.service.GameStartCheckResult
 import top.laoxin.modmanager.listener.ProgressUpdateListener
 import top.laoxin.modmanager.tools.ArchiveUtil
+import java.io.InputStream
+import java.security.MessageDigest
 
 /** 特殊游戏处理器基类 定义特殊游戏操作的内部接口 */
 interface BaseSpecialGameHandler {
@@ -22,9 +22,9 @@ interface BaseSpecialGameHandler {
 
     /** 禁用 Mod 的特殊操作 */
     suspend fun handleModDisable(
-            backup: List<BackupBean>,
-            packageName: String,
-            mod: ModBean
+        backup: List<BackupBean>,
+        packageName: String,
+        mod: ModBean
     ): Result<Unit>
 
     /** 启动游戏的特殊操作 */
@@ -76,14 +76,14 @@ interface BaseSpecialGameHandler {
     }
 
     fun getZipFileInputStream(
-            zipFilePath: String,
-            fileName: String,
-            password: String?
+        zipFilePath: String,
+        fileName: String,
+        password: String?
     ): InputStream? {
         return runCatching {
             ArchiveUtil.getArchiveItemInputStream(zipFilePath, fileName, password)
         }
-                .getOrNull()
+            .getOrNull()
     }
 
     fun getInputStreamSize(inputStream: InputStream): Long {

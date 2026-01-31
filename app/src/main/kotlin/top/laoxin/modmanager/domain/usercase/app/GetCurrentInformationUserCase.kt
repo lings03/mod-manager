@@ -1,8 +1,8 @@
 package top.laoxin.modmanager.domain.usercase.app
 
 import kotlinx.coroutines.flow.first
-import top.laoxin.modmanager.domain.bean.InfoBean
 import top.laoxin.modmanager.data.repository.AppDataRepositoryImpl
+import top.laoxin.modmanager.domain.bean.InfoBean
 import top.laoxin.modmanager.domain.repository.UserPreferencesRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,11 +20,11 @@ class GetCurrentInformationUserCase @Inject constructor(
      * Fetches new information if available.
      * This UseCase delegates all data handling logic to the repository.
      */
-    suspend operator fun invoke(autoCheck : Boolean = true): InfoBean? {
+    suspend operator fun invoke(autoCheck: Boolean = true): InfoBean? {
         val lastSeenVersion = userPreferencesRepository.cachedInformationVision.first()
-        val remoteInfo =  appDataRepositoryImpl.getNewInformation().getOrNull()
+        val remoteInfo = appDataRepositoryImpl.getNewInformation().getOrNull()
 
-        return if (remoteInfo != null ) {
+        return if (remoteInfo != null) {
             if (remoteInfo.version > lastSeenVersion) {
                 userPreferencesRepository.saveCachedInformationVision(remoteInfo.version)
                 userPreferencesRepository.saveCachedInformation(remoteInfo.msg)

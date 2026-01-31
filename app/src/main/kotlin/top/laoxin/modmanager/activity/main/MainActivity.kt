@@ -14,19 +14,20 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import top.laoxin.modmanager.activity.userAgreement.UserAgreementActivity
 import top.laoxin.modmanager.domain.service.PermissionService
 import top.laoxin.modmanager.notification.AppNotificationManager
 import top.laoxin.modmanager.service.ScanForegroundService
+import top.laoxin.modmanager.ui.theme.ModManagerTheme
 import top.laoxin.modmanager.ui.view.ModernModManagerApp
 import top.laoxin.modmanager.ui.view.splash.RandomSplashScreen
-import top.laoxin.modmanager.ui.theme.ModManagerTheme
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity() : ComponentActivity() {
 
-    @Inject lateinit var permissionService: PermissionService
+    @Inject
+    lateinit var permissionService: PermissionService
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -74,10 +75,11 @@ class MainActivity() : ComponentActivity() {
      */
     private fun handleNotificationClick(intent: Intent?) {
         val uri = intent?.data ?: return
-        
+
         // 检查是否来自扫描通知的 Deep Link
         if (uri.toString().startsWith(AppNotificationManager.DEEP_LINK_SCAN_PROGRESS) ||
-            uri.toString().startsWith(AppNotificationManager.DEEP_LINK_SCAN_RESULT)) {
+            uri.toString().startsWith(AppNotificationManager.DEEP_LINK_SCAN_RESULT)
+        ) {
             // 通知 Service 退出后台模式，让覆盖层重新出现
             ScanForegroundService.exitBackground(this)
         }
@@ -106,7 +108,7 @@ class MainActivity() : ComponentActivity() {
     }
 
     private fun isUserAgreementConfirmed() =
-            getSharedPreferences("AppLaunch", MODE_PRIVATE).getBoolean("isConfirm", false)
+        getSharedPreferences("AppLaunch", MODE_PRIVATE).getBoolean("isConfirm", false)
 
     // 设置状态栏和导航栏
     @Composable

@@ -1,8 +1,6 @@
 package top.laoxin.modmanager.data.service
 
 import kotlinx.coroutines.Dispatchers
-import java.io.File
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -16,6 +14,8 @@ import top.laoxin.modmanager.domain.service.ArchiveService
 import top.laoxin.modmanager.domain.service.FileService
 import top.laoxin.modmanager.domain.service.ModScanService
 import top.laoxin.modmanager.domain.service.TraditionalModScanService
+import java.io.File
+import javax.inject.Inject
 
 /** MOD 扫描服务调度实现 自动检测 MOD 类型并调度到对应的扫描服务 */
 class ModScanServiceImpl

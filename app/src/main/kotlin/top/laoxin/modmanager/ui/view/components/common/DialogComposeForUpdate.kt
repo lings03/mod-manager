@@ -26,9 +26,9 @@ fun DialogCommonForUpdate(
     if (showDialog) {
         // 检查是否为强制更新
         val isForceUpdate = content.contains("强制") ||
-                            content.contains("重大") ||
-                            content.contains("重要") ||
-                            content.contains("forced", ignoreCase = true)
+                content.contains("重大") ||
+                content.contains("重要") ||
+                content.contains("forced", ignoreCase = true)
 
         AlertDialog(
             onDismissRequest = {

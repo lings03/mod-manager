@@ -22,25 +22,25 @@ import androidx.documentfile.provider.DocumentFile
 /** SAF (Storage Access Framework) 权限请求 Launcher 用于请求目录访问权限 */
 @Composable
 fun rememberSAFPermissionLauncher(
-        onPermissionGranted: (Uri) -> Unit,
-        onPermissionDenied: () -> Unit
+    onPermissionGranted: (Uri) -> Unit,
+    onPermissionDenied: () -> Unit
 ): ManagedActivityResultLauncher<Intent, ActivityResult> {
     val context = LocalContext.current
 
     return rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
+        contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 // 持久化 URI 权限
                 context.contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
                 onPermissionGranted(uri)
             }
-                    ?: onPermissionDenied()
+                ?: onPermissionDenied()
         } else {
             onPermissionDenied()
         }
@@ -51,11 +51,11 @@ fun rememberSAFPermissionLauncher(
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun rememberStoragePermissionLauncher(
-        onPermissionGranted: () -> Unit,
-        onPermissionDenied: () -> Unit
+    onPermissionGranted: () -> Unit,
+    onPermissionDenied: () -> Unit
 ): ManagedActivityResultLauncher<Intent, ActivityResult> {
     return rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
+        contract = ActivityResultContracts.StartActivityForResult()
     ) { _ ->
         // 不管返回什么结果，都检查实际权限状态
         if (Environment.isExternalStorageManager()) {
@@ -69,13 +69,13 @@ fun rememberStoragePermissionLauncher(
 /** 通知权限请求 Launcher */
 @Composable
 fun rememberNotificationPermissionLauncher(
-        onPermissionGranted: () -> Unit,
-        onPermissionDenied: () -> Unit
+    onPermissionGranted: () -> Unit,
+    onPermissionDenied: () -> Unit
 ): ManagedActivityResultLauncher<Intent, ActivityResult> {
     val context = LocalContext.current
 
     return rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
+        contract = ActivityResultContracts.StartActivityForResult()
     ) { _ ->
         // 检查实际权限状态
         if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
@@ -94,10 +94,10 @@ fun rememberNotificationPermissionLauncher(
 fun createSAFIntent(path: String, context: Context): Intent {
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
     intent.setFlags(
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                    Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                    Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+        Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
     )
 
     // 尝试设置初始目录

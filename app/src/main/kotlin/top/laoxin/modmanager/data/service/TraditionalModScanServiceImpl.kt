@@ -4,9 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
-import java.io.File
-import java.io.FileOutputStream
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import top.laoxin.modmanager.constant.PathConstants
@@ -20,6 +17,9 @@ import top.laoxin.modmanager.domain.model.ScanStep
 import top.laoxin.modmanager.domain.service.ArchiveService
 import top.laoxin.modmanager.domain.service.FileService
 import top.laoxin.modmanager.domain.service.TraditionalModScanService
+import java.io.File
+import java.io.FileOutputStream
+import javax.inject.Inject
 
 /** 传统 MOD 扫描服务实现 负责扫描压缩包和文件夹，通过被动识别构建 ModBean */
 class TraditionalModScanServiceImpl
@@ -412,7 +412,7 @@ constructor(private val archiveService: ArchiveService, private val fileService:
 
                 // 检查路径是否包含游戏目录
 
-              //  Log.d(TAG, "$filePath 文件是否包含游戏目录: ${gameDirIndex != -1}")
+                //  Log.d(TAG, "$filePath 文件是否包含游戏目录: ${gameDirIndex != -1}")
                 if (File(filePath).parentFile?.name == gameDirName) {
                     val gameDirIndex = filePath.indexOf(gameDirName, ignoreCase = true)
                     // 提取相对于游戏目录的文件路径
@@ -677,7 +677,7 @@ constructor(private val archiveService: ArchiveService, private val fileService:
                 iconPath = imageFiles.first()
                 imagePaths = imageFiles
             } else if (isZip) {
-               // iconPath = imageFiles.first()
+                // iconPath = imageFiles.first()
                 //imagePaths = imageFiles
                 // 不解压测试
                 // 未加密压缩包：提取到缓存目录
@@ -740,7 +740,7 @@ constructor(private val archiveService: ArchiveService, private val fileService:
             rootReadmePath = "$sourcePath/$rootReadmeFile"
             description = if (readmeFile != null) {
                 try {
-                   File(readmePath).readText().take(2000)
+                    File(readmePath).readText().take(2000)
                     //Log.d(TAG,"当前mod: $name, 是否包含readmeFile: ${text}")
 
                 } catch (e: Exception) {
@@ -749,7 +749,7 @@ constructor(private val archiveService: ArchiveService, private val fileService:
             } else {
                 try {
                     File(rootReadmePath).readText().take(2000)
-                   // Log.d(TAG,"当前mod: $name, 是否包含filereadmeFile: ${text}")
+                    // Log.d(TAG,"当前mod: $name, 是否包含filereadmeFile: ${text}")
 
                 } catch (e: Exception) {
                     ""
@@ -765,7 +765,7 @@ constructor(private val archiveService: ArchiveService, private val fileService:
             if (modRelativePath.isNotEmpty()) "$sourcePath/$modRelativePath" else sourcePath
         //Log.d(TAG,"当前mod: $name, 描述文本: ${description}")
         return ModBean(
-            name = name.replace("($ROOT_DIR_KEY)",""),
+            name = name.replace("($ROOT_DIR_KEY)", ""),
             path = modPath,
             modFiles = finalFiles,
             gameFilesPath = gameFilesPath,
@@ -847,11 +847,11 @@ constructor(private val archiveService: ArchiveService, private val fileService:
         }
     }
 
-/*    private fun generateImageFileName(modName: String, imagePath: String): String {
-        val hash = (modName + imagePath).hashCode().toUInt().toString(16)
-        val ext = imagePath.substringAfterLast(".", "png")
-        return "${modName.replace("[^a-zA-Z0-9]".toRegex(), "_")}_$hash.$ext"
-    }*/
+    /*    private fun generateImageFileName(modName: String, imagePath: String): String {
+            val hash = (modName + imagePath).hashCode().toUInt().toString(16)
+            val ext = imagePath.substringAfterLast(".", "png")
+            return "${modName.replace("[^a-zA-Z0-9]".toRegex(), "_")}_$hash.$ext"
+        }*/
 
     /**
      * 生成可还原的图片缓存文件名
@@ -865,7 +865,7 @@ constructor(private val archiveService: ArchiveService, private val fileService:
      */
     private fun generateImageFileName(archivePath: String, imagePath: String): String {
         // 使用 URL-safe Base64 编码，替换特殊字符以确保文件名合法
-        val safeModName = File(archivePath).nameWithoutExtension +"/" + imagePath
+        val safeModName = File(archivePath).nameWithoutExtension + "/" + imagePath
         return safeModName
     }
 
@@ -901,7 +901,6 @@ constructor(private val archiveService: ArchiveService, private val fileService:
             else -> "$sourceName(${parts.joinToString("|")})"
         }
     }
-
 
 
     // ==================== 工具方法 ====================

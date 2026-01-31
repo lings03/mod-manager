@@ -61,14 +61,15 @@ import top.laoxin.modmanager.domain.bean.GameInfoBean
 import top.laoxin.modmanager.domain.bean.ThanksBean
 import top.laoxin.modmanager.ui.state.SettingUiState
 import top.laoxin.modmanager.ui.theme.ExpressiveTextButton
-import top.laoxin.modmanager.ui.viewmodel.MainViewModel
-import top.laoxin.modmanager.ui.viewmodel.SettingViewModel
-import top.laoxin.modmanager.ui.view.components.setting.License
 import top.laoxin.modmanager.ui.view.components.common.DialogCommon
 import top.laoxin.modmanager.ui.view.components.common.DialogCommonForUpdate
 import top.laoxin.modmanager.ui.view.components.common.DialogType
 import top.laoxin.modmanager.ui.view.components.common.PermissionHandler
 import top.laoxin.modmanager.ui.view.components.common.openUrl
+import top.laoxin.modmanager.ui.view.components.setting.License
+import top.laoxin.modmanager.ui.viewmodel.MainViewModel
+import top.laoxin.modmanager.ui.viewmodel.SettingViewModel
+
 // Import License component
 // Import other necessary components if they are not copied locally. 
 // Ideally we copy small components to keep this Screen self-contained or use a shared module.
@@ -78,7 +79,7 @@ import top.laoxin.modmanager.ui.view.components.common.openUrl
 @Composable
 fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel() 
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -151,7 +152,7 @@ fun SettingScreen(
         thinks = uiState.thanksList,
         showDialog = uiState.showAcknowledgmentsDialog
     )
-    
+
     uiState.updateInfo?.let {
         DialogCommonForUpdate(
             title = stringResource(id = R.string.console_upgrade_title),
@@ -188,7 +189,7 @@ fun SettingScreen(
 
     SwitchGameDialog(
         gameInfoList = uiState.gameInfoList,
-        setGameInfo = {viewModel.setGameInfo(it)},
+        setGameInfo = { viewModel.setGameInfo(it) },
         showSwitchGameInfo = viewModel::setShowSwitchGameDialog,
         showDialog = uiState.showSwitchGameDialog,
         getAppIcon = viewModel::getAppIcon
@@ -215,7 +216,7 @@ fun SettingScreen(
 @Composable
 fun SettingContent(uiState: SettingUiState, settingViewModel: SettingViewModel) {
     val context = LocalContext.current
-    
+
     DialogCommon(
         type = DialogType.WARNING,
         title = stringResource(R.string.setting_del_backups_dialog_title),
@@ -370,12 +371,12 @@ fun SettingItem(
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = name,
-                    style = MaterialTheme.typography.titleSmall 
+                    style = MaterialTheme.typography.titleSmall
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = description,
-                    style = MaterialTheme.typography.bodySmall 
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
@@ -469,9 +470,11 @@ private fun GameInfoItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 游戏图标
-            Box(modifier = Modifier
-                .size(48.dp)
-                .clip(MaterialTheme.shapes.small)) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(MaterialTheme.shapes.small)
+            ) {
                 androidx.compose.foundation.Image(
                     bitmap = icon,
                     contentDescription = gameInfo.gameName,
@@ -595,9 +598,11 @@ private fun GameConfigItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 游戏图标
-            Box(modifier = Modifier
-                .size(48.dp)
-                .clip(MaterialTheme.shapes.small)) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(MaterialTheme.shapes.small)
+            ) {
                 androidx.compose.foundation.Image(
                     bitmap = icon,
                     contentDescription = config.gameName,

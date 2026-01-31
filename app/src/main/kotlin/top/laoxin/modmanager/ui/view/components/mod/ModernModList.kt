@@ -1,5 +1,9 @@
 package top.laoxin.modmanager.ui.view.components.mod
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,9 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import top.laoxin.modmanager.domain.bean.ModBean
 import top.laoxin.modmanager.ui.viewmodel.ModDetailViewModel
-import top.laoxin.modmanager.ui.viewmodel.ModOperationViewModel
-import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
-import androidx.compose.animation.*
 
 @Composable
 fun ModernModList(
@@ -30,21 +31,17 @@ fun ModernModList(
     enableMod: (ModBean, Boolean) -> Unit,
     onLongClick: (ModBean) -> Unit,
     onMultiSelectClick: (ModBean) -> Unit,
-    // Removed unused ModListViewModel parameter
-    modOperationViewModel: ModOperationViewModel,
+    onUnlockClick: (ModBean) -> Unit,
     modDetailViewModel: ModDetailViewModel,
-    modListViewModel: ModernModListViewModel,
     listState: androidx.compose.foundation.lazy.LazyListState = androidx.compose.foundation.lazy.rememberLazyListState(),
     gridState: androidx.compose.foundation.lazy.grid.LazyGridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
 ) {
-    androidx.compose.animation.AnimatedContent(
+    AnimatedContent(
         targetState = isGridView,
         transitionSpec = {
-            (androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(300)) +
-                    androidx.compose.animation.scaleIn(initialScale = 0.95f, animationSpec = androidx.compose.animation.core.tween(300)))
+            fadeIn(androidx.compose.animation.core.tween(200))
                 .togetherWith(
-                    androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(300)) +
-                            androidx.compose.animation.scaleOut(targetScale = 0.95f, animationSpec = androidx.compose.animation.core.tween(300))
+                    fadeOut(androidx.compose.animation.core.tween(200))
                 )
         },
         label = "ModListViewModeTransition"
@@ -75,6 +72,7 @@ fun ModernModList(
                         modSwitchEnable = modSwitchEnable,
                         openModDetail = { showDialog(mod) },
                         enableMod = enableMod,
+                        onUnlockClick = onUnlockClick,
                         modDetailViewModel = modDetailViewModel
                     )
                 }
@@ -102,6 +100,7 @@ fun ModernModList(
                         modSwitchEnable = modSwitchEnable,
                         openModDetail = { showDialog(mod) },
                         enableMod = enableMod,
+                        onUnlockClick = onUnlockClick,
                         modDetailViewModel = modDetailViewModel
                     )
                 }

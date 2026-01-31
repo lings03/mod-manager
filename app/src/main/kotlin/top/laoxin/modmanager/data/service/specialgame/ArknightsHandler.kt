@@ -5,9 +5,6 @@ import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.Strictness
-import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import top.laoxin.modmanager.constant.FileAccessType
@@ -20,6 +17,9 @@ import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.service.FileService
 import top.laoxin.modmanager.domain.service.GameStartCheckResult
 import top.laoxin.modmanager.domain.service.PermissionService
+import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 /** 明日方舟特殊游戏处理器 处理明日方舟游戏的校验文件修改 */
@@ -97,12 +97,14 @@ constructor(
                 mod.gameFilesPath.forEachIndexed { index, gameFile ->
                     Log.d(TAG, "handleModEnable: $gameFile")
                     val md5Result = fileService.calculateFileMd5(gameFile)
-                    if (md5Result is Result.Error)  return@withContext Result.Error(md5Result.error)
+                    if (md5Result is Result.Error) return@withContext Result.Error(md5Result.error)
                     val md5 = (md5Result as Result.Success).data
                     val fileSizeResult = fileService.getFileLength(gameFile)
-                    if (fileSizeResult is Result.Error)  return@withContext Result.Error(fileSizeResult.error)
+                    if (fileSizeResult is Result.Error) return@withContext Result.Error(
+                        fileSizeResult.error
+                    )
                     val fileSize = (fileSizeResult as Result.Success).data
-                    val checkName = File(File(gameFile).parentFile?.name,File(gameFile).name).path
+                    val checkName = File(File(gameFile).parentFile?.name, File(gameFile).name).path
 
                     Log.d(TAG, "checkFileName: $checkName, md5: $md5, fileSize: $fileSize")
                     flag.add(modifyCheckFile(checkName, md5, fileSize))
@@ -146,12 +148,14 @@ constructor(
                 val flag = mutableListOf<Boolean>()
                 mod.gameFilesPath.forEachIndexed { index, gameFile ->
                     val md5Result = fileService.calculateFileMd5(gameFile)
-                    if (md5Result is Result.Error)  return@withContext Result.Error(md5Result.error)
+                    if (md5Result is Result.Error) return@withContext Result.Error(md5Result.error)
                     val md5 = (md5Result as Result.Success).data
                     val fileSizeResult = fileService.getFileLength(gameFile)
-                    if (fileSizeResult is Result.Error)  return@withContext Result.Error(fileSizeResult.error)
+                    if (fileSizeResult is Result.Error) return@withContext Result.Error(
+                        fileSizeResult.error
+                    )
                     val fileSize = (fileSizeResult as Result.Success).data
-                    val checkName = File(File(gameFile).parentFile?.name,File(gameFile).name).path
+                    val checkName = File(File(gameFile).parentFile?.name, File(gameFile).name).path
                     Log.d(TAG, "checkFileName: $checkName, md5: $md5, fileSize: $fileSize")
 
                     flag.add(modifyCheckFile(checkName, md5, fileSize))
@@ -233,7 +237,7 @@ constructor(
     private fun loadCheckFiles() {
         persistentRes =
             gson.fromJson(
-                File(PathConstants.MODS_TEMP_PATH+ CHECK_FILE_1).readText(),
+                File(PathConstants.MODS_TEMP_PATH + CHECK_FILE_1).readText(),
                 PersistentRes::class.java
             )
         hotUpdate =

@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,22 +32,23 @@ import top.laoxin.modmanager.ui.state.ModScanUiState
 import top.laoxin.modmanager.ui.state.PermissionRequestState
 import top.laoxin.modmanager.ui.state.PermissionType
 import top.laoxin.modmanager.ui.state.SnackbarManager
+import javax.inject.Inject
 
 /** Mod扫描和刷新ViewModel */
 @HiltViewModel
 class ModScanViewModel
 @Inject
 constructor(
-        private val application: Application,
-        private val userPreferencesRepository: UserPreferencesRepository,
-        private val modRepository: ModRepository,
-        private val scanAndSyncUseCase: ScanAndSyncModsUseCase,
-        private val deleteModsUserCase: DeleteModsUserCase,
-        private val flashModsObserverManager: FlashModsObserverManager,
-        private val permissionService: PermissionService,
-        private val snackbarManager: SnackbarManager,
-        private val appNotificationManager: AppNotificationManager,
-        private val scanStateRepository: ScanStateRepository,
+    private val application: Application,
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val modRepository: ModRepository,
+    private val scanAndSyncUseCase: ScanAndSyncModsUseCase,
+    private val deleteModsUserCase: DeleteModsUserCase,
+    private val flashModsObserverManager: FlashModsObserverManager,
+    private val permissionService: PermissionService,
+    private val snackbarManager: SnackbarManager,
+    private val appNotificationManager: AppNotificationManager,
+    private val scanStateRepository: ScanStateRepository,
 ) : ViewModel(), FlashObserverInterface {
 
     private val _internalState = MutableStateFlow(InternalState())
@@ -64,40 +64,40 @@ constructor(
     val permissionState: StateFlow<PermissionRequestState> = _permissionState.asStateFlow()
 
     val uiState: StateFlow<ModScanUiState> =
-            combine(
-                            userPreferencesRepository.selectedGame,
-                            _internalState,
-                            scanStateRepository.scanState
-                    ) { selectedGame, internalState, scanProgress ->
-                        ModScanUiState(
-                                isLoading = internalState.isLoading,
-                                loadingPath = internalState.loadingPath,
-                                allMods =
-                                        modRepository
-                                                .getModsByGamePackageName(selectedGame.packageName)
-                                                .first(),
-                                enableMods =
-                                        modRepository
-                                                .getEnableMods(selectedGame.packageName)
-                                                .first(),
-                                disableMods =
-                                        modRepository
-                                                .getDisableMods(selectedGame.packageName)
-                                                .first(),
-                                openPermissionRequestDialog =
-                                        internalState.openPermissionRequestDialog,
-                                requestPermissionPath = internalState.requestPermissionPath,
-                                showDisEnableModsDialog = internalState.showDisEnableModsDialog,
-                                delEnableModsList = internalState.delEnableModsList,
-                                showForceScanDialog = internalState.showForceScanDialog,
-                                scanProgress = scanProgress
-                        )
-                    }
-                    .stateIn(
-                            scope = viewModelScope,
-                            started = SharingStarted.WhileSubscribed(5000),
-                            initialValue = ModScanUiState(isLoading = true)
-                    )
+        combine(
+            userPreferencesRepository.selectedGame,
+            _internalState,
+            scanStateRepository.scanState
+        ) { selectedGame, internalState, scanProgress ->
+            ModScanUiState(
+                isLoading = internalState.isLoading,
+                loadingPath = internalState.loadingPath,
+                allMods =
+                    modRepository
+                        .getModsByGamePackageName(selectedGame.packageName)
+                        .first(),
+                enableMods =
+                    modRepository
+                        .getEnableMods(selectedGame.packageName)
+                        .first(),
+                disableMods =
+                    modRepository
+                        .getDisableMods(selectedGame.packageName)
+                        .first(),
+                openPermissionRequestDialog =
+                    internalState.openPermissionRequestDialog,
+                requestPermissionPath = internalState.requestPermissionPath,
+                showDisEnableModsDialog = internalState.showDisEnableModsDialog,
+                delEnableModsList = internalState.delEnableModsList,
+                showForceScanDialog = internalState.showForceScanDialog,
+                scanProgress = scanProgress
+            )
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = ModScanUiState(isLoading = true)
+            )
 
     private var delModsList = emptyList<ModBean>()
 
@@ -286,8 +286,8 @@ constructor(
             pendingBackgroundSwitch = true
             _permissionState.update {
                 PermissionRequestState(
-                        showDialog = true,
-                        permissionType = PermissionType.NOTIFICATION
+                    showDialog = true,
+                    permissionType = PermissionType.NOTIFICATION
                 )
             }
         }
@@ -322,9 +322,11 @@ constructor(
 
                     return showPermissionDialog(gamePath, PermissionType.STORAGE)
                 }
+
                 is AppError.PermissionError.UriPermissionNotGranted -> {
                     return showPermissionDialog(gamePath, PermissionType.URI_SAF)
                 }
+
                 else -> {}
             }
         }
@@ -361,14 +363,14 @@ constructor(
     }
 
     private fun showPermissionDialog(
-            gamePath: String,
-            permissionType: PermissionType = PermissionType.URI_SAF
+        gamePath: String,
+        permissionType: PermissionType = PermissionType.URI_SAF
     ) {
         _permissionState.update {
             PermissionRequestState(
-                    showDialog = true,
-                    requestPath = permissionService.getRequestPermissionPath(gamePath),
-                    permissionType = permissionType
+                showDialog = true,
+                requestPath = permissionService.getRequestPermissionPath(gamePath),
+                permissionType = permissionType
             )
         }
     }
@@ -389,7 +391,7 @@ constructor(
     /** 权限拒绝回调 */
     fun onPermissionDenied(permissionType: PermissionType) {
         _permissionState.update { PermissionRequestState() }
-       // snackbarManager.showMessageAsync(R.string.toast_permission_not_granted)
+        // snackbarManager.showMessageAsync(R.string.toast_permission_not_granted)
         if (permissionType == PermissionType.NOTIFICATION) {
             // 如果有待处理的后台切换，执行切换
             pendingBackgroundSwitch = false
@@ -407,6 +409,7 @@ constructor(
                         snackbarManager.showMessageAsync(R.string.toast_permission_not_granted)
                     }
                 }
+
                 is Result.Error -> {
                     snackbarManager.showMessageAsync(R.string.toast_permission_not_granted)
                 }
@@ -424,12 +427,12 @@ constructor(
     }
 
     data class InternalState(
-            val isLoading: Boolean = false,
-            val loadingPath: String = "",
-            val openPermissionRequestDialog: Boolean = false,
-            val requestPermissionPath: String = "",
-            val showDisEnableModsDialog: Boolean = false,
-            val delEnableModsList: List<ModBean> = emptyList(),
-            val showForceScanDialog: Boolean = false
+        val isLoading: Boolean = false,
+        val loadingPath: String = "",
+        val openPermissionRequestDialog: Boolean = false,
+        val requestPermissionPath: String = "",
+        val showDisEnableModsDialog: Boolean = false,
+        val delEnableModsList: List<ModBean> = emptyList(),
+        val showForceScanDialog: Boolean = false
     )
 }

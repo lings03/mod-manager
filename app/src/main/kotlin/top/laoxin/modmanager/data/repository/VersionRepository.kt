@@ -12,7 +12,6 @@ import top.laoxin.modmanager.App
 import top.laoxin.modmanager.BuildConfig
 import top.laoxin.modmanager.R
 import javax.inject.Inject
-import javax.inject.Singleton
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "version_data_store")
 

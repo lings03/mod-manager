@@ -4,10 +4,10 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
-import java.io.File
-import java.io.InputStream
 import top.laoxin.modmanager.App
 import top.laoxin.modmanager.constant.PathConstants
+import java.io.File
+import java.io.InputStream
 
 abstract class BaseFileTools() {
 
@@ -34,9 +34,9 @@ abstract class BaseFileTools() {
 
     // 通过流创建文件
     abstract fun createFileByStream(
-            path: String,
-            filename: String,
-            inputStream: InputStream
+        path: String,
+        filename: String,
+        inputStream: InputStream
     ): Boolean
 
     // 监听文件变化
@@ -85,10 +85,10 @@ abstract class BaseFileTools() {
         val halfPath = path.replace("${PathConstants.ROOT_PATH}/", "")
         val segments = halfPath.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val uriBuilder =
-                Uri.Builder()
-                        .scheme("content")
-                        .authority("com.android.externalstorage.documents")
-                        .appendPath("tree")
+            Uri.Builder()
+                .scheme("content")
+                .authority("com.android.externalstorage.documents")
+                .appendPath("tree")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             uriBuilder.appendPath("primary:Android/" + segments[1] + "/" + segments[2])
         } else {

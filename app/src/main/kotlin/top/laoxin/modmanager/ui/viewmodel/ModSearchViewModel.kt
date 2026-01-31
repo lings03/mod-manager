@@ -42,7 +42,12 @@ class ModSearchViewModel @Inject constructor(
                     if (query.isNotEmpty()) {
                         performSearch(query)
                     } else {
-                        _uiState.update { it.copy(searchModList = emptyList(), isSearching = false) }
+                        _uiState.update {
+                            it.copy(
+                                searchModList = emptyList(),
+                                isSearching = false
+                            )
+                        }
                     }
                 }
         }
@@ -70,7 +75,13 @@ class ModSearchViewModel @Inject constructor(
      * 清空搜索
      */
     fun clearSearch() {
-        _uiState.update { it.copy(searchContent = "", searchModList = emptyList(), isSearching = false) }
+        _uiState.update {
+            it.copy(
+                searchContent = "",
+                searchModList = emptyList(),
+                isSearching = false
+            )
+        }
         _searchQuery.value = ""
     }
 

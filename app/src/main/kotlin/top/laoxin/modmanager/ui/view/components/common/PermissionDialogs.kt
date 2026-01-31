@@ -13,9 +13,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import top.laoxin.modmanager.R
 import top.laoxin.modmanager.constant.OSVersion
-import top.laoxin.modmanager.ui.view.components.setting.SettingItem
 import top.laoxin.modmanager.ui.state.PermissionRequestState
 import top.laoxin.modmanager.ui.state.PermissionType
+import top.laoxin.modmanager.ui.view.components.setting.SettingItem
 
 /**
  * 权限请求对话框 纯 UI 组件，根据权限类型显示不同的选项

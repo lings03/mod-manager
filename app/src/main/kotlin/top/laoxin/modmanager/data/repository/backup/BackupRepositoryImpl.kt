@@ -1,16 +1,16 @@
 package top.laoxin.modmanager.data.repository.backup
 
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import top.laoxin.modmanager.data.repository.ModManagerDatabase
 import top.laoxin.modmanager.domain.bean.BackupBean
 import top.laoxin.modmanager.domain.bean.ModBean
 import top.laoxin.modmanager.domain.repository.BackupRepository
+import javax.inject.Inject
 
 class BackupRepositoryImpl
 @Inject
 constructor(
-        database: ModManagerDatabase,
+    database: ModManagerDatabase,
 //    private val permissionTools: PermissionTools,
 //    private val fileToolsManager: FileToolsManager,
 //    private val appPathsManager: AppPathsManager,
@@ -37,16 +37,16 @@ constructor(
     }
 
     override fun getByModNameAndGamePackageName(
-            modName: String,
-            gamePackageName: String
+        modName: String,
+        gamePackageName: String
     ): Flow<List<BackupBean>> {
         // return backupDao.getByModNameAndGamePackageName(modName, gamePackageName)
         return backupDao.getByModId(1)
     }
 
     override suspend fun backupModOriginalFiles(
-            modBean: ModBean,
-            onProgress: suspend (progress: Int, total: Int) -> Unit
+        modBean: ModBean,
+        onProgress: suspend (progress: Int, total: Int) -> Unit
     ): List<BackupBean> {
         //        val gameModPath = modBean.gameModPath!!
         //        val list: MutableList<BackupBean> = mutableListOf()

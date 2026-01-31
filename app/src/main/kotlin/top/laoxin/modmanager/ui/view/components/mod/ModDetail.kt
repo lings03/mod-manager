@@ -250,7 +250,7 @@ fun ModDetailPartialBottomSheet(
                     icon = Icons.Filled.AttachFile,
                     showButton = false,
                     mod = mod,
-                    modDetailViewModel  = modDetailViewModel,
+                    modDetailViewModel = modDetailViewModel,
                     modOperationViewModel = modOperationViewModel,
                 )
                 Card(
@@ -359,7 +359,7 @@ fun LabelAndIconButtonGroup(
                 modifier = Modifier
             ) {
                 IconButton(onClick = {
-                    modDetailViewModel.refreshModDetail(mod,false)
+                    modDetailViewModel.refreshModDetail(mod, false)
                 }) {
                     Icon(
                         Icons.Filled.Refresh,

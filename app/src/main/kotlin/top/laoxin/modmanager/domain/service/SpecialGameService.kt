@@ -24,9 +24,9 @@ interface SpecialGameService {
      * @return Result<Unit> 操作结果
      */
     suspend fun onModDisable(
-            backup: List<BackupBean>,
-            packageName: String,
-            mod: ModBean
+        backup: List<BackupBean>,
+        packageName: String,
+        mod: ModBean
     ): Result<Unit>
 
     /**

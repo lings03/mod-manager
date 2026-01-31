@@ -25,7 +25,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideApplicationScope(): CoroutineScope {
-         // SupervisorJob() //确保一个子协程的失败不会导致整个 Scope 被取消
+        // SupervisorJob() //确保一个子协程的失败不会导致整个 Scope 被取消
         return CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
 

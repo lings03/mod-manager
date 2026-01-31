@@ -4,13 +4,6 @@ import android.annotation.SuppressLint
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.util.Log
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 import top.laoxin.modmanager.service.bean.FileInfoBean
 import top.laoxin.modmanager.service.model.RemoteBoolResult
 import top.laoxin.modmanager.service.model.RemoteFileListResult
@@ -18,6 +11,13 @@ import top.laoxin.modmanager.service.model.RemoteLongResult
 import top.laoxin.modmanager.service.model.RemoteResult
 import top.laoxin.modmanager.service.model.RemoteStringListResult
 import top.laoxin.modmanager.service.model.RemoteStringResult
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 
 /** 文件浏览器服务实现 通过 Shizuku 提供高权限文件操作 所有方法返回封装的 Result 类型 */
 class FileExplorerService : IFileExplorerService.Stub() {
@@ -41,8 +41,8 @@ class FileExplorerService : IFileExplorerService.Stub() {
             }
             if (!file.isDirectory) {
                 return RemoteStringListResult.error(
-                        RemoteResult.ERROR_NOT_A_DIRECTORY,
-                        "不是目录: $path"
+                    RemoteResult.ERROR_NOT_A_DIRECTORY,
+                    "不是目录: $path"
                 )
             }
 
@@ -74,21 +74,24 @@ class FileExplorerService : IFileExplorerService.Stub() {
                 return RemoteFileListResult.fileNotFound(path)
             }
             if (!file.isDirectory) {
-                return RemoteFileListResult.error(RemoteResult.ERROR_NOT_A_DIRECTORY, "不是目录: $path")
+                return RemoteFileListResult.error(
+                    RemoteResult.ERROR_NOT_A_DIRECTORY,
+                    "不是目录: $path"
+                )
             }
 
             val files = file.listFiles()
             val list =
-                    files?.map {
-                        FileInfoBean(
-                                it.name,
-                                it.path,
-                                it.isDirectory,
-                                it.length(),
-                                it.lastModified()
-                        )
-                    }
-                            ?: emptyList()
+                files?.map {
+                    FileInfoBean(
+                        it.name,
+                        it.path,
+                        it.isDirectory,
+                        it.length(),
+                        it.lastModified()
+                    )
+                }
+                    ?: emptyList()
             RemoteFileListResult.success(list)
         } catch (e: SecurityException) {
             Log.e(TAG, "listFile 权限错误: $e")
@@ -203,8 +206,8 @@ class FileExplorerService : IFileExplorerService.Stub() {
             File(destPath).parentFile?.let { parent ->
                 if (!parent.exists() && !parent.mkdirs()) {
                     return RemoteResult.error(
-                            RemoteResult.ERROR_CREATE_FAILED,
-                            "无法创建目标目录: ${parent.absolutePath}"
+                        RemoteResult.ERROR_CREATE_FAILED,
+                        "无法创建目标目录: ${parent.absolutePath}"
                     )
                 }
             }
@@ -278,8 +281,8 @@ class FileExplorerService : IFileExplorerService.Stub() {
             File(destPath).parentFile?.let { parent ->
                 if (!parent.exists() && !parent.mkdirs()) {
                     return RemoteResult.error(
-                            RemoteResult.ERROR_CREATE_FAILED,
-                            "无法创建目标目录: ${parent.absolutePath}"
+                        RemoteResult.ERROR_CREATE_FAILED,
+                        "无法创建目标目录: ${parent.absolutePath}"
                     )
                 }
             }
@@ -331,9 +334,9 @@ class FileExplorerService : IFileExplorerService.Stub() {
     }
 
     override fun createFileByStream(
-            path: String?,
-            filename: String?,
-            pfd: ParcelFileDescriptor?
+        path: String?,
+        filename: String?,
+        pfd: ParcelFileDescriptor?
     ): RemoteResult {
         Log.d(TAG, "shuzuku通过流创建文件: $path, $filename")
         if (path.isNullOrEmpty()) {
@@ -354,8 +357,8 @@ class FileExplorerService : IFileExplorerService.Stub() {
                 file.parentFile?.let { parent ->
                     if (!parent.exists() && !parent.mkdirs()) {
                         return RemoteResult.error(
-                                RemoteResult.ERROR_CREATE_FAILED,
-                                "无法创建目录: ${parent.absolutePath}"
+                            RemoteResult.ERROR_CREATE_FAILED,
+                            "无法创建目录: ${parent.absolutePath}"
                         )
                     }
                 }
@@ -394,8 +397,8 @@ class FileExplorerService : IFileExplorerService.Stub() {
                     return RemoteResult.success()
                 } else {
                     return RemoteResult.error(
-                            RemoteResult.ERROR_NOT_A_DIRECTORY,
-                            "路径已存在但不是目录: $path"
+                        RemoteResult.ERROR_NOT_A_DIRECTORY,
+                        "路径已存在但不是目录: $path"
                     )
                 }
             }
@@ -499,7 +502,7 @@ class FileExplorerService : IFileExplorerService.Stub() {
                     digest.update(buffer, 0, read)
                 }
             }
-            
+
             val md5Hash = digest.digest().joinToString("") { "%02x".format(it) }
             RemoteStringResult.success(md5Hash)
         } catch (e: SecurityException) {

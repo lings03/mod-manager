@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import androidx.core.net.toUri
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +13,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import top.laoxin.modmanager.R
 import top.laoxin.modmanager.domain.model.ScanStep
 import top.laoxin.modmanager.domain.repository.ScanStateRepository
 import top.laoxin.modmanager.domain.usercase.mod.ScanAndSyncModsUseCase
@@ -22,7 +22,6 @@ import top.laoxin.modmanager.notification.AppNotificationManager
 import top.laoxin.modmanager.ui.state.ScanProgressState
 import top.laoxin.modmanager.ui.state.ScanResultState
 import top.laoxin.modmanager.ui.state.SnackbarManager
-import top.laoxin.modmanager.R
 import javax.inject.Inject
 
 /**
@@ -34,20 +33,20 @@ class ScanForegroundService : Service() {
 
     companion object {
         private const val TAG = "ScanForegroundService"
-        
+
         // Intent Actions
         const val ACTION_START_SCAN = "top.laoxin.modmanager.action.START_SCAN"
         const val ACTION_SWITCH_BACKGROUND = "top.laoxin.modmanager.action.SWITCH_BACKGROUND"
         const val ACTION_EXIT_BACKGROUND = "top.laoxin.modmanager.action.EXIT_BACKGROUND"
         const val ACTION_CANCEL = "top.laoxin.modmanager.action.CANCEL"
-        
+
         // Intent Extras
         const val EXTRA_FORCE_SCAN = "extra_force_scan"
-        
+
         // Deep Link URIs
         const val DEEP_LINK_SCAN_PROGRESS = "modmanager://scan/progress"
         const val DEEP_LINK_SCAN_RESULT = "modmanager://scan/result"
-        
+
         /**
          * 启动扫描
          */
@@ -58,7 +57,7 @@ class ScanForegroundService : Service() {
             }
             context.startForegroundService(intent)
         }
-        
+
         /**
          * 切换到后台模式
          */
@@ -68,7 +67,7 @@ class ScanForegroundService : Service() {
             }
             context.startService(intent)
         }
-        
+
         /**
          * 取消扫描
          */
@@ -92,16 +91,16 @@ class ScanForegroundService : Service() {
 
     @Inject
     lateinit var scanAndSyncUseCase: ScanAndSyncModsUseCase
-    
+
     @Inject
     lateinit var scanStateRepository: ScanStateRepository
-    
+
     @Inject
     lateinit var notificationManager: AppNotificationManager
-    
+
     @Inject
     lateinit var snackbarManager: SnackbarManager
-    
+
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var scanJob: Job? = null
     private var isBackgroundMode = false
@@ -116,24 +115,27 @@ class ScanForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand: action=${intent?.action}")
-        
+
         when (intent?.action) {
             ACTION_START_SCAN -> {
                 isForceScan = intent.getBooleanExtra(EXTRA_FORCE_SCAN, false)
                 startForegroundWithNotification()
                 startScan()
             }
+
             ACTION_SWITCH_BACKGROUND -> {
                 switchToBackgroundMode()
             }
+
             ACTION_EXIT_BACKGROUND -> {
                 exitBackgroundMode()
             }
+
             ACTION_CANCEL -> {
                 cancelScan()
             }
         }
-        
+
         return START_NOT_STICKY
     }
 
@@ -151,7 +153,7 @@ class ScanForegroundService : Service() {
     private fun startScan() {
         // 取消之前的扫描任务
         scanJob?.cancel()
-        
+
         scanJob = serviceScope.launch {
             scanAndSyncUseCase.execute(scanExternalDirs = true, forceScan = isForceScan)
                 .catch { e ->
@@ -175,6 +177,7 @@ class ScanForegroundService : Service() {
                     progress = 0f
                 )
             }
+
             is ScanState.Progress -> {
                 updateProgressState(
                     step = state.step,
@@ -186,6 +189,7 @@ class ScanForegroundService : Service() {
                     subProgress = state.subProgress
                 )
             }
+
             is ScanState.ModFound -> {
                 // 更新已发现 MOD 数量
                 val currentState = scanStateRepository.scanState.value
@@ -195,15 +199,19 @@ class ScanForegroundService : Service() {
                     )
                 }
             }
+
             is ScanState.TransferComplete -> {
                 // 转移完成，继续扫描
             }
+
             is ScanState.ScanComplete -> {
                 // 扫描完成，进入同步阶段
             }
+
             is ScanState.Success -> {
                 handleScanSuccess(state.result)
             }
+
             is ScanState.Error -> {
                 handleScanErrorState(state.error)
             }
@@ -224,7 +232,7 @@ class ScanForegroundService : Service() {
     ) {
         val currentState = scanStateRepository.scanState.value
         val foundModsCount = currentState?.foundModsCount ?: 0
-        
+
         val newState = ScanProgressState(
             isScanning = true,
             isBackgroundMode = isBackgroundMode,
@@ -238,9 +246,9 @@ class ScanForegroundService : Service() {
             foundModsCount = foundModsCount,
             subProgress = subProgress
         )
-        
+
         scanStateRepository.updateState(newState)
-        
+
         // 始终更新通知（前台服务必须显示通知）
         notificationManager.showScanProgress(newState)
     }
@@ -261,10 +269,10 @@ class ScanForegroundService : Service() {
             deletedEnabledMods = result.deletedEnabledMods,
             errors = result.errors
         )
-        
+
         // 判断是否需要显示结果页面
         val shouldShowResult = isForceScan || result.deletedEnabledMods.isNotEmpty()
-        
+
         if (shouldShowResult) {
             // 显示结果页面
             val finalState = ScanProgressState(
@@ -277,16 +285,21 @@ class ScanForegroundService : Service() {
         } else {
             // 不显示结果页面，清除状态并显示 Snackbar
             scanStateRepository.clear()
-            snackbarManager.showMessageAsync(R.string.scan_complete_toast, result.addedCount, result.updatedCount, result.deletedCount)
+            snackbarManager.showMessageAsync(
+                R.string.scan_complete_toast,
+                result.addedCount,
+                result.updatedCount,
+                result.deletedCount
+            )
         }
-        
+
         // 显示完成通知
         notificationManager.showScanComplete(
             addedCount = result.addedCount,
             updatedCount = result.updatedCount,
             deletedCount = result.deletedCount
         )
-        
+
         // 停止前台服务
         stopForeground(STOP_FOREGROUND_DETACH)
         stopSelf()
@@ -301,12 +314,12 @@ class ScanForegroundService : Service() {
             isBackgroundMode = isBackgroundMode,
             error = error
         )
-        
+
         scanStateRepository.updateState(errorState)
-        
+
         // 显示错误通知
         notificationManager.showScanError()
-        
+
         // 停止前台服务
         stopForeground(STOP_FOREGROUND_DETACH)
         stopSelf()
@@ -319,13 +332,15 @@ class ScanForegroundService : Service() {
         val errorState = ScanProgressState(
             isScanning = false,
             isBackgroundMode = isBackgroundMode,
-            error = top.laoxin.modmanager.domain.model.AppError.Unknown(e as? Exception ?: Exception(e))
+            error = top.laoxin.modmanager.domain.model.AppError.Unknown(
+                e as? Exception ?: Exception(e)
+            )
         )
-        
+
         scanStateRepository.updateState(errorState)
-        
+
         notificationManager.showScanError()
-        
+
         stopForeground(STOP_FOREGROUND_DETACH)
         stopSelf()
     }
@@ -335,7 +350,7 @@ class ScanForegroundService : Service() {
      */
     private fun switchToBackgroundMode() {
         isBackgroundMode = true
-        
+
         // 更新当前状态为后台模式
         val currentState = scanStateRepository.scanState.value
         currentState?.let {
@@ -350,7 +365,7 @@ class ScanForegroundService : Service() {
      */
     private fun exitBackgroundMode() {
         isBackgroundMode = false
-        
+
         // 更新当前状态为前台模式
         val currentState = scanStateRepository.scanState.value
         currentState?.let {
@@ -366,10 +381,10 @@ class ScanForegroundService : Service() {
         scanJob?.cancel()
         scanJob = null
         isBackgroundMode = false
-        
+
         scanStateRepository.clear()
         notificationManager.cancelScanNotification()
-        
+
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }

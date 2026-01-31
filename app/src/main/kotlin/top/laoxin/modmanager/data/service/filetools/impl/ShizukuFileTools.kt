@@ -2,17 +2,9 @@ package top.laoxin.modmanager.data.service.filetools.impl
 
 import android.os.ParcelFileDescriptor
 import android.util.Log
-import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import top.laoxin.modmanager.data.service.filetools.BaseFileTools
 import top.laoxin.modmanager.service.model.RemoteBoolResult
 import top.laoxin.modmanager.service.model.RemoteFileListResult
@@ -21,11 +13,17 @@ import top.laoxin.modmanager.service.model.RemoteResult
 import top.laoxin.modmanager.service.model.RemoteStringListResult
 import top.laoxin.modmanager.service.model.RemoteStringResult
 import top.laoxin.modmanager.service.shizuku.IFileExplorerService
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** Shizuku 文件系统操作工具 不捕获异常，让异常传播到 FileServiceImpl 统一处理 根据 RemoteResult 错误码抛出相应异常 */
 @Singleton
 class ShizukuFileTools @Inject constructor(
-    private val scope : CoroutineScope
+    private val scope: CoroutineScope
 ) : BaseFileTools() {
 
     companion object {
@@ -34,7 +32,7 @@ class ShizukuFileTools @Inject constructor(
     }
 
     // 使用 SupervisorJob 确保单个协程失败不会影响其他协程
-   //private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    //private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private fun getService(): IFileExplorerService {
         return iFileExplorerService ?: throw IllegalStateException("Shizuku 服务未连接")
@@ -47,9 +45,11 @@ class ShizukuFileTools @Inject constructor(
                 RemoteResult.ERROR_PERMISSION_DENIED, RemoteResult.ERROR_ACCESS_DENIED -> {
                     SecurityException(result.getErrorDescription())
                 }
+
                 RemoteResult.ERROR_FILE_NOT_FOUND -> {
                     java.io.FileNotFoundException(result.getErrorDescription())
                 }
+
                 RemoteResult.ERROR_IO,
                 RemoteResult.ERROR_COPY_FAILED,
                 RemoteResult.ERROR_DELETE_FAILED,
@@ -58,11 +58,13 @@ class ShizukuFileTools @Inject constructor(
                 RemoteResult.ERROR_READ_FAILED -> {
                     IOException(result.getErrorDescription())
                 }
+
                 RemoteResult.ERROR_INVALID_ARGUMENT,
                 RemoteResult.ERROR_INVALID_PATH,
                 RemoteResult.ERROR_INVALID_FILENAME -> {
                     IllegalArgumentException(result.getErrorDescription())
                 }
+
                 else -> {
                     RuntimeException(result.getErrorDescription())
                 }
@@ -75,9 +77,11 @@ class ShizukuFileTools @Inject constructor(
         if (!result.success) {
             throw when (result.errorCode) {
                 RemoteResult.ERROR_PERMISSION_DENIED, RemoteResult.ERROR_ACCESS_DENIED ->
-                        SecurityException(result.errorMessage)
+                    SecurityException(result.errorMessage)
+
                 RemoteResult.ERROR_FILE_NOT_FOUND ->
-                        java.io.FileNotFoundException(result.errorMessage)
+                    java.io.FileNotFoundException(result.errorMessage)
+
                 else -> RuntimeException(result.errorMessage)
             }
         }
@@ -89,9 +93,11 @@ class ShizukuFileTools @Inject constructor(
         if (!result.success) {
             throw when (result.errorCode) {
                 RemoteResult.ERROR_PERMISSION_DENIED, RemoteResult.ERROR_ACCESS_DENIED ->
-                        SecurityException(result.errorMessage)
+                    SecurityException(result.errorMessage)
+
                 RemoteResult.ERROR_FILE_NOT_FOUND ->
-                        java.io.FileNotFoundException(result.errorMessage)
+                    java.io.FileNotFoundException(result.errorMessage)
+
                 else -> RuntimeException(result.errorMessage)
             }
         }
@@ -103,9 +109,11 @@ class ShizukuFileTools @Inject constructor(
         if (!result.success) {
             throw when (result.errorCode) {
                 RemoteResult.ERROR_PERMISSION_DENIED, RemoteResult.ERROR_ACCESS_DENIED ->
-                        SecurityException(result.errorMessage)
+                    SecurityException(result.errorMessage)
+
                 RemoteResult.ERROR_FILE_NOT_FOUND ->
-                        java.io.FileNotFoundException(result.errorMessage)
+                    java.io.FileNotFoundException(result.errorMessage)
+
                 RemoteResult.ERROR_READ_FAILED -> IOException(result.errorMessage)
                 else -> RuntimeException(result.errorMessage)
             }
@@ -118,9 +126,11 @@ class ShizukuFileTools @Inject constructor(
         if (!result.success) {
             throw when (result.errorCode) {
                 RemoteResult.ERROR_PERMISSION_DENIED, RemoteResult.ERROR_ACCESS_DENIED ->
-                        SecurityException(result.errorMessage)
+                    SecurityException(result.errorMessage)
+
                 RemoteResult.ERROR_FILE_NOT_FOUND ->
-                        java.io.FileNotFoundException(result.errorMessage)
+                    java.io.FileNotFoundException(result.errorMessage)
+
                 else -> RuntimeException(result.errorMessage)
             }
         }
@@ -132,9 +142,11 @@ class ShizukuFileTools @Inject constructor(
         if (!result.success) {
             throw when (result.errorCode) {
                 RemoteResult.ERROR_PERMISSION_DENIED, RemoteResult.ERROR_ACCESS_DENIED ->
-                        SecurityException(result.errorMessage)
+                    SecurityException(result.errorMessage)
+
                 RemoteResult.ERROR_FILE_NOT_FOUND ->
-                        java.io.FileNotFoundException(result.errorMessage)
+                    java.io.FileNotFoundException(result.errorMessage)
+
                 else -> RuntimeException(result.errorMessage)
             }
         }
@@ -181,9 +193,9 @@ class ShizukuFileTools @Inject constructor(
     }
 
     override fun createFileByStream(
-            path: String,
-            filename: String,
-            inputStream: InputStream
+        path: String,
+        filename: String,
+        inputStream: InputStream
     ): Boolean {
         val pfd = getPfdFromInputStream(inputStream)
         val result = getService().createFileByStream(path, filename, pfd)
@@ -237,7 +249,7 @@ class ShizukuFileTools @Inject constructor(
         // 必须在单独的协程中写入数据！
         // 原因：管道缓冲区有限（通常64KB），同步写入会在缓冲区满时阻塞，
         // 但此时远程服务还未开始读取（IPC调用尚未发起），导致死锁。
-        scope.launch(Dispatchers.IO){
+        scope.launch(Dispatchers.IO) {
             var outputStream: OutputStream? = null
             try {
                 outputStream = ParcelFileDescriptor.AutoCloseOutputStream(writeSide)

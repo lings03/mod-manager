@@ -1,8 +1,6 @@
 package top.laoxin.modmanager.domain.usercase.mod
 
 import android.util.Log
-import javax.inject.Inject
-import kotlin.text.substringAfterLast
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -26,6 +24,7 @@ import top.laoxin.modmanager.domain.service.ModEnableService
 import top.laoxin.modmanager.domain.service.PermissionService
 import top.laoxin.modmanager.domain.service.SpecialGameService
 import top.laoxin.modmanager.domain.service.ValidationResult
+import javax.inject.Inject
 
 // import java.io.File
 

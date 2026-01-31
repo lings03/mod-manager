@@ -1,17 +1,9 @@
 package top.laoxin.modmanager.data.service
 
 import android.content.Context
-import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.InputStream
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Contextual
-import top.laoxin.modmanager.App
 import top.laoxin.modmanager.constant.FileAccessType
 import top.laoxin.modmanager.constant.PathConstants
 import top.laoxin.modmanager.data.service.filetools.FileToolsManager
@@ -20,20 +12,29 @@ import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.service.ArchiveService
 import top.laoxin.modmanager.tools.ArchiveUtil
 import top.laoxin.modmanager.tools.PasswordErrorException
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.InputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** ArchiveService 实现 封装 ArchiveUtil，提供统一的错误处理 支持 Shizuku 权限：当文件需要 Shizuku 权限时，先复制到临时目录再操作 */
 @Singleton
 class ArchiveServiceImpl @Inject constructor(
     private val fileToolsManager: FileToolsManager,
     @param:ApplicationContext private val context: Context,
-    ) :
+) :
     ArchiveService {
 
-        companion object {
-            private const val TAG = "ArchiveServiceImpl"
-        }
+    companion object {
+        private const val TAG = "ArchiveServiceImpl"
+    }
+
     private val tempDir: File
-        get() = File(PathConstants.MODS_TEMP_PATH, "temp_archive").also { if (!it.exists()) it.mkdirs() }
+        get() = File(
+            PathConstants.MODS_TEMP_PATH,
+            "temp_archive"
+        ).also { if (!it.exists()) it.mkdirs() }
 
     override suspend fun extract(
         srcPath: String,
@@ -182,7 +183,7 @@ class ArchiveServiceImpl @Inject constructor(
                 } catch (e: SecurityException) {
                     Result.Error(AppError.FileError.PermissionDenied)
                 } catch (e: Exception) {
-                   // e.printStackTrace()
+                    // e.printStackTrace()
                     when {
                         e.message?.contains("password", ignoreCase = true) == true ->
                             Result.Error(AppError.ArchiveError.WrongPassword)
@@ -278,15 +279,15 @@ class ArchiveServiceImpl @Inject constructor(
                     }
 
                     val result = operation(tempFile.absolutePath)
-                   tempFile.delete()
+                    tempFile.delete()
                     result
                 } catch (e: Exception) {
-                   tempFile.delete()
+                    tempFile.delete()
                     Result.Error(AppError.FileError.Unknown(e.message ?: "Shizuku 操作失败"))
                 }
             }
 
-            FileAccessType.DOCUMENT_FILE-> {
+            FileAccessType.DOCUMENT_FILE -> {
                 val tempFile = File(tempDir, File(originalPath).name)
                 try {
                     val fileTools = fileToolsManager.getDocumentFileTools()
@@ -321,7 +322,7 @@ class ArchiveServiceImpl @Inject constructor(
         operation: suspend (actualPath: String) -> Result<T>
     ): Result<T> {
         val accessType = fileToolsManager.getFileAccessType(originalPath)
-       // Log.d(TAG, "当前压缩包文件权限:,$originalPath $accessType")
+        // Log.d(TAG, "当前压缩包文件权限:,$originalPath $accessType")
 
         return when (accessType) {
             FileAccessType.SHIZUKU -> {
@@ -342,7 +343,7 @@ class ArchiveServiceImpl @Inject constructor(
                 }
             }
 
-            FileAccessType.DOCUMENT_FILE-> {
+            FileAccessType.DOCUMENT_FILE -> {
                 val tempFile = File(tempDir, File(originalPath).name)
                 try {
                     val fileTools = fileToolsManager.getDocumentFileTools()

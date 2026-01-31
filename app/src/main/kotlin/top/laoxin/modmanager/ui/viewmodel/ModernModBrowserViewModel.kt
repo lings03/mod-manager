@@ -38,28 +38,28 @@ constructor(
 
     // UI State now only holds global preference/data, not navigation state
     val uiState =
-            combine(
-                _uiState,
-                getGameAllModsUserCase(),
-                userPreferencesRepository.selectedGame,
-                userPreferencesRepository.modListDisplayMode
-            ) { uiState, allMods, gameInfo, displayMode ->
-                ModBrowserUiState(
-                    currentGameModPath =
-                        PathConstants.getFullModPath(gameInfo.modSavePath),
-                    allMods = allMods,
-                    showCategory = uiState.showCategory,
-                    isGridView = displayMode == 1,
-                    currentBrowsingPath = uiState.currentBrowsingPath
-                        ?: PathConstants.getFullModPath(gameInfo.modSavePath),
-                    currentMods = uiState.currentMods
-                )
-            }
-                    .stateIn(
-                        viewModelScope,
-                            SharingStarted.Companion.WhileSubscribed(5000),
-                        ModBrowserUiState()
-                    )
+        combine(
+            _uiState,
+            getGameAllModsUserCase(),
+            userPreferencesRepository.selectedGame,
+            userPreferencesRepository.modListDisplayMode
+        ) { uiState, allMods, gameInfo, displayMode ->
+            ModBrowserUiState(
+                currentGameModPath =
+                    PathConstants.getFullModPath(gameInfo.modSavePath),
+                allMods = allMods,
+                showCategory = uiState.showCategory,
+                isGridView = displayMode == 1,
+                currentBrowsingPath = uiState.currentBrowsingPath
+                    ?: PathConstants.getFullModPath(gameInfo.modSavePath),
+                currentMods = uiState.currentMods
+            )
+        }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Companion.WhileSubscribed(5000),
+                ModBrowserUiState()
+            )
 
     fun setCurrentBrowsingPath(path: String) {
         _uiState.update { it.copy(currentBrowsingPath = path) }
@@ -67,9 +67,11 @@ constructor(
         val currentPathModsByPath = uiState.value.allMods.filter { mod ->
             File(mod.path).parent == path.trimEnd('/')
         }.filterOnlyUniqueBy { it.path }
-        val currentPathModsByVirtualPath = uiState.value.allMods.filter { File(
-            it.virtualPaths ?: ""
-        ).parent == path.trimEnd('/') }
+        val currentPathModsByVirtualPath = uiState.value.allMods.filter {
+            File(
+                it.virtualPaths ?: ""
+            ).parent == path.trimEnd('/')
+        }
         val currentPathMods = currentPathModsByPath.ifEmpty { currentPathModsByVirtualPath }
         setCurrentMods(currentPathMods)
     }
@@ -107,6 +109,7 @@ constructor(
     fun getModsByVirtualPaths(path: String, allMods: List<ModBean>): List<ModBean> {
         return allMods.filter { it.virtualPaths?.contains(path + File.separator) == true }
     }
+
     // Scroll State Cache (Not in UiState to avoid unnecessary recomposition loop)
     private val _scrollStates = mutableMapOf<String, Pair<Int, Int>>()
 

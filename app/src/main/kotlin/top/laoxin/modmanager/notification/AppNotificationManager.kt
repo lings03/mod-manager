@@ -14,13 +14,13 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 import top.laoxin.modmanager.R
 import top.laoxin.modmanager.activity.main.MainActivity
 import top.laoxin.modmanager.service.ScanForegroundService
 import top.laoxin.modmanager.ui.state.ScanProgressState
 import top.laoxin.modmanager.ui.state.ScanResultState
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** 统一的应用通知管理器 处理所有类型的通知（扫描进度、未来可能的其他通知类型） */
 @Singleton
@@ -30,7 +30,7 @@ class AppNotificationManager @Inject constructor(
     companion object {
         // 扫描通知 ID (公开供 Service 使用)
         const val SCAN_NOTIFICATION_ID = 1001
-        
+
         // Deep Link URIs
         const val DEEP_LINK_SCAN_PROGRESS = "modmanager://scan/progress"
         const val DEEP_LINK_SCAN_RESULT = "modmanager://scan/result"
@@ -46,21 +46,21 @@ class AppNotificationManager @Inject constructor(
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val scanChannel =
-                    NotificationChannel(
-                                    context.getString(R.string.scan_notification_channel_id),
-                                    context.getString(R.string.scan_notification_channel_name),
-                                    NotificationManager.IMPORTANCE_LOW
+                NotificationChannel(
+                    context.getString(R.string.scan_notification_channel_id),
+                    context.getString(R.string.scan_notification_channel_name),
+                    NotificationManager.IMPORTANCE_LOW
+                )
+                    .apply {
+                        description =
+                            context.getString(
+                                R.string.scan_notification_channel_description
                             )
-                            .apply {
-                                description =
-                                        context.getString(
-                                                R.string.scan_notification_channel_description
-                                        )
-                                setShowBadge(false)
-                            }
+                        setShowBadge(false)
+                    }
 
             val manager =
-                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(scanChannel)
         }
     }
@@ -78,16 +78,16 @@ class AppNotificationManager @Inject constructor(
     /** 创建初始扫描通知 (用于 Foreground Service 启动) */
     fun createInitialScanNotification(): Notification {
         return createScanNotificationBuilder(DEEP_LINK_SCAN_PROGRESS)
-                .setContentTitle(context.getString(R.string.scan_notification_title))
-                .setContentText(context.getString(R.string.scan_notification_preparing))
-                .setProgress(0, 0, true)
-                .setOngoing(true)
-                .addAction(
-                        android.R.drawable.ic_delete,
-                        context.getString(R.string.scan_notification_cancel),
-                        createCancelPendingIntent()
-                )
-                .build()
+            .setContentTitle(context.getString(R.string.scan_notification_title))
+            .setContentText(context.getString(R.string.scan_notification_preparing))
+            .setProgress(0, 0, true)
+            .setOngoing(true)
+            .addAction(
+                android.R.drawable.ic_delete,
+                context.getString(R.string.scan_notification_cancel),
+                createCancelPendingIntent()
+            )
+            .build()
     }
 
     /** 显示扫描进度通知 */
@@ -95,23 +95,23 @@ class AppNotificationManager @Inject constructor(
         if (!hasNotificationPermission()) return
 
         val contentText =
-                context.getString(
-                        R.string.scan_notification_progress,
-                        state.sourceName.ifEmpty { state.currentFile }
-                )
+            context.getString(
+                R.string.scan_notification_progress,
+                state.sourceName.ifEmpty { state.currentFile }
+            )
 
         val notification =
-                createScanNotificationBuilder(DEEP_LINK_SCAN_PROGRESS)
-                        .setContentTitle(context.getString(R.string.scan_notification_title))
-                        .setContentText(contentText)
-                        .setProgress(100, (state.progress * 100).toInt(), false)
-                        .setOngoing(true)
-                        .addAction(
-                                android.R.drawable.ic_delete,
-                                context.getString(R.string.scan_notification_cancel),
-                                createCancelPendingIntent()
-                        )
-                        .build()
+            createScanNotificationBuilder(DEEP_LINK_SCAN_PROGRESS)
+                .setContentTitle(context.getString(R.string.scan_notification_title))
+                .setContentText(contentText)
+                .setProgress(100, (state.progress * 100).toInt(), false)
+                .setOngoing(true)
+                .addAction(
+                    android.R.drawable.ic_delete,
+                    context.getString(R.string.scan_notification_cancel),
+                    createCancelPendingIntent()
+                )
+                .build()
 
         notificationManager.notify(SCAN_NOTIFICATION_ID, notification)
     }
@@ -126,21 +126,21 @@ class AppNotificationManager @Inject constructor(
         if (!hasNotificationPermission()) return
 
         val contentText =
-                context.getString(
-                        R.string.scan_notification_complete,
-                        addedCount,
-                        updatedCount,
-                        deletedCount
-                )
+            context.getString(
+                R.string.scan_notification_complete,
+                addedCount,
+                updatedCount,
+                deletedCount
+            )
 
         val notification =
-                createScanNotificationBuilder(DEEP_LINK_SCAN_RESULT)
-                        .setContentTitle(context.getString(R.string.scan_result_title))
-                        .setContentText(contentText)
-                        .setProgress(0, 0, false)
-                        .setOngoing(false)
-                        .setAutoCancel(true)
-                        .build()
+            createScanNotificationBuilder(DEEP_LINK_SCAN_RESULT)
+                .setContentTitle(context.getString(R.string.scan_result_title))
+                .setContentText(contentText)
+                .setProgress(0, 0, false)
+                .setOngoing(false)
+                .setAutoCancel(true)
+                .build()
 
         notificationManager.notify(SCAN_NOTIFICATION_ID, notification)
     }
@@ -150,15 +150,15 @@ class AppNotificationManager @Inject constructor(
         if (!hasNotificationPermission()) return
 
         val notification =
-                createScanNotificationBuilder(DEEP_LINK_SCAN_PROGRESS)
-                        .setContentTitle(context.getString(R.string.scan_error_title))
-                        .setContentText(
-                                errorMessage ?: context.getString(R.string.scan_notification_error)
-                        )
-                        .setProgress(0, 0, false)
-                        .setOngoing(false)
-                        .setAutoCancel(true)
-                        .build()
+            createScanNotificationBuilder(DEEP_LINK_SCAN_PROGRESS)
+                .setContentTitle(context.getString(R.string.scan_error_title))
+                .setContentText(
+                    errorMessage ?: context.getString(R.string.scan_notification_error)
+                )
+                .setProgress(0, 0, false)
+                .setOngoing(false)
+                .setAutoCancel(true)
+                .build()
 
         notificationManager.notify(SCAN_NOTIFICATION_ID, notification)
     }
@@ -171,27 +171,27 @@ class AppNotificationManager @Inject constructor(
     /** 创建扫描通知的基础 Builder */
     private fun createScanNotificationBuilder(deepLink: String): NotificationCompat.Builder {
         val intent =
-                Intent(Intent.ACTION_VIEW, deepLink.toUri()).apply {
-                    setClass(context, MainActivity::class.java)
-                    flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                }
+            Intent(Intent.ACTION_VIEW, deepLink.toUri()).apply {
+                setClass(context, MainActivity::class.java)
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
 
         val pendingIntent =
-                PendingIntent.getActivity(
-                        context,
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
+            PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
 
         return NotificationCompat.Builder(
-                        context,
-                        context.getString(R.string.scan_notification_channel_id)
-                )
-                .setSmallIcon(R.drawable.app_icon)
-                .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            context,
+            context.getString(R.string.scan_notification_channel_id)
+        )
+            .setSmallIcon(R.drawable.app_icon)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
     }
 
     /** 创建取消扫描的 PendingIntent */
@@ -200,10 +200,10 @@ class AppNotificationManager @Inject constructor(
             action = ScanForegroundService.ACTION_CANCEL
         }
         return PendingIntent.getService(
-                context,
-                1, // 使用不同的 requestCode 避免冲突
-                cancelIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context,
+            1, // 使用不同的 requestCode 避免冲突
+            cancelIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
 }

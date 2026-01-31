@@ -18,9 +18,9 @@ interface BackupService {
      * @return Flow<BackupEvent> 备份事件流
      */
     fun backupGameFiles(
-            mod: ModBean,
-            gameInfo: GameInfoBean,
-            replacedFilesMap: Map<String, ReplacedFileBean> = emptyMap()
+        mod: ModBean,
+        gameInfo: GameInfoBean,
+        replacedFilesMap: Map<String, ReplacedFileBean> = emptyMap()
     ): Flow<BackupEvent>
 
     /**
@@ -32,10 +32,10 @@ interface BackupService {
      * @return Flow<BackupEvent> 还原事件流
      */
     fun restoreBackups(
-            backups: List<BackupBean>,
-            replacedFilesMap: Map<String, ReplacedFileBean>,
-            mod: ModBean,
-            gameInfo: GameInfoBean
+        backups: List<BackupBean>,
+        replacedFilesMap: Map<String, ReplacedFileBean>,
+        mod: ModBean,
+        gameInfo: GameInfoBean
     ): Flow<BackupEvent>
 
     /**
