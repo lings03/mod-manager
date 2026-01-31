@@ -71,8 +71,18 @@ fun RandomSplashScreen(
         // 启动 App 信息的动画（延迟 200ms 后开始）
         launch {
             delay(200)
-            launch { appInfoAlpha.animateTo(1f, animationSpec = tween(600, easing = FastOutSlowInEasing)) }
-            launch { appInfoOffsetY.animateTo(0f, animationSpec = tween(600, easing = FastOutSlowInEasing)) }
+            launch {
+                appInfoAlpha.animateTo(
+                    1f,
+                    animationSpec = tween(600, easing = FastOutSlowInEasing)
+                )
+            }
+            launch {
+                appInfoOffsetY.animateTo(
+                    0f,
+                    animationSpec = tween(600, easing = FastOutSlowInEasing)
+                )
+            }
         }
 
         delay(durationMillis)

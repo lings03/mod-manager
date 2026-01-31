@@ -2,9 +2,6 @@ package top.laoxin.modmanager.data.repository
 
 import android.util.Log
 import com.google.gson.Gson
-import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,25 +10,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import top.laoxin.modmanager.constant.GameInfoConstant
 import top.laoxin.modmanager.constant.PathConstants
+import top.laoxin.modmanager.data.network.ModManagerApi
 import top.laoxin.modmanager.domain.bean.DownloadGameConfigBean
 import top.laoxin.modmanager.domain.bean.GameInfoBean
-import top.laoxin.modmanager.data.network.ModManagerApi
-import top.laoxin.modmanager.domain.service.AppInfoService
 import top.laoxin.modmanager.domain.model.AppError
 import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.repository.GameInfoRepository
 import top.laoxin.modmanager.domain.repository.ImportConfigResult
+import top.laoxin.modmanager.domain.service.AppInfoService
 import top.laoxin.modmanager.domain.service.FileService
 import top.laoxin.modmanager.domain.service.SpecialGameService
+import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class GameInfoRepositoryImpl
 @Inject
 constructor(
-        private val fileService: FileService,
-        private val appInfoService: AppInfoService,
-        private val specialGameService: SpecialGameService,
-        private val externalScope: CoroutineScope // From di/AppModule.kt
+    private val fileService: FileService,
+    private val appInfoService: AppInfoService,
+    private val specialGameService: SpecialGameService,
+    private val externalScope: CoroutineScope // From di/AppModule.kt
 ) : GameInfoRepository {
 
     private val _gameInfoList = MutableSharedFlow<List<GameInfoBean>>(replay = 1)
@@ -43,58 +43,58 @@ constructor(
     override fun getGameInfoList(): SharedFlow<List<GameInfoBean>> = _gameInfoList
 
     override suspend fun reloadGameInfo() =
-            withContext(Dispatchers.IO) {
-                try {
-                    val defaultGames =
-                            listOf(
-                                    GameInfoConstant.NO_GAME,
-                                    GameInfoConstant.CROSSCORE,
-                                    GameInfoConstant.CROSSCOREB
-                            )
+        withContext(Dispatchers.IO) {
+            try {
+                val defaultGames =
+                    listOf(
+                        GameInfoConstant.NO_GAME,
+                        GameInfoConstant.CROSSCORE,
+                        GameInfoConstant.CROSSCOREB
+                    )
 
-                    val configFiles =
-                            fileService
-                                    .listFiles(
-                                            PathConstants.APP_PATH + PathConstants.GAME_CONFIG_PATH
-                                    )
-                                    .getOrNull()
-                                    ?: return@withContext
-                    val customGames =
-                            configFiles.mapNotNull { file ->
-                                if (file.name.endsWith(".json")) {
-                                    try {
-                                        val gameInfo =
-                                                Gson().fromJson(
-                                                                file.readText(),
-                                                                GameInfoBean::class.java
-                                                        )
-                                        checkGameConfig(gameInfo, PathConstants.ROOT_PATH)
-                                    } catch (e: Exception) {
-                                        Log.e(
-                                                "GameInfoRepo",
-                                                "Failed to parse game config: ${file.name}",
-                                                e
-                                        )
-                                        null
-                                    }
-                                } else null
-                            }
-
-                    val combinedList = (defaultGames + customGames).distinctBy { it.packageName }
-                    _gameInfoList.emit(combinedList)
-                } catch (e: Exception) {
-                    Log.e("GameInfoRepo", "Failed to load game configs", e)
-                    if (_gameInfoList.replayCache.isEmpty()) {
-                        _gameInfoList.emit(
-                                listOf(
-                                        GameInfoConstant.NO_GAME,
-                                        GameInfoConstant.CROSSCORE,
-                                        GameInfoConstant.CROSSCOREB
-                                )
+                val configFiles =
+                    fileService
+                        .listFiles(
+                            PathConstants.APP_PATH + PathConstants.GAME_CONFIG_PATH
                         )
+                        .getOrNull()
+                        ?: return@withContext
+                val customGames =
+                    configFiles.mapNotNull { file ->
+                        if (file.name.endsWith(".json")) {
+                            try {
+                                val gameInfo =
+                                    Gson().fromJson(
+                                        file.readText(),
+                                        GameInfoBean::class.java
+                                    )
+                                checkGameConfig(gameInfo, PathConstants.ROOT_PATH)
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "GameInfoRepo",
+                                    "Failed to parse game config: ${file.name}",
+                                    e
+                                )
+                                null
+                            }
+                        } else null
                     }
+
+                val combinedList = (defaultGames + customGames).distinctBy { it.packageName }
+                _gameInfoList.emit(combinedList)
+            } catch (e: Exception) {
+                Log.e("GameInfoRepo", "Failed to load game configs", e)
+                if (_gameInfoList.replayCache.isEmpty()) {
+                    _gameInfoList.emit(
+                        listOf(
+                            GameInfoConstant.NO_GAME,
+                            GameInfoConstant.CROSSCORE,
+                            GameInfoConstant.CROSSCOREB
+                        )
+                    )
                 }
             }
+        }
 
     override suspend fun enrichGameInfo(baseGameInfo: GameInfoBean, modPath: String): GameInfoBean {
 
@@ -105,13 +105,13 @@ constructor(
         )
         return if (appInfoService.isAppInstalled(gameInfo.packageName).isSuccess) {
             val modifyGameInfo =
-                    gameInfo.copy(
-                            version =
-                                    appInfoService
-                                            .getVersionName(gameInfo.packageName)
-                                            .getOrDefault(gameInfo.version),
-                            modSavePath = modPath + gameInfo.packageName + File.separator
-                    )
+                gameInfo.copy(
+                    version =
+                        appInfoService
+                            .getVersionName(gameInfo.packageName)
+                            .getOrDefault(gameInfo.version),
+                    modSavePath = modPath + gameInfo.packageName + File.separator
+                )
             createModsDirectory(modifyGameInfo, modPath)
             // Log.i("UpdateGameInfoUserCase", "修改的gameInfo: ${modifyGameInfo.version}")
             specialGameService.updateGameInfo(modifyGameInfo)
@@ -135,7 +135,7 @@ constructor(
     }
 
     override suspend fun downloadRemoteGameConfig(
-            config: DownloadGameConfigBean
+        config: DownloadGameConfigBean
     ): Result<GameInfoBean> {
         return withContext(Dispatchers.IO) {
             try {
@@ -147,14 +147,14 @@ constructor(
 
                 // 2. 校验配置
                 val validatedConfig =
-                        try {
-                            checkGameConfig(gameInfo, PathConstants.ROOT_PATH)
-                        } catch (e: Exception) {
-                            Log.e("GameInfoRepo", "配置校验失败: ${e.message}")
-                            return@withContext Result.Error(
-                                    AppError.GameConfigError.InvalidConfig(e.message ?: "配置校验失败")
-                            )
-                        }
+                    try {
+                        checkGameConfig(gameInfo, PathConstants.ROOT_PATH)
+                    } catch (e: Exception) {
+                        Log.e("GameInfoRepo", "配置校验失败: ${e.message}")
+                        return@withContext Result.Error(
+                            AppError.GameConfigError.InvalidConfig(e.message ?: "配置校验失败")
+                        )
+                    }
 
                 // 3. 确保目标目录存在
                 val configDir = File(PathConstants.APP_PATH + PathConstants.GAME_CONFIG_PATH)
@@ -201,15 +201,15 @@ constructor(
             throw Exception("gamePath cannot be empty")
         } else {
             result =
-                    result.copy(gamePath = rootPath + "/Android/data/" + gameInfo.packageName + "/")
+                result.copy(gamePath = rootPath + "/Android/data/" + gameInfo.packageName + "/")
         }
 
         if (gameInfo.antiHarmonyFile.isNotEmpty()) {
             result =
-                    result.copy(
-                            antiHarmonyFile =
-                                    (rootPath + "/" + gameInfo.antiHarmonyFile).replace("//", "/")
-                    )
+                result.copy(
+                    antiHarmonyFile =
+                        (rootPath + "/" + gameInfo.antiHarmonyFile).replace("//", "/")
+                )
         }
 
         if (gameInfo.modType.isEmpty()) throw Exception("modType cannot be empty")
@@ -220,13 +220,13 @@ constructor(
 
         if (gameInfo.serviceName.isEmpty()) throw Exception("serviceName cannot be empty")
         if (gameInfo.gameFilePath.size != gameInfo.modType.size)
-                throw Exception("gameFilePath and modType must have the same size")
+            throw Exception("gameFilePath and modType must have the same size")
 
         return result
     }
 
     override suspend fun importCustomGameConfigs(
-            customConfigPath: String
+        customConfigPath: String
     ): Result<ImportConfigResult> {
         return withContext(Dispatchers.IO) {
             try {
@@ -234,7 +234,7 @@ constructor(
                 if (!customDir.exists() || !customDir.isDirectory) {
                     Log.d("GameInfoRepo", "自定义配置目录不存在: $customConfigPath")
                     return@withContext Result.Error(
-                            AppError.GameConfigError.InvalidConfig("目录不存在")
+                        AppError.GameConfigError.InvalidConfig("目录不存在")
                     )
                 }
 
@@ -246,7 +246,7 @@ constructor(
                 if (jsonFiles.isEmpty()) {
                     Log.d("GameInfoRepo", "未找到配置文件")
                     return@withContext Result.Success(
-                            ImportConfigResult(successCount = 0, failedCount = 0)
+                        ImportConfigResult(successCount = 0, failedCount = 0)
                     )
                 }
 
@@ -291,11 +291,11 @@ constructor(
                 }
 
                 Result.Success(
-                        ImportConfigResult(
-                                successCount = successCount,
-                                failedCount = failedCount,
-                                successConfigs = successConfigs
-                        )
+                    ImportConfigResult(
+                        successCount = successCount,
+                        failedCount = failedCount,
+                        successConfigs = successConfigs
+                    )
                 )
             } catch (e: Exception) {
                 Log.e("GameInfoRepo", "导入自定义配置失败", e)

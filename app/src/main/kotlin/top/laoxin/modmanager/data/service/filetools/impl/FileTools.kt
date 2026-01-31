@@ -1,5 +1,6 @@
 package top.laoxin.modmanager.data.service.filetools.impl
 
+import top.laoxin.modmanager.data.service.filetools.BaseFileTools
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -8,13 +9,11 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import javax.inject.Inject
 import javax.inject.Singleton
-import top.laoxin.modmanager.data.service.filetools.BaseFileTools
-import kotlin.io.use
 
 /** 标准文件系统操作工具 不捕获异常，让异常传播到 FileServiceImpl 统一处理 */
 @Singleton
 class FileTools @Inject constructor() :
-        BaseFileTools() {
+    BaseFileTools() {
 
     companion object {
         const val TAG = "FileTools"
@@ -73,9 +72,9 @@ class FileTools @Inject constructor() :
     }
 
     override fun createFileByStream(
-            path: String,
-            filename: String,
-            inputStream: InputStream
+        path: String,
+        filename: String,
+        inputStream: InputStream
     ): Boolean {
         val file = File(path, filename)
         if (!file.exists()) {
@@ -134,10 +133,10 @@ class FileTools @Inject constructor() :
                 digest.update(buffer, 0, read)
             }
         }
-        return  digest.digest().joinToString("") { "%02x".format(it) }
+        return digest.digest().joinToString("") { "%02x".format(it) }
     }
 
     override fun getFileSize(path: String): Long {
-       return File(path).length()
+        return File(path).length()
     }
 }

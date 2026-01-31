@@ -171,6 +171,7 @@
     <string name="mod_bean_no_author">Неизвестно</string>
     <string name="mod_bean_encrypted_version">Зашифровано</string>
     <string name="mod_bean_encrypted_desc">Файл мода зашифрован. Пожалуйста нажмите на переключатель и введите пароль для расшифровки</string>
+    <string name="mod_unlock">Разблокировать</string>
     <string name="mod_page_mod_detail_dialog_detali_modNums">Количество файлов модов: %1$s</string>
     <string name="console_info_title">Уведомление</string>
     <string name="setting_page_about_info">Просмотр уведомлений</string>

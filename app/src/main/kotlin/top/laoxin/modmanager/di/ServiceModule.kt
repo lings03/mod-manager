@@ -4,7 +4,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import top.laoxin.modmanager.data.service.AppInfoServiceImpl
 import top.laoxin.modmanager.data.service.ArchiveServiceImpl
 import top.laoxin.modmanager.data.service.BackupServiceImpl
@@ -29,53 +28,64 @@ import top.laoxin.modmanager.domain.service.PermissionService
 import top.laoxin.modmanager.domain.service.SpecialGameService
 import top.laoxin.modmanager.domain.service.TraditionalModEnableService
 import top.laoxin.modmanager.domain.service.TraditionalModScanService
+import javax.inject.Singleton
 
 /** Service 依赖注入模块 绑定 Service 接口到具体实现 */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ServiceModule {
 
-        @Binds @Singleton abstract fun bindAppInfoService(impl: AppInfoServiceImpl): AppInfoService
+    @Binds
+    @Singleton
+    abstract fun bindAppInfoService(impl: AppInfoServiceImpl): AppInfoService
 
-        @Binds @Singleton abstract fun bindFileService(impl: FileServiceImpl): FileService
+    @Binds
+    @Singleton
+    abstract fun bindFileService(impl: FileServiceImpl): FileService
 
-        @Binds @Singleton abstract fun bindArchiveService(impl: ArchiveServiceImpl): ArchiveService
+    @Binds
+    @Singleton
+    abstract fun bindArchiveService(impl: ArchiveServiceImpl): ArchiveService
 
-        @Binds
-        @Singleton
-        abstract fun bindPermissionService(impl: PermissionServiceImpl): PermissionService
+    @Binds
+    @Singleton
+    abstract fun bindPermissionService(impl: PermissionServiceImpl): PermissionService
 
-        @Binds
-        @Singleton
-        abstract fun bindSpecialGameService(impl: SpecialGameServiceImpl): SpecialGameService
+    @Binds
+    @Singleton
+    abstract fun bindSpecialGameService(impl: SpecialGameServiceImpl): SpecialGameService
 
-        @Binds
-        @Singleton
-        abstract fun bindTraditionalModScanService(
-                impl: TraditionalModScanServiceImpl
-        ): TraditionalModScanService
+    @Binds
+    @Singleton
+    abstract fun bindTraditionalModScanService(
+        impl: TraditionalModScanServiceImpl
+    ): TraditionalModScanService
 
-        @Binds @Singleton abstract fun bindModScanService(impl: ModScanServiceImpl): ModScanService
+    @Binds
+    @Singleton
+    abstract fun bindModScanService(impl: ModScanServiceImpl): ModScanService
 
-        @Binds
-        @Singleton
-        abstract fun bindModSourcePrepareService(
-                impl: ModSourcePrepareServiceImpl
-        ): ModSourcePrepareService
+    @Binds
+    @Singleton
+    abstract fun bindModSourcePrepareService(
+        impl: ModSourcePrepareServiceImpl
+    ): ModSourcePrepareService
 
-        @Binds @Singleton abstract fun bindBackupService(impl: BackupServiceImpl): BackupService
+    @Binds
+    @Singleton
+    abstract fun bindBackupService(impl: BackupServiceImpl): BackupService
 
-        @Binds
-        @Singleton
-        abstract fun bindTraditionalModEnableService(
-                impl: TraditionalModEnableServiceImpl
-        ): TraditionalModEnableService
+    @Binds
+    @Singleton
+    abstract fun bindTraditionalModEnableService(
+        impl: TraditionalModEnableServiceImpl
+    ): TraditionalModEnableService
 
-        @Binds
-        @Singleton
-        abstract fun bindModEnableService(impl: ModEnableServiceImpl): ModEnableService
+    @Binds
+    @Singleton
+    abstract fun bindModEnableService(impl: ModEnableServiceImpl): ModEnableService
 
-        @Binds
-        @Singleton
-        abstract fun bindModDecryptService(impl: ModDecryptServiceImpl): ModDecryptService
+    @Binds
+    @Singleton
+    abstract fun bindModDecryptService(impl: ModDecryptServiceImpl): ModDecryptService
 }

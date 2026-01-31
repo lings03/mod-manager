@@ -7,10 +7,10 @@ import javax.inject.Singleton
 
 @Singleton
 class UpdateLogServiceUserCase @Inject constructor(
-    private  val logService: LogService,
+    private val logService: LogService,
 
-) {
-     suspend operator fun invoke(logPath: String)  {
+    ) {
+    suspend operator fun invoke(logPath: String) {
         logService.setLogPath(PathConstants.getFullModPath(logPath))
     }
 }

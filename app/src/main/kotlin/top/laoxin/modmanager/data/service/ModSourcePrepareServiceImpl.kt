@@ -1,7 +1,6 @@
 package top.laoxin.modmanager.data.service
 
 import android.util.Log
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,6 +16,7 @@ import top.laoxin.modmanager.domain.service.ModScanService
 import top.laoxin.modmanager.domain.service.ModSourcePrepareService
 import top.laoxin.modmanager.domain.service.TransferEvent
 import top.laoxin.modmanager.domain.service.TransferResult
+import javax.inject.Inject
 
 /** MOD 源文件准备服务实现 从外部目录转移 MOD 文件到 MOD 目录 */
 class ModSourcePrepareServiceImpl

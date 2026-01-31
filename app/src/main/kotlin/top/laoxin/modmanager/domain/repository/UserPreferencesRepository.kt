@@ -46,7 +46,6 @@ interface UserPreferencesRepository {
     suspend fun saveUserTips(shouldShow: Boolean)
 
 
-
     /** MOD列表显示模式 (0=列表视图, 1=大图网格视图) */
     val modListDisplayMode: Flow<Int>
     suspend fun saveModListDisplayMode(mode: Int)
@@ -58,7 +57,7 @@ interface UserPreferencesRepository {
     // ==================== 高级操作 ====================
 
     suspend fun prepareAndSetModDirectory(
-            selectedDirectoryPath: String,
+        selectedDirectoryPath: String,
     ): Result<Unit>
 
     // ==================== 版本缓存 ====================

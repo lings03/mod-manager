@@ -1,29 +1,25 @@
 package top.laoxin.modmanager.data.service
 
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import java.io.File
-import java.io.InputStream
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import top.laoxin.modmanager.App
 import top.laoxin.modmanager.constant.FileAccessType
 import top.laoxin.modmanager.data.service.filetools.FileToolsManager
 import top.laoxin.modmanager.domain.model.AppError
 import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.service.FileService
-import top.laoxin.modmanager.tools.ArchiveUtil
-import top.laoxin.modmanager.tools.PasswordErrorException
+import java.io.File
 import java.io.FileNotFoundException
+import java.io.InputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** FileService 实现 封装 FileToolsManager，根据权限自动选择正确的文件访问方式 所有操作返回 Result 类型以支持统一的错误处理 */
 @Singleton
 class FileServiceImpl @Inject constructor(
     private val fileToolsManager: FileToolsManager,
 
-) :
+    ) :
     FileService {
 
     override suspend fun copyFile(srcPath: String, destPath: String): Result<Unit> =
@@ -386,23 +382,24 @@ class FileServiceImpl @Inject constructor(
     }
 
 
-    override suspend fun getFileLength(absolutePath: String): Result<Long> = withContext(Dispatchers.IO){
-        try {
+    override suspend fun getFileLength(absolutePath: String): Result<Long> =
+        withContext(Dispatchers.IO) {
+            try {
 
-            val fileTools =
-                fileToolsManager.getFileToolsBySinglePath(absolutePath)
-                    ?: return@withContext Result.Error(
-                        AppError.FileError.PermissionDenied
-                    )
+                val fileTools =
+                    fileToolsManager.getFileToolsBySinglePath(absolutePath)
+                        ?: return@withContext Result.Error(
+                            AppError.FileError.PermissionDenied
+                        )
 
-            Result.Success(fileTools.getFileSize(absolutePath))
-        } catch (e: SecurityException) {
-            Result.Error(AppError.FileError.PermissionDenied)
-        } catch (e: FileNotFoundException) {
-            Result.Error(AppError.FileError.FileNotFound(absolutePath))
-        } catch (e: Exception) {
-            Result.Error(AppError.FileError.Unknown(e.message ?: "读取MOD失败"))
+                Result.Success(fileTools.getFileSize(absolutePath))
+            } catch (e: SecurityException) {
+                Result.Error(AppError.FileError.PermissionDenied)
+            } catch (e: FileNotFoundException) {
+                Result.Error(AppError.FileError.FileNotFound(absolutePath))
+            } catch (e: Exception) {
+                Result.Error(AppError.FileError.Unknown(e.message ?: "读取MOD失败"))
+            }
         }
-    }
 
 }

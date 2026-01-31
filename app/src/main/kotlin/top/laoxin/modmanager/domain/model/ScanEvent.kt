@@ -9,28 +9,28 @@ import top.laoxin.modmanager.domain.bean.ModBean
 enum class ScanStep {
     /** 检查加密状态 */
     CHECKING_ENCRYPTION,
-    
+
     /** 读取文件列表 */
     LISTING_FILES,
-    
+
     /** 分析文件 */
     ANALYZING_FILES,
-    
+
     /** 识别 MOD */
     IDENTIFYING_MODS,
-    
+
     /** 检查文件夹 */
     CHECKING_FOLDER,
-    
+
     /** 转移外部 MOD */
     TRANSFERRING,
-    
+
     /** 扫描 MOD 目录 */
     SCANNING_DIRECTORY,
-    
+
     /** 同步数据库 */
     SYNCING_DATABASE,
-    
+
     /** 完成 */
     COMPLETE
 }

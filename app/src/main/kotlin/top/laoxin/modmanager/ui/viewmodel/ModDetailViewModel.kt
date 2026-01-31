@@ -38,7 +38,7 @@ class ModDetailViewModel @Inject constructor(
     /**
      * 打开mod详情
      */
-    fun openModDetail(mod: ModBean, isShow:  Boolean) {
+    fun openModDetail(mod: ModBean, isShow: Boolean) {
         _uiState.update { it.copy(mod = mod, isShown = true) }
     }
 
@@ -52,23 +52,23 @@ class ModDetailViewModel @Inject constructor(
     /**
      * 刷新mod详情
      */
-/*    fun refreshModDetail() {
-        val modBean = _uiState.value.mod ?: return
+    /*    fun refreshModDetail() {
+            val modBean = _uiState.value.mod ?: return
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoadingDetail = true) }
-            try {
-                val result = flashModDetailUserCase(modBean)
-                _uiState.update { it.copy(mod = result.mod) }
-            } finally {
-                _uiState.update { it.copy(isLoadingDetail = false) }
+            viewModelScope.launch {
+                _uiState.update { it.copy(isLoadingDetail = true) }
+                try {
+                    val result = flashModDetailUserCase(modBean)
+                    _uiState.update { it.copy(mod = result.mod) }
+                } finally {
+                    _uiState.update { it.copy(isLoadingDetail = false) }
+                }
             }
-        }
-    }*/
+        }*/
 
     /**
      * 刷新mod预览图（重新从压缩包提取图片到缓存）
-     * 
+     *
      * @param modBean 需要刷新图片的MOD
      * @param silent 是否静默模式（不显示loading状态）
      */
@@ -88,12 +88,13 @@ class ModDetailViewModel @Inject constructor(
                         if (!silent) {
                             snackbarManager.showMessage(R.string.refresh_detail_success)
                         }
-                        
+
                         // 如果是当前显示的mod，更新详情
                         if (_uiState.value.mod?.id == modBean.id) {
                             _uiState.update { it.copy(mod = result.data) }
                         }
                     }
+
                     is Result.Error -> {
                         // 刷新失败，显示错误提示
                         if (!silent) {

@@ -31,7 +31,8 @@ interface ReplacedFileDao {
     suspend fun getByGamePackageName(gamePackageName: String): List<ReplacedFileBean>
 
     // 通过 modId 删除
-    @Query("DELETE FROM replaced_files WHERE modId = :modId") suspend fun deleteByModId(modId: Int)
+    @Query("DELETE FROM replaced_files WHERE modId = :modId")
+    suspend fun deleteByModId(modId: Int)
 
     // 通过 gameFilePath 删除
     @Query("DELETE FROM replaced_files WHERE gameFilePath = :gameFilePath")
@@ -42,7 +43,8 @@ interface ReplacedFileDao {
     suspend fun deleteByGamePackageName(gamePackageName: String)
 
     // 删除所有
-    @Query("DELETE FROM replaced_files") suspend fun deleteAll()
+    @Query("DELETE FROM replaced_files")
+    suspend fun deleteAll()
 
     // 检查 gameFilePath 是否存在记录
     @Query("SELECT EXISTS(SELECT 1 FROM replaced_files WHERE gameFilePath = :gameFilePath)")

@@ -84,12 +84,14 @@ fun DecryptProgressOverlay(
                         state.error != null -> {
                             DecryptErrorContent(error = state.error, onDismiss = onDismiss)
                         }
+
                         state.isComplete -> {
                             DecryptSuccessContent(
                                 decryptedCount = state.decryptedCount,
                                 onConfirm = onConfirm
                             )
                         }
+
                         else -> {
                             DecryptProgressContent(state = state, onCancel = onCancel)
                         }

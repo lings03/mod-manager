@@ -6,10 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Environment
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CompletableDeferred
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
@@ -22,6 +18,10 @@ import top.laoxin.modmanager.domain.model.AppError
 import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.service.PermissionService
 import top.laoxin.modmanager.service.shizuku.FileExplorerServiceManager
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 
 /** 权限服务实现类 封装 Shizuku、SAF、标准文件权限的检查和请求逻辑 */
@@ -42,15 +42,15 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
 
     // Shizuku 权限请求回调监听器
     val requestPermissionResultListener =
-            OnRequestPermissionResultListener { requestCode, grantResult ->
-                val granted = grantResult == PackageManager.PERMISSION_GRANTED
-                if (granted) {
-                    FileExplorerServiceManager.bindService()
-                }
-                Log.d(TAG, "Shizuku permission result: requestCode=$requestCode, granted=$granted")
-                // 完成对应请求的 Deferred
-                pendingRequests.remove(requestCode)?.complete(granted)
+        OnRequestPermissionResultListener { requestCode, grantResult ->
+            val granted = grantResult == PackageManager.PERMISSION_GRANTED
+            if (granted) {
+                FileExplorerServiceManager.bindService()
             }
+            Log.d(TAG, "Shizuku permission result: requestCode=$requestCode, granted=$granted")
+            // 完成对应请求的 Deferred
+            pendingRequests.remove(requestCode)?.complete(granted)
+        }
 
     /** 注册 Shizuku 权限请求监听器 应在 Activity.onCreate 中调用 */
     override fun registerShizukuListener(): Result<Unit> {
@@ -149,7 +149,11 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
                     Result.Success(granted)
                 } catch (e: CancellationException) {
                     pendingRequests.remove(requestCode)
-                    Result.Error(AppError.PermissionError.ShizukuPermissionRequestFailed(e.message ?: "Shizuku permission request failed"))
+                    Result.Error(
+                        AppError.PermissionError.ShizukuPermissionRequestFailed(
+                            e.message ?: "Shizuku permission request failed"
+                        )
+                    )
                 }
             }
         } catch (e: CancellationException) {
@@ -215,6 +219,7 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
                     FileAccessType.NONE
                 }
             }
+
             OSVersion.OS_13 -> {
                 var path1 = path
                 if (isUnderAppDataPath(path)) {
@@ -227,6 +232,7 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
                     else -> FileAccessType.NONE
                 }
             }
+
             OSVersion.OS_11 -> {
                 var path1 = path
                 if (isUnderDataPath(path)) {
@@ -239,6 +245,7 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
                     else -> FileAccessType.NONE
                 }
             }
+
             OSVersion.OS_6 -> FileAccessType.STANDARD_FILE
             OSVersion.OS_5 -> FileAccessType.NONE
         }
@@ -259,6 +266,7 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
                     path
                 }
             }
+
             OSVersion.OS_13 -> {
                 if (isUnderAppDataPath(path)) {
                     getAppDataPath(path)
@@ -266,6 +274,7 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
                     path
                 }
             }
+
             else -> path
         }
     }
@@ -273,10 +282,10 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
     override fun isUnderAppDataPath(path: String): Boolean {
         return if (path.contains("$rootPath/Android/data/")) {
             val appPath =
-                    path.replace("$rootPath/Android/data/", "")
-                            .split("/".toRegex())
-                            .dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[0]
+                path.replace("$rootPath/Android/data/", "")
+                    .split("/".toRegex())
+                    .dropLastWhile { it.isEmpty() }
+                    .toTypedArray()[0]
 
             //  Log.d(TAG, "检查是否是应用数据路径: $appPath")
             try {
@@ -294,10 +303,10 @@ constructor(@param:ApplicationContext private val context: Context) : Permission
 
     override fun getAppDataPath(path: String): String {
         val appPath =
-                path.replace("$rootPath/Android/data/", "")
-                        .split("/".toRegex())
-                        .dropLastWhile { it.isEmpty() }
-                        .toTypedArray()[0]
+            path.replace("$rootPath/Android/data/", "")
+                .split("/".toRegex())
+                .dropLastWhile { it.isEmpty() }
+                .toTypedArray()[0]
         return "$rootPath/Android/data/$appPath"
     }
 

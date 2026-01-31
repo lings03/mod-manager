@@ -11,12 +11,14 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement.Start
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,16 +26,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Surface
-import androidx.compose.ui.res.painterResource
-import java.io.File
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement.Start
-import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.filled.Close
@@ -54,11 +48,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,28 +62,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import top.laoxin.modmanager.R
-import top.laoxin.modmanager.ui.viewmodel.ModernModBrowserViewModel
-import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
 import top.laoxin.modmanager.ui.state.ModListFilter
-import top.laoxin.modmanager.ui.view.components.common.fuzzyContains
 import top.laoxin.modmanager.ui.theme.ExpressiveTextField
+import top.laoxin.modmanager.ui.view.components.common.fuzzyContains
 import top.laoxin.modmanager.ui.viewmodel.ModOperationViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModScanViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModSearchViewModel
+import top.laoxin.modmanager.ui.viewmodel.ModernModBrowserViewModel
+import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable*/
+        /*@OptIn(ExperimentalMaterial3Api::class)
+        @Composable*/
 fun ModernModTopBar(
     modListViewModel: ModernModListViewModel,
     modBrowserViewModel: ModernModBrowserViewModel,
@@ -100,7 +100,7 @@ fun ModernModTopBar(
     val modListUiState by modListViewModel.uiState.collectAsState()
     val isBrowser = modListUiState.isBrowser
     val isMultiSelect = modListUiState.isMultiSelect
-    
+
     val modSearchUiState by modSearchViewModel.uiState.collectAsState()
     val modOperationUiState by modOperationViewModel.uiState.collectAsState()
     val modBrowserUiState by modBrowserViewModel.uiState.collectAsState()
@@ -111,17 +111,17 @@ fun ModernModTopBar(
     val currentBrowserMods = modBrowserUiState.currentMods
     val modsSelected = modListUiState.modsSelected
     val filter = modListUiState.filter
-    
+
     val searchBoxVisible = modSearchUiState.searchBoxVisible
     val searchQuery = modSearchUiState.searchContent
-    
+
     // Shared Data Preparation
-    val currentMods = remember(isBrowser, filter, searchQuery, currentBrowserMods,modList) {
+    val currentMods = remember(isBrowser, filter, searchQuery, currentBrowserMods, modList) {
         Log.d("ModernModTopBar", "currentMods: $isBrowser, ${currentBrowserMods.size}")
         if (isBrowser) {
             currentBrowserMods
         } else {
-             when (filter) {
+            when (filter) {
                 ModListFilter.ALL -> modList
                 ModListFilter.ENABLE -> enableModList
                 ModListFilter.DISABLE -> disableModList
@@ -132,7 +132,7 @@ fun ModernModTopBar(
     val currentModList = remember(currentMods, searchQuery) {
         currentMods.filter { searchQuery.isBlank() || it.name.fuzzyContains(searchQuery) }
     }
-    
+
     // Determine Title Resource
     val titleRes = if (isBrowser) {
         R.string.mod_page_title_mods_browser
@@ -151,8 +151,8 @@ fun ModernModTopBar(
             modifier = modifier,
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = if (configuration == Configuration.ORIENTATION_LANDSCAPE)
-                        MaterialTheme.colorScheme.surface
-                    else MaterialTheme.colorScheme.surfaceContainer,
+                    MaterialTheme.colorScheme.surface
+                else MaterialTheme.colorScheme.surfaceContainer,
             ),
             navigationIcon = {
                 // Determine Navigation Icon: Back (Browser) vs None/Close (MultiSelect)
@@ -162,7 +162,7 @@ fun ModernModTopBar(
                 // Let's stick to General Mode logic for Nav Icon, as user said "left side fixed".
                 // If isMultiSelect, we probably shouldn't show "Back" even if isBrowser?
                 // Or maybe we treat MultiSelect as an overlay state?
-                
+
                 /* if (isBrowser && !isMultiSelect) {
                     ExpressiveButton(
                         onClick = { modListViewModel.onBackClick() },
@@ -176,7 +176,7 @@ fun ModernModTopBar(
                 }*/
             },
             title = {
-                 Box(
+                Box(
                     contentAlignment = Alignment.CenterStart,
                     modifier = if (isBrowser) Modifier.padding(start = 6.dp) else Modifier
                 ) {
@@ -187,8 +187,8 @@ fun ModernModTopBar(
                     Box {
                         Row(modifier = Modifier.padding(top = 40.dp)) {
                             val total = if (modsSelected.isNotEmpty())
-                                    "${modsSelected.size}/${currentModList.size}"
-                                else "${currentModList.size}"
+                                "${modsSelected.size}/${currentModList.size}"
+                            else "${currentModList.size}"
                             Text(
                                 text = stringResource(R.string.mod_top_bar_count, total),
                                 style = MaterialTheme.typography.labelMedium,
@@ -204,26 +204,38 @@ fun ModernModTopBar(
                     targetState = isMultiSelect,
                     transitionSpec = {
                         if (targetState) {
-                             // MultiSelect enters (Slide from right, Scale up)
-                            (slideInHorizontally { it } + 
-                             scaleIn(initialScale = 0.5f, transformOrigin = TransformOrigin(1f, 0.5f)) + 
-                             fadeIn()) togetherWith
-                            // General exits (Scale down to right)
-                            (scaleOut(targetScale = 0.5f, transformOrigin = TransformOrigin(1f, 0.5f)) + 
-                             fadeOut())
+                            // MultiSelect enters (Slide from right, Scale up)
+                            (slideInHorizontally { it } +
+                                    scaleIn(
+                                        initialScale = 0.5f,
+                                        transformOrigin = TransformOrigin(1f, 0.5f)
+                                    ) +
+                                    fadeIn()) togetherWith
+                                    // General exits (Scale down to right)
+                                    (scaleOut(
+                                        targetScale = 0.5f,
+                                        transformOrigin = TransformOrigin(1f, 0.5f)
+                                    ) +
+                                            fadeOut())
                         } else {
                             // General enters (Scale up from right)
-                             (scaleIn(initialScale = 0.5f, transformOrigin = TransformOrigin(1f, 0.5f)) + 
-                             fadeIn()) togetherWith
-                            // MultiSelect exits (Slide out to right, Scale down)
-                            (slideOutHorizontally { it } + 
-                             scaleOut(targetScale = 0.5f, transformOrigin = TransformOrigin(1f, 0.5f)) + 
-                             fadeOut())
+                            (scaleIn(
+                                initialScale = 0.5f,
+                                transformOrigin = TransformOrigin(1f, 0.5f)
+                            ) +
+                                    fadeIn()) togetherWith
+                                    // MultiSelect exits (Slide out to right, Scale down)
+                                    (slideOutHorizontally { it } +
+                                            scaleOut(
+                                                targetScale = 0.5f,
+                                                transformOrigin = TransformOrigin(1f, 0.5f)
+                                            ) +
+                                            fadeOut())
                         }
                     },
                     label = "TopBarActionsTransition"
                 ) { targetIsMultiSelect ->
-                     Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         if (targetIsMultiSelect) {
                             // Multi-Select Actions
                             IconButton(onClick = { modListViewModel.allSelect(currentModList) }) {
@@ -237,12 +249,14 @@ fun ModernModTopBar(
                                 modOperationViewModel.switchSelectMods(selectedMods, true)
                             }) { Icon(Icons.Default.FlashOn, "Enable") }
                             IconButton(onClick = {
-                                val selectedMods = modListViewModel.getSelectableModsForSwitch(false)
+                                val selectedMods =
+                                    modListViewModel.getSelectableModsForSwitch(false)
                                 modOperationViewModel.switchSelectMods(selectedMods, false)
                             }) { Icon(Icons.Filled.FlashOff, "Disable") }
                             IconButton(onClick = {
                                 modOperationViewModel.checkAndDeleteMods(
-                                    modsSelected.map { id -> modList.find { it.id == id } }.mapNotNull { it }
+                                    modsSelected.map { id -> modList.find { it.id == id } }
+                                        .mapNotNull { it }
                                 )
                             }) { Icon(Icons.Filled.Delete, "Delete") }
                             IconButton(onClick = { modListViewModel.exitSelect() }) {
@@ -271,7 +285,7 @@ fun ModernModTopBar(
                         }
                     }
                 }
-                
+
                 // Dropdown Menu (General Actions Only, strictly speaking, but hoisted out of AnimatedContent to avoid clipping issues if possible? 
                 // Typically Menu is anchored to button. If button animates out, menu might close. 
                 // Since this is only for General mode, we can keep it inside the if-else block OR
@@ -279,10 +293,13 @@ fun ModernModTopBar(
                 // Wait, DropdownMenu needs to be in composition tree.
                 // If I put it inside `AnimatedContent`, it will disappear when exiting general mode.
                 // That is correct.
-                
-                AnimatedVisibility(visible = showMenu && !isMultiSelect, modifier = Modifier.offset(y = 20.dp)) {
-                     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                         DropdownMenuItem(
+
+                AnimatedVisibility(
+                    visible = showMenu && !isMultiSelect,
+                    modifier = Modifier.offset(y = 20.dp)
+                ) {
+                    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+                        DropdownMenuItem(
                             text = { Text(stringResource(R.string.mod_page_dropdownMenu_show_enable_mods)) },
                             onClick = {
                                 if (isBrowser) modListViewModel.onNavigateToList()
@@ -313,7 +330,7 @@ fun ModernModTopBar(
                                 showMenu = false
                             }
                         )
-                     }
+                    }
                 }
             }
         )
@@ -334,21 +351,22 @@ fun ModernModTopBar(
 
         // Path Header (Only in Browser Mode)
         AnimatedVisibility(visible = isBrowser) {
-             val currentPath = modBrowserUiState.currentBrowsingPath ?: modBrowserUiState.currentGameModPath
-             val rootPath = modBrowserUiState.currentGameModPath
-             PathHeader(
-                 currentPath = currentPath, 
-                 rootPath = rootPath,
-                 onPathClick = { path -> modListViewModel.onNavigateToBrowser(path) },
-                 onBackClick = { modListViewModel.onBackClick() }
-             )
+            val currentPath =
+                modBrowserUiState.currentBrowsingPath ?: modBrowserUiState.currentGameModPath
+            val rootPath = modBrowserUiState.currentGameModPath
+            PathHeader(
+                currentPath = currentPath,
+                rootPath = rootPath,
+                onPathClick = { path -> modListViewModel.onNavigateToBrowser(path) },
+                onBackClick = { modListViewModel.onBackClick() }
+            )
         }
     }
 }
 
 @Composable
 private fun PathHeader(
-    currentPath: String, 
+    currentPath: String,
     rootPath: String,
     onPathClick: (String) -> Unit,
     onBackClick: () -> Unit
@@ -369,18 +387,19 @@ private fun PathHeader(
             val parts = relativePath.split('/', '\\').filter { it.isNotEmpty() }
             var accPath = rootPath
             parts.forEach { part ->
-                accPath = if (accPath.endsWith(File.separator)) accPath + part else accPath + File.separator + part
+                accPath =
+                    if (accPath.endsWith(File.separator)) accPath + part else accPath + File.separator + part
                 list.add(part to accPath)
             }
         }
         list
     }
-    
+
     // Auto-scroll to end
     val listState = rememberLazyListState()
     LaunchedEffect(breadcrumbs) {
         if (breadcrumbs.isNotEmpty()) {
-            listState.animateScrollToItem(breadcrumbs.size * 2) 
+            listState.animateScrollToItem(breadcrumbs.size * 2)
         }
     }
 
@@ -402,16 +421,16 @@ private fun PathHeader(
                     .clickable(enabled = !isRoot) { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
-                 Icon(
+                Icon(
                     painter = painterResource(id = R.drawable.folder_icon),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
-                
+
                 // Overlay "Return" Arrow if not root
                 if (!isRoot) {
-                     Icon(
+                    Icon(
                         imageVector = Icons.AutoMirrored.Filled.Reply, // U-shaped arrow
                         contentDescription = "Up",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -435,10 +454,13 @@ private fun PathHeader(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
-                                .clickable { 
-                                        android.util.Log.d("PathHeader", "Click on breadcrumb: name=$name, path=$path")
-                                        onPathClick(path) 
-                                    }
+                                .clickable {
+                                    android.util.Log.d(
+                                        "PathHeader",
+                                        "Click on breadcrumb: name=$name, path=$path"
+                                    )
+                                    onPathClick(path)
+                                }
                                 .padding(horizontal = 4.dp, vertical = 2.dp)
                         ) {
                             Text(
@@ -448,7 +470,7 @@ private fun PathHeader(
                                 maxLines = 1
                             )
                         }
-                        
+
                         // Separator if not last
                         if (index < breadcrumbs.size - 1) {
                             Text(
@@ -516,7 +538,8 @@ fun SearchBox(
         onValueChange = onValueChangeCallback,
         placeholder = { Text(text = hint, style = placeholderStyle) },
         modifier =
-            modifier.fillMaxWidth()
+            modifier
+                .fillMaxWidth()
                 .padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 10.dp)
                 .height(50.dp)
                 .focusRequester(focusRequester),

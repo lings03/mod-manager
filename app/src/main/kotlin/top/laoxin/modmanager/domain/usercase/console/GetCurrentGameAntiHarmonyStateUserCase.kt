@@ -14,7 +14,7 @@ class GetCurrentGameAntiHarmonyStateUserCase @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository
 ) {
     operator fun invoke(): Flow<AntiHarmonyBean?> {
-       return userPreferencesRepository.selectedGame.flatMapLatest {
+        return userPreferencesRepository.selectedGame.flatMapLatest {
             antiHarmonyRepository.getAntiHarmony(it.packageName)
         }
         //return antiHarmonyRepository.getAntiHarmony(userPreferencesRepository.selectedGameValue.packageName)

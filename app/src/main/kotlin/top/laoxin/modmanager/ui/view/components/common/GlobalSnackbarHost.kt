@@ -1,6 +1,5 @@
 package top.laoxin.modmanager.ui.view.components.common
 
-import androidx.compose.material3.SnackbarDuration as M3SnackbarDuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,14 +28,15 @@ import top.laoxin.modmanager.R
 import top.laoxin.modmanager.ui.state.SnackbarDuration
 import top.laoxin.modmanager.ui.state.SnackbarManager
 import top.laoxin.modmanager.ui.state.SnackbarMessage
+import androidx.compose.material3.SnackbarDuration as M3SnackbarDuration
 
 /** CompositionLocal 用于在 Compose 树中访问 SnackbarManager 主要用于需要在 Composable 函数中直接发送消息的场景 */
 val LocalSnackbarManager =
-        compositionLocalOf<SnackbarManager> {
-            error(
-                    "SnackbarManager not provided. Make sure to wrap your content with ProvideSnackbarHost."
-            )
-        }
+    compositionLocalOf<SnackbarManager> {
+        error(
+            "SnackbarManager not provided. Make sure to wrap your content with ProvideSnackbarHost."
+        )
+    }
 
 /**
  * 全局 Snackbar 宿主组件 监听 SnackbarManager 的消息流并显示 Snackbar
@@ -47,8 +47,8 @@ val LocalSnackbarManager =
 
 @Composable
 fun GlobalSnackbarHost(
-        snackbarManager: SnackbarManager,
-        snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    snackbarManager: SnackbarManager,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val context = LocalContext.current
 
@@ -61,29 +61,30 @@ fun GlobalSnackbarHost(
             // 这里不能使用 @Composable 的 stringResource 函数，因为它不在 Composable 上下文中。
             // 应该使用 context.getString()。
             val text =
-                    when (message) {
-                        is SnackbarMessage.Text -> message.message
+                when (message) {
+                    is SnackbarMessage.Text -> message.message
 
-                        is SnackbarMessage.Resource ->  context.getString(message.resId)
-                        is SnackbarMessage.ResourceWithArgs ->
-                                context.getString(message.resId, *message.formatArgs.toTypedArray())
-                        is SnackbarMessage.WithAction -> message.message
-                    }
+                    is SnackbarMessage.Resource -> context.getString(message.resId)
+                    is SnackbarMessage.ResourceWithArgs ->
+                        context.getString(message.resId, *message.formatArgs.toTypedArray())
+
+                    is SnackbarMessage.WithAction -> message.message
+                }
 
             val actionLabel =
-                    when (message) {
-                        is SnackbarMessage.WithAction -> message.actionLabel
-                        else -> null
-                    }
+                when (message) {
+                    is SnackbarMessage.WithAction -> message.actionLabel
+                    else -> null
+                }
 
             val duration = message.duration.toM3Duration()
 
             val result =
-                    snackbarHostState.showSnackbar(
-                            message = text,
-                            actionLabel = actionLabel,
-                            duration = duration
-                    )
+                snackbarHostState.showSnackbar(
+                    message = text,
+                    actionLabel = actionLabel,
+                    duration = duration
+                )
 
             // 处理操作按钮点击
             if (result == SnackbarResult.ActionPerformed && message is SnackbarMessage.WithAction) {

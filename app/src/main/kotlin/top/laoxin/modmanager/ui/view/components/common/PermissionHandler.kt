@@ -40,85 +40,85 @@ import top.laoxin.modmanager.ui.state.PermissionType
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun PermissionHandler(
-        permissionStateFlow: StateFlow<PermissionRequestState>,
-        onPermissionGranted: ( PermissionType) -> Unit,
-        onPermissionDenied: (PermissionType) -> Unit,
-        onRequestShizuku: () -> Unit,
-        isShizukuAvailable: Boolean = false
+    permissionStateFlow: StateFlow<PermissionRequestState>,
+    onPermissionGranted: (PermissionType) -> Unit,
+    onPermissionDenied: (PermissionType) -> Unit,
+    onRequestShizuku: () -> Unit,
+    isShizukuAvailable: Boolean = false
 ) {
-        val permissionState by permissionStateFlow.collectAsState()
-        val context = LocalContext.current
+    val permissionState by permissionStateFlow.collectAsState()
+    val context = LocalContext.current
 
-        // SAF 权限 launcher
-        val safLauncher =
-                rememberSAFPermissionLauncher(
-                        onPermissionGranted = { _ -> onPermissionGranted(permissionState.permissionType) },
-                        onPermissionDenied = { onPermissionDenied(permissionState.permissionType) }
-                )
-
-        // 全局存储权限 launcher
-        val storageLauncher =
-                rememberStoragePermissionLauncher(
-                        onPermissionGranted = { onPermissionGranted(permissionState.permissionType) },
-                        onPermissionDenied = { onPermissionDenied(permissionState.permissionType) }
-                )
-
-        // 通知权限 launcher
-        val notificationLauncher =
-                rememberNotificationPermissionLauncher(
-                        onPermissionGranted = { onPermissionGranted(permissionState.permissionType) },
-                        onPermissionDenied = { onPermissionDenied(permissionState.permissionType) }
-                )
-
-        // 显示权限对话框
-        PermissionRequestDialog(
-                state = permissionState,
-                osVersion = App.osVersion,
-                isShizukuAvailable = isShizukuAvailable,
-                onRequestSAF = { path ->
-                        val intent = createSAFIntent(path, context)
-                        safLauncher.launch(intent)
-                },
-                onRequestShizuku = { onRequestShizuku() },
-                onRequestStorage = {
-                        val intent = createStoragePermissionIntent(context)
-                        storageLauncher.launch(intent)
-                },
-                onRequestNotification = {
-                        val intent = createNotificationSettingsIntent(context)
-                        notificationLauncher.launch(intent)
-                },
-                onDismiss = { onPermissionDenied(permissionState.permissionType) }
+    // SAF 权限 launcher
+    val safLauncher =
+        rememberSAFPermissionLauncher(
+            onPermissionGranted = { _ -> onPermissionGranted(permissionState.permissionType) },
+            onPermissionDenied = { onPermissionDenied(permissionState.permissionType) }
         )
+
+    // 全局存储权限 launcher
+    val storageLauncher =
+        rememberStoragePermissionLauncher(
+            onPermissionGranted = { onPermissionGranted(permissionState.permissionType) },
+            onPermissionDenied = { onPermissionDenied(permissionState.permissionType) }
+        )
+
+    // 通知权限 launcher
+    val notificationLauncher =
+        rememberNotificationPermissionLauncher(
+            onPermissionGranted = { onPermissionGranted(permissionState.permissionType) },
+            onPermissionDenied = { onPermissionDenied(permissionState.permissionType) }
+        )
+
+    // 显示权限对话框
+    PermissionRequestDialog(
+        state = permissionState,
+        osVersion = App.osVersion,
+        isShizukuAvailable = isShizukuAvailable,
+        onRequestSAF = { path ->
+            val intent = createSAFIntent(path, context)
+            safLauncher.launch(intent)
+        },
+        onRequestShizuku = { onRequestShizuku() },
+        onRequestStorage = {
+            val intent = createStoragePermissionIntent(context)
+            storageLauncher.launch(intent)
+        },
+        onRequestNotification = {
+            val intent = createNotificationSettingsIntent(context)
+            notificationLauncher.launch(intent)
+        },
+        onDismiss = { onPermissionDenied(permissionState.permissionType) }
+    )
 }
 
 /** 简化版权限处理器 用于只需要 SAF 权限的简单场景 */
 @Composable
 fun SimpleSAFPermissionHandler(
-        showDialog: Boolean,
-        requestPath: String,
-        onPermissionGranted: (Uri) -> Unit,
-        onPermissionDenied: () -> Unit
+    showDialog: Boolean,
+    requestPath: String,
+    onPermissionGranted: (Uri) -> Unit,
+    onPermissionDenied: () -> Unit
 ) {
-        val context = LocalContext.current
+    val context = LocalContext.current
 
-        val safLauncher =
-                rememberSAFPermissionLauncher(
-                        onPermissionGranted = onPermissionGranted,
-                        onPermissionDenied = onPermissionDenied
-                )
+    val safLauncher =
+        rememberSAFPermissionLauncher(
+            onPermissionGranted = onPermissionGranted,
+            onPermissionDenied = onPermissionDenied
+        )
 
-        if (showDialog) {
-                SAFOrShizukuPermissionDialog(
-                        requestPath = requestPath,
-                        osVersion = App.osVersion,
-                        isShizukuAvailable = false,
-                        onRequestSAF = { path ->
-                                val intent = createSAFIntent(path, context)
-                                safLauncher.launch(intent)
-                        },
-                        onRequestShizuku = { /* 不支持 */},
-                        onDismiss = onPermissionDenied
-                )
-        }
+    if (showDialog) {
+        SAFOrShizukuPermissionDialog(
+            requestPath = requestPath,
+            osVersion = App.osVersion,
+            isShizukuAvailable = false,
+            onRequestSAF = { path ->
+                val intent = createSAFIntent(path, context)
+                safLauncher.launch(intent)
+            },
+            onRequestShizuku = { /* 不支持 */ },
+            onDismiss = onPermissionDenied
+        )
+    }
 }

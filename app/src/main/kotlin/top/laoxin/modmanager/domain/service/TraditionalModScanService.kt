@@ -17,9 +17,9 @@ interface TraditionalModScanService {
      * @return 识别到的 MOD 列表
      */
     suspend fun scanArchive(
-            archivePath: String,
-            gameInfo: GameInfoBean,
-            gameFilesByDir: Map<String, Set<String>>? = null
+        archivePath: String,
+        gameInfo: GameInfoBean,
+        gameFilesByDir: Map<String, Set<String>>? = null
     ): Result<List<ModBean>>
 
     /**
@@ -30,9 +30,9 @@ interface TraditionalModScanService {
      * @return 扫描事件 Flow
      */
     fun scanArchiveWithProgress(
-            archivePath: String,
-            gameInfo: GameInfoBean,
-            gameFilesByDir: Map<String, Set<String>>? = null
+        archivePath: String,
+        gameInfo: GameInfoBean,
+        gameFilesByDir: Map<String, Set<String>>? = null
     ): Flow<ScanEvent>
 
     /**
@@ -43,9 +43,9 @@ interface TraditionalModScanService {
      * @return 识别到的 MOD 列表
      */
     suspend fun scanDirectoryMod(
-            folderPath: String,
-            gameInfo: GameInfoBean,
-            gameFilesByDir: Map<String, Set<String>>? = null
+        folderPath: String,
+        gameInfo: GameInfoBean,
+        gameFilesByDir: Map<String, Set<String>>? = null
     ): Result<List<ModBean>>
 
     /**
@@ -56,9 +56,9 @@ interface TraditionalModScanService {
      * @return 扫描事件 Flow
      */
     fun scanDirectoryModWithProgress(
-            folderPath: String,
-            gameInfo: GameInfoBean,
-            gameFilesByDir: Map<String, Set<String>>? = null
+        folderPath: String,
+        gameInfo: GameInfoBean,
+        gameFilesByDir: Map<String, Set<String>>? = null
     ): Flow<ScanEvent>
 
     /**

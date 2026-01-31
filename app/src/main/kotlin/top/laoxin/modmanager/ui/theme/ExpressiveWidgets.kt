@@ -51,7 +51,7 @@ fun ExpressiveCircularProgressIndicator(
         animationSpec = MotionSpec.emphasized,
         label = "progressAnimation"
     )
-    
+
     CircularProgressIndicator(
         progress = { animatedProgress },
         modifier = modifier.size(56.dp),

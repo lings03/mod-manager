@@ -1,8 +1,6 @@
 package top.laoxin.modmanager.domain.usercase.mod
 
 import android.util.Log
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -12,6 +10,8 @@ import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.repository.ModRepository
 import top.laoxin.modmanager.domain.service.FileService
 import top.laoxin.modmanager.domain.service.PermissionService
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** 批量删除 MOD 用例 负责权限检查、整合包判断、已启用跳过、物理文件删除、数据库清理 */
 @Singleton
@@ -35,248 +35,255 @@ constructor(
      * @param deleteIntegratedPackage 是否删除整合包（一个物理文件包含多个MOD）
      * @return Flow<DeleteState> 删除状态流
      */
-    fun execute(modToDelete: List<ModBean>, deleteIntegratedPackage: Boolean): Flow<DeleteState> = flow {
-        isCanceled = false
-        // 从数据库查询最新的mod
-        val mods = modToDelete.mapNotNull { modRepository.getModById(it.id) }
-        if (mods.size != modToDelete.size) {
-            Log.w(TAG, "部分 MOD 不存在，预期 ${modToDelete.size} 个，实际找到 ${mods.size} 个")
-        }
-        if (mods.isEmpty()) {
-            emit(
-                DeleteState.Success(
-                    DeleteResult(
-                        deletedMods = emptyList(),
-                        deletedEnabledMods = emptyList(),
-                        skippedIntegratedMods = emptyList(),
-                        failedMods = emptyList()
+    fun execute(modToDelete: List<ModBean>, deleteIntegratedPackage: Boolean): Flow<DeleteState> =
+        flow {
+            isCanceled = false
+            // 从数据库查询最新的mod
+            val mods = modToDelete.mapNotNull { modRepository.getModById(it.id) }
+            if (mods.size != modToDelete.size) {
+                Log.w(TAG, "部分 MOD 不存在，预期 ${modToDelete.size} 个，实际找到 ${mods.size} 个")
+            }
+            if (mods.isEmpty()) {
+                emit(
+                    DeleteState.Success(
+                        DeleteResult(
+                            deletedMods = emptyList(),
+                            deletedEnabledMods = emptyList(),
+                            skippedIntegratedMods = emptyList(),
+                            failedMods = emptyList()
+                        )
                     )
                 )
+                return@flow
+            }
+
+            // Step 1: 鉴权
+            emit(
+                DeleteState.Progress(
+                    step = DeleteStep.AUTHENTICATING,
+                    modName = "",
+                    progress = 0f,
+                    current = 0,
+                    total = mods.size
+                )
             )
-            return@flow
-        }
 
-        // Step 1: 鉴权
-        emit(
-            DeleteState.Progress(
-                step = DeleteStep.AUTHENTICATING,
-                modName = "",
-                progress = 0f,
-                current = 0,
-                total = mods.size
-            )
-        )
+            if (!permissionService.hasStoragePermission()) {
+                emit(DeleteState.Error(AppError.PermissionError.StoragePermissionDenied))
+                return@flow
+            }
 
-        if (!permissionService.hasStoragePermission()) {
-            emit(DeleteState.Error(AppError.PermissionError.StoragePermissionDenied))
-            return@flow
-        }
-
-        if (isCanceled) {
-            emit(DeleteState.Cancel)
-            return@flow
-        }
-
-        // Step 2: 收集所有MOD的物理路径并去重
-        emit(
-            DeleteState.Progress(
-                step = DeleteStep.COLLECTING_PATHS,
-                modName = "",
-                progress = 0.1f,
-                current = 0,
-                total = mods.size
-            )
-        )
-
-        val distinctPaths = mods.map { it.path }.distinct()
-        Log.d(TAG, "收集到 ${distinctPaths.size} 个不同路径")
-
-        if (isCanceled) {
-            emit(DeleteState.Cancel)
-            return@flow
-        }
-
-        // Step 3: 查询每个路径下的所有MOD，进行筛选
-        emit(
-            DeleteState.Progress(
-                step = DeleteStep.FILTERING,
-                modName = "",
-                progress = 0.2f,
-                current = 0,
-                total = mods.size
-            )
-        )
-
-        val skippedIntegratedMods = mutableListOf<ModBean>()
-        val modsToDelete = mutableListOf<ModBean>() // 未开启的MOD，删除后清理数据库
-        val enabledModsToDelete = mutableListOf<ModBean>() // 已开启的MOD，删除物理文件但保留数据库
-        val pathsToDelete = mutableSetOf<String>() // 需要删除的物理文件路径
-
-        // 按路径分组选中的MOD
-        val selectedModsByPath = mods.groupBy { it.path }
-
-        for (path in distinctPaths) {
             if (isCanceled) {
                 emit(DeleteState.Cancel)
                 return@flow
             }
 
-            // 查询该路径下所有的MOD
-            val allModsAtPath = modRepository.getModsByPath(path).first()
-            val selectedModsAtPath = selectedModsByPath[path] ?: emptyList()
-
-            Log.d(
-                TAG,
-                "路径 $path 下共有 ${allModsAtPath.size} 个MOD, 选中 ${selectedModsAtPath.size} 个"
+            // Step 2: 收集所有MOD的物理路径并去重
+            emit(
+                DeleteState.Progress(
+                    step = DeleteStep.COLLECTING_PATHS,
+                    modName = "",
+                    progress = 0.1f,
+                    current = 0,
+                    total = mods.size
+                )
             )
 
-            // 判断是否为整合包（路径下有多个MOD）
-            val isIntegratedPackage = allModsAtPath.size > 1
+            val distinctPaths = mods.map { it.path }.distinct()
+            Log.d(TAG, "收集到 ${distinctPaths.size} 个不同路径")
 
-            for (mod in selectedModsAtPath) {
-                when {
-                    // 整合包处理：如果不删除整合包则跳过
-                    isIntegratedPackage && !deleteIntegratedPackage -> {
-                        skippedIntegratedMods.add(mod)
-                        Log.d(TAG, "跳过整合包MOD: ${mod.name}")
-                    }
-                    // 已启用的MOD：删除物理文件但不清理数据库
-                    mod.isEnable -> {
-                        enabledModsToDelete.add(mod)
-                        pathsToDelete.add(path)
-                        Log.d(TAG, "已启用的MOD将被删除(保留数据库): ${mod.name}")
-                    }
-                    // 未启用的MOD：删除物理文件并清理数据库
-                    else -> {
-                        modsToDelete.add(mod)
-                        pathsToDelete.add(path)
-                    }
-                }
+            if (isCanceled) {
+                emit(DeleteState.Cancel)
+                return@flow
             }
 
-            // 如果是整合包且选择删除整合包，需要添加该路径下所有MOD
-            if (isIntegratedPackage && deleteIntegratedPackage) {
-                for (mod in allModsAtPath) {
-                    if (!selectedModsAtPath.contains(mod)) {
-                        if (mod.isEnable) {
-                            if (!enabledModsToDelete.contains(mod)) {
-                                enabledModsToDelete.add(mod)
-                            }
-                        } else if (!modsToDelete.contains(mod)) {
+            // Step 3: 查询每个路径下的所有MOD，进行筛选
+            emit(
+                DeleteState.Progress(
+                    step = DeleteStep.FILTERING,
+                    modName = "",
+                    progress = 0.2f,
+                    current = 0,
+                    total = mods.size
+                )
+            )
+
+            val skippedIntegratedMods = mutableListOf<ModBean>()
+            val modsToDelete = mutableListOf<ModBean>() // 未开启的MOD，删除后清理数据库
+            val enabledModsToDelete = mutableListOf<ModBean>() // 已开启的MOD，删除物理文件但保留数据库
+            val pathsToDelete = mutableSetOf<String>() // 需要删除的物理文件路径
+
+            // 按路径分组选中的MOD
+            val selectedModsByPath = mods.groupBy { it.path }
+
+            for (path in distinctPaths) {
+                if (isCanceled) {
+                    emit(DeleteState.Cancel)
+                    return@flow
+                }
+
+                // 查询该路径下所有的MOD
+                val allModsAtPath = modRepository.getModsByPath(path).first()
+                val selectedModsAtPath = selectedModsByPath[path] ?: emptyList()
+
+                Log.d(
+                    TAG,
+                    "路径 $path 下共有 ${allModsAtPath.size} 个MOD, 选中 ${selectedModsAtPath.size} 个"
+                )
+
+                // 判断是否为整合包（路径下有多个MOD）
+                val isIntegratedPackage = allModsAtPath.size > 1
+
+                for (mod in selectedModsAtPath) {
+                    when {
+                        // 整合包处理：如果不删除整合包则跳过
+                        isIntegratedPackage && !deleteIntegratedPackage -> {
+                            skippedIntegratedMods.add(mod)
+                            Log.d(TAG, "跳过整合包MOD: ${mod.name}")
+                        }
+                        // 已启用的MOD：删除物理文件但不清理数据库
+                        mod.isEnable -> {
+                            enabledModsToDelete.add(mod)
+                            pathsToDelete.add(path)
+                            Log.d(TAG, "已启用的MOD将被删除(保留数据库): ${mod.name}")
+                        }
+                        // 未启用的MOD：删除物理文件并清理数据库
+                        else -> {
                             modsToDelete.add(mod)
+                            pathsToDelete.add(path)
+                        }
+                    }
+                }
+
+                // 如果是整合包且选择删除整合包，需要添加该路径下所有MOD
+                if (isIntegratedPackage && deleteIntegratedPackage) {
+                    for (mod in allModsAtPath) {
+                        if (!selectedModsAtPath.contains(mod)) {
+                            if (mod.isEnable) {
+                                if (!enabledModsToDelete.contains(mod)) {
+                                    enabledModsToDelete.add(mod)
+                                }
+                            } else if (!modsToDelete.contains(mod)) {
+                                modsToDelete.add(mod)
+                            }
                         }
                     }
                 }
             }
-        }
 
-        Log.d(
-            TAG,
-            "待删除MOD: ${modsToDelete.size}, 已启用待删除: ${enabledModsToDelete.size}, 跳过整合包: ${skippedIntegratedMods.size}"
-        )
+            Log.d(
+                TAG,
+                "待删除MOD: ${modsToDelete.size}, 已启用待删除: ${enabledModsToDelete.size}, 跳过整合包: ${skippedIntegratedMods.size}"
+            )
 
-        if (modsToDelete.isEmpty() && enabledModsToDelete.isEmpty()) {
-            emit(
-                DeleteState.Success(
-                    DeleteResult(
-                        deletedMods = emptyList(),
-                        deletedEnabledMods = emptyList(),
-                        skippedIntegratedMods = skippedIntegratedMods,
-                        failedMods = emptyList()
+            if (modsToDelete.isEmpty() && enabledModsToDelete.isEmpty()) {
+                emit(
+                    DeleteState.Success(
+                        DeleteResult(
+                            deletedMods = emptyList(),
+                            deletedEnabledMods = emptyList(),
+                            skippedIntegratedMods = skippedIntegratedMods,
+                            failedMods = emptyList()
+                        )
                     )
                 )
-            )
-            return@flow
-        }
-
-        // Step 4: 执行删除
-        val deletedMods = mutableListOf<ModBean>()
-        val deletedEnabledMods = mutableListOf<ModBean>()
-        val failedMods = mutableListOf<Pair<ModBean, AppError>>()
-
-        // 合并所有需要删除物理文件的MOD
-        val allModsToDeletePhysically = modsToDelete + enabledModsToDelete
-
-        // 按路径分组，每个路径只删除一次物理文件
-        val modsGroupedByPath = allModsToDeletePhysically.groupBy { it.path }
-        var deletedCount = 0
-        val totalToDelete = allModsToDeletePhysically.size
-
-        for ((path, modsAtPath) in modsGroupedByPath) {
-            if (isCanceled) {
-                emit(DeleteState.Cancel)
                 return@flow
             }
 
+            // Step 4: 执行删除
+            val deletedMods = mutableListOf<ModBean>()
+            val deletedEnabledMods = mutableListOf<ModBean>()
+            val failedMods = mutableListOf<Pair<ModBean, AppError>>()
+
+            // 合并所有需要删除物理文件的MOD
+            val allModsToDeletePhysically = modsToDelete + enabledModsToDelete
+
+            // 按路径分组，每个路径只删除一次物理文件
+            val modsGroupedByPath = allModsToDeletePhysically.groupBy { it.path }
+            var deletedCount = 0
+            val totalToDelete = allModsToDeletePhysically.size
+
+            for ((path, modsAtPath) in modsGroupedByPath) {
+                if (isCanceled) {
+                    emit(DeleteState.Cancel)
+                    return@flow
+                }
+
+                emit(
+                    DeleteState.Progress(
+                        step = DeleteStep.DELETING,
+                        modName = modsAtPath.firstOrNull()?.name ?: "",
+                        progress = 0.3f + 0.6f * (deletedCount.toFloat() / totalToDelete),
+                        current = deletedCount,
+                        total = totalToDelete
+                    )
+                )
+
+                when (val deleteResult = fileService.deleteFile(path)) {
+                    is Result.Success -> {
+                        // 物理文件删除成功
+                        // 分离已启用和未启用的MOD
+                        val enabledMods = modsAtPath.filter { it.isEnable }
+                        val disabledMods = modsAtPath.filter { !it.isEnable }
+
+                        // 未启用的MOD：删除数据库记录
+                        if (disabledMods.isNotEmpty()) {
+                            try {
+                                modRepository.deleteAll(disabledMods)
+                                deletedMods.addAll(disabledMods)
+                                Log.d(
+                                    TAG,
+                                    "成功删除路径: $path, 未启用MOD数量: ${disabledMods.size}"
+                                )
+                            } catch (e: Exception) {
+                                Log.e(TAG, "删除数据库记录失败: $path", e)
+                                disabledMods.forEach { mod ->
+                                    failedMods.add(mod to AppError.DatabaseError.DeleteFailed)
+                                }
+                            }
+                        }
+
+                        // 已启用的MOD：保留数据库记录，只记录到已删除列表
+                        if (enabledMods.isNotEmpty()) {
+                            deletedEnabledMods.addAll(enabledMods)
+                            Log.d(
+                                TAG,
+                                "成功删除路径: $path, 已启用MOD数量: ${enabledMods.size} (保留数据库)"
+                            )
+                        }
+                    }
+
+                    is Result.Error -> {
+                        Log.e(TAG, "删除物理文件失败: $path, 错误: ${deleteResult.error}")
+                        modsAtPath.forEach { mod -> failedMods.add(mod to deleteResult.error) }
+                    }
+                }
+
+                deletedCount += modsAtPath.size
+            }
+
+            // Step 5: 完成
             emit(
                 DeleteState.Progress(
-                    step = DeleteStep.DELETING,
-                    modName = modsAtPath.firstOrNull()?.name ?: "",
-                    progress = 0.3f + 0.6f * (deletedCount.toFloat() / totalToDelete),
+                    step = DeleteStep.COMPLETED,
+                    modName = "",
+                    progress = 1f,
                     current = deletedCount,
                     total = totalToDelete
                 )
             )
 
-            when (val deleteResult = fileService.deleteFile(path)) {
-                is Result.Success -> {
-                    // 物理文件删除成功
-                    // 分离已启用和未启用的MOD
-                    val enabledMods = modsAtPath.filter { it.isEnable }
-                    val disabledMods = modsAtPath.filter { !it.isEnable }
-
-                    // 未启用的MOD：删除数据库记录
-                    if (disabledMods.isNotEmpty()) {
-                        try {
-                            modRepository.deleteAll(disabledMods)
-                            deletedMods.addAll(disabledMods)
-                            Log.d(TAG, "成功删除路径: $path, 未启用MOD数量: ${disabledMods.size}")
-                        } catch (e: Exception) {
-                            Log.e(TAG, "删除数据库记录失败: $path", e)
-                            disabledMods.forEach { mod ->
-                                failedMods.add(mod to AppError.DatabaseError.DeleteFailed)
-                            }
-                        }
-                    }
-
-                    // 已启用的MOD：保留数据库记录，只记录到已删除列表
-                    if (enabledMods.isNotEmpty()) {
-                        deletedEnabledMods.addAll(enabledMods)
-                        Log.d(TAG, "成功删除路径: $path, 已启用MOD数量: ${enabledMods.size} (保留数据库)")
-                    }
-                }
-
-                is Result.Error -> {
-                    Log.e(TAG, "删除物理文件失败: $path, 错误: ${deleteResult.error}")
-                    modsAtPath.forEach { mod -> failedMods.add(mod to deleteResult.error) }
-                }
-            }
-
-            deletedCount += modsAtPath.size
-        }
-
-        // Step 5: 完成
-        emit(
-            DeleteState.Progress(
-                step = DeleteStep.COMPLETED,
-                modName = "",
-                progress = 1f,
-                current = deletedCount,
-                total = totalToDelete
-            )
-        )
-
-        emit(
-            DeleteState.Success(
-                DeleteResult(
-                    deletedMods = deletedMods,
-                    deletedEnabledMods = deletedEnabledMods,
-                    skippedIntegratedMods = skippedIntegratedMods,
-                    failedMods = failedMods
+            emit(
+                DeleteState.Success(
+                    DeleteResult(
+                        deletedMods = deletedMods,
+                        deletedEnabledMods = deletedEnabledMods,
+                        skippedIntegratedMods = skippedIntegratedMods,
+                        failedMods = failedMods
+                    )
                 )
             )
-        )
-    }
+        }
 
     /**
      * 删除前检查 检测待删除MOD中是否包含整合包，返回整合包信息用于用户确认
@@ -426,7 +433,8 @@ data class DeleteCheckResult(
 
     /** 所有检查结果已启用MOD */
     val allEnabledMods: List<ModBean>
-        get() = integratedPackages.flatMap { it.enabledMods }.distinctBy { it.id } + singleEnabledMods
+        get() = integratedPackages.flatMap { it.enabledMods }
+            .distinctBy { it.id } + singleEnabledMods
 }
 
 /** 整合包信息 */

@@ -16,7 +16,8 @@ interface BackupDao {
     suspend fun insert(backupBean: BackupBean)
 
     // 获取所有数据
-    @Query("SELECT * from backups") fun getAll(): List<BackupBean>
+    @Query("SELECT * from backups")
+    fun getAll(): List<BackupBean>
 
     @Query("SELECT * from backups WHERE modId = :modId")
     fun getByModId(modId: Int): Flow<List<BackupBean>>
@@ -24,7 +25,8 @@ interface BackupDao {
     @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
     suspend fun insertAll(backups: List<BackupBean>)
 
-    @Query("DELETE FROM backups") fun deleteAll()
+    @Query("DELETE FROM backups")
+    fun deleteAll()
 
     // 通过gamePackageName删除
     @Query("DELETE FROM backups WHERE gamePackageName = :gamePackageName")
@@ -39,7 +41,8 @@ interface BackupDao {
     suspend fun getByModIdSync(modId: Int): List<BackupBean>
 
     // 通过modId删除backups
-    @Query("DELETE FROM backups WHERE modId = :modId") suspend fun deleteByModId(modId: Int)
+    @Query("DELETE FROM backups WHERE modId = :modId")
+    suspend fun deleteByModId(modId: Int)
 
     // ==================== MD5 校验相关 ====================
 
@@ -52,11 +55,12 @@ interface BackupDao {
     suspend fun getByModIdAndGameFilePath(modId: Int, gameFilePath: String): BackupBean?
 
     // 更新备份记录
-    @Update suspend fun update(backup: BackupBean)
+    @Update
+    suspend fun update(backup: BackupBean)
 
     // 通过 gameFilePath 更新所有 originalMd5（游戏更新后批量更新）
     @Query(
-            "UPDATE backups SET originalMd5 = :md5, backupTime = :backupTime WHERE gameFilePath = :gameFilePath"
+        "UPDATE backups SET originalMd5 = :md5, backupTime = :backupTime WHERE gameFilePath = :gameFilePath"
     )
     suspend fun updateOriginalMd5ByGameFilePath(gameFilePath: String, md5: String, backupTime: Long)
 

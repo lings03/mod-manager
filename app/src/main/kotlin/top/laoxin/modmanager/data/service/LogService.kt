@@ -7,6 +7,8 @@ import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import top.laoxin.modmanager.R
+import top.laoxin.modmanager.constant.PathConstants
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -18,8 +20,6 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
-import top.laoxin.modmanager.R
-import top.laoxin.modmanager.constant.PathConstants
 
 /** 日志服务 封装日志记录和 logcat 捕获功能 */
 @Singleton
@@ -46,7 +46,10 @@ class LogService @Inject constructor(@param:ApplicationContext private val conte
      * @param path 日志目录路径
      */
     suspend fun setLogPath(path: String) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "setLogPath path: $path 更目录：${context.getExternalFilesDir(null)?.absolutePath}")
+        Log.d(
+            TAG,
+            "setLogPath path: $path 更目录：${context.getExternalFilesDir(null)?.absolutePath}"
+        )
         try {
             if (path.isEmpty()) {
                 Log.e(TAG, context.getString(R.string.log_path_empty))
@@ -103,7 +106,7 @@ class LogService @Inject constructor(@param:ApplicationContext private val conte
                 logFile.delete()
             }
             logFile.createNewFile()
-            Log.e(TAG, "logcat 文件路径：${logFile.path}", )
+            Log.e(TAG, "logcat 文件路径：${logFile.path}")
 
             if (logcatExecutor == null || logcatExecutor?.isShutdown == true) {
                 logcatExecutor = Executors.newSingleThreadExecutor()
@@ -114,7 +117,7 @@ class LogService @Inject constructor(@param:ApplicationContext private val conte
                 var writer: BufferedWriter? = null
                 try {
                     logcatProcess =
-                            Runtime.getRuntime().exec(arrayOf("logcat", "-v", "time", "*:V"))
+                        Runtime.getRuntime().exec(arrayOf("logcat", "-v", "time", "*:V"))
 
                     val reader = InputStreamReader(logcatProcess?.inputStream)
                     writer = BufferedWriter(FileWriter(logFile, true), 8192)
@@ -157,7 +160,8 @@ class LogService @Inject constructor(@param:ApplicationContext private val conte
             logcatProcess?.destroy()
             logcatExecutor?.shutdown()
             logcatExecutor?.awaitTermination(2, TimeUnit.SECONDS)
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     /**
@@ -191,8 +195,8 @@ class LogService @Inject constructor(@param:ApplicationContext private val conte
                 }
 
                 val currentDateAndTime =
-                        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                                .format(Calendar.getInstance().time)
+                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                        .format(Calendar.getInstance().time)
 
                 val logWithDateAndTime = "$currentDateAndTime: $log\n"
 
@@ -200,7 +204,8 @@ class LogService @Inject constructor(@param:ApplicationContext private val conte
                     writer.write(logWithDateAndTime)
                     writer.flush()
                 }
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -212,7 +217,8 @@ class LogService @Inject constructor(@param:ApplicationContext private val conte
             if (logRecordExecutor?.awaitTermination(1, TimeUnit.SECONDS) == false) {
                 logRecordExecutor?.shutdownNow()
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     /** 刷新所有待写入的日志 */

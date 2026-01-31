@@ -41,6 +41,7 @@ enum class EnableStep {
     SPECIAL_PROCESS, // 特殊处理
     UPDATING_DB, // 更新数据库
     COMPLETE, // 完成
+
     // 取消中
     CANCELING,
 }
@@ -49,14 +50,14 @@ enum class EnableStep {
 sealed class EnableFileEvent {
     /** 文件进度 */
     data class FileProgress(val fileName: String, val current: Int, val total: Int) :
-            EnableFileEvent()
+        EnableFileEvent()
 
     /** 单个 MOD 完成 */
     data class Complete(
-            val success: Boolean,
-            val error: AppError? = null,
-            /** 替换文件的 MD5 映射: gameFilePath -> md5 */
-            val fileMd5Map: Map<String, String> = emptyMap()
+        val success: Boolean,
+        val error: AppError? = null,
+        /** 替换文件的 MD5 映射: gameFilePath -> md5 */
+        val fileMd5Map: Map<String, String> = emptyMap()
     ) : EnableFileEvent()
 }
 

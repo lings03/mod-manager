@@ -1,13 +1,12 @@
 package top.laoxin.modmanager.data.service.filetools
 
-import javax.inject.Inject
-import javax.inject.Singleton
 import top.laoxin.modmanager.constant.FileAccessType
 import top.laoxin.modmanager.data.service.filetools.impl.DocumentFileTools
 import top.laoxin.modmanager.data.service.filetools.impl.FileTools
 import top.laoxin.modmanager.data.service.filetools.impl.ShizukuFileTools
-
 import top.laoxin.modmanager.domain.service.PermissionService
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class FileToolsManager
@@ -29,6 +28,7 @@ constructor(
             FileAccessType.NONE -> null
         }
     }
+
     /**
      * 通过源文件路径和目标文件路径获取对应的文件工具 权限优先级: SHIZUKU > DOCUMENT_FILE > STANDARD_FILE
      * - 如果任一路径需要 SHIZUKU 权限，则使用 ShizukuFileTools
@@ -54,7 +54,7 @@ constructor(
 
         // 如果任一需要 DOCUMENT_FILE，使用 DocumentFileTools
         if (srcAccessType == FileAccessType.DOCUMENT_FILE ||
-                        destAccessType == FileAccessType.DOCUMENT_FILE
+            destAccessType == FileAccessType.DOCUMENT_FILE
         ) {
             return documentFileTools
         }
@@ -62,6 +62,7 @@ constructor(
         // 都是 STANDARD_FILE
         return fileTools
     }
+
     /*
     获取文件访问类型 */
     fun getFileAccessType(path: String): FileAccessType {

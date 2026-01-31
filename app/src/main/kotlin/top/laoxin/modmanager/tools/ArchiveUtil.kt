@@ -1,14 +1,6 @@
 package top.laoxin.modmanager.tools
 
 import android.util.Log
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.RandomAccessFile
-import java.nio.charset.Charset
 import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.model.FileHeader
 import net.lingala.zip4j.progress.ProgressMonitor
@@ -23,6 +15,14 @@ import net.sf.sevenzipjbinding.SevenZip
 import net.sf.sevenzipjbinding.SevenZipException
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream
 import top.laoxin.modmanager.constant.ArchiveFileType
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.RandomAccessFile
+import java.nio.charset.Charset
 
 object ArchiveUtil {
     const val TAG = "ArchiveUtil"
@@ -30,11 +30,11 @@ object ArchiveUtil {
 
     // 带密码解压
     fun decompression(
-            srcFile: String,
-            destDir: String,
-            password: String?,
-            overwrite: Boolean = false,
-            onProgress: (progress: Int) -> Unit
+        srcFile: String,
+        destDir: String,
+        password: String?,
+        overwrite: Boolean = false,
+        onProgress: (progress: Int) -> Unit
     ): Boolean {
         return when (getFileType(File(srcFile))) {
             ArchiveFileType.ZIP -> {
@@ -45,20 +45,22 @@ object ArchiveUtil {
                     extractZip(srcFile, destDir, password, overwrite, onProgress)
                 }
             }
+
             ArchiveFileType._7z, ArchiveFileType.RAR -> {
                 decompressionBy7z(srcFile, destDir, password, overwrite, onProgress)
             }
+
             else -> false
         }
     }
 
     // 无密码解压指定文件
     fun extractSpecificFile(
-            srcFile: String,
-            files: List<String>,
-            destDir: String,
-            overwrite: Boolean = false,
-            onProgress: (progress: Int) -> Unit
+        srcFile: String,
+        files: List<String>,
+        destDir: String,
+        overwrite: Boolean = false,
+        onProgress: (progress: Int) -> Unit
     ): Boolean {
         // 判断压缩文件类型`
         return extractSpecificFile(srcFile, files, destDir, null, overwrite, onProgress)
@@ -66,25 +68,34 @@ object ArchiveUtil {
 
     // 有密码解压指定文件
     fun extractSpecificFile(
-            srcFile: String,
-            files: List<String>,
-            destDir: String,
-            password: String?,
-            overwrite: Boolean = false,
-            onProgress: (progress: Int) -> Unit
+        srcFile: String,
+        files: List<String>,
+        destDir: String,
+        password: String?,
+        overwrite: Boolean = false,
+        onProgress: (progress: Int) -> Unit
     ): Boolean {
         return when (getFileType(File(srcFile))) {
             ArchiveFileType.ZIP -> {
                 // 有密码时使用 7z 库处理（解决中文密码兼容性问题）
                 if (!password.isNullOrEmpty()) {
-                    extractSpecificFileBy7z(srcFile, files, destDir, password, overwrite, onProgress)
+                    extractSpecificFileBy7z(
+                        srcFile,
+                        files,
+                        destDir,
+                        password,
+                        overwrite,
+                        onProgress
+                    )
                 } else {
                     extractSpecificZipFile(srcFile, files, destDir, password, overwrite, onProgress)
                 }
             }
+
             ArchiveFileType._7z, ArchiveFileType.RAR -> {
                 extractSpecificFileBy7z(srcFile, files, destDir, password, overwrite, onProgress)
             }
+
             else -> {
                 Log.e(TAG, "不支持的文件类型")
                 false
@@ -98,12 +109,15 @@ object ArchiveUtil {
             ArchiveFileType.ZIP -> {
                 listZipFiles(srcFile)
             }
+
             ArchiveFileType._7z -> {
                 listInArchiveFilesBy7z(srcFile)
             }
+
             ArchiveFileType.RAR -> {
                 listInArchiveFilesBy7z(srcFile)
             }
+
             else -> {
                 Log.e(TAG, "不支持的文件类型")
                 emptyList()
@@ -113,9 +127,9 @@ object ArchiveUtil {
 
     // 读取指定文件流
     fun getArchiveItemInputStream(
-            archivePath: String,
-            itemName: String,
-            password: String?
+        archivePath: String,
+        itemName: String,
+        password: String?
     ): InputStream? {
         return when (getFileType(File(archivePath))) {
             ArchiveFileType.ZIP -> {
@@ -126,12 +140,15 @@ object ArchiveUtil {
                     getZipFileInputStream(archivePath, itemName, password)
                 }
             }
+
             ArchiveFileType._7z -> {
                 getArchiveItemInputStreamBy7z(archivePath, itemName, password)
             }
+
             ArchiveFileType.RAR -> {
                 getArchiveItemInputStreamBy7z(archivePath, itemName, password)
             }
+
             else -> {
                 Log.e(TAG, "不支持的文件类型")
                 null
@@ -148,11 +165,11 @@ object ArchiveUtil {
      * @param charset 编码格式
      */
     private fun extractZip(
-            srcFile: String,
-            destDir: String,
-            password: String?,
-            overwrite: Boolean,
-            onProgress: (progress: Int) -> Unit
+        srcFile: String,
+        destDir: String,
+        password: String?,
+        overwrite: Boolean,
+        onProgress: (progress: Int) -> Unit
     ): Boolean {
         Log.i(TAG, "解压文件: $srcFile---$destDir---$password")
 
@@ -186,7 +203,11 @@ object ArchiveUtil {
                 return true
             }
             if (progressMonitor.result == ProgressMonitor.Result.ERROR) {
-                if (progressMonitor.exception?.message?.contains("password", ignoreCase = true) == true) {
+                if (progressMonitor.exception?.message?.contains(
+                        "password",
+                        ignoreCase = true
+                    ) == true
+                ) {
                     Log.e(TAG, "解压失败: 密码错误 - ${progressMonitor.exception?.message}")
                 } else {
                     Log.e(TAG, "解压失败: ${progressMonitor.exception?.message}")
@@ -232,12 +253,12 @@ object ArchiveUtil {
 
     // 通过zip4j解压zip文件中的指定文件
     private fun extractSpecificZipFile(
-            srcFile: String,
-            files: List<String>,
-            destDir: String,
-            password: String?,
-            overwrite: Boolean,
-            onProgress: (progress: Int) -> Unit
+        srcFile: String,
+        files: List<String>,
+        destDir: String,
+        password: String?,
+        overwrite: Boolean,
+        onProgress: (progress: Int) -> Unit
     ): Boolean {
 
         if (files.map { File(destDir, it) }.all { it.exists() } && !overwrite) return true
@@ -250,11 +271,11 @@ object ArchiveUtil {
             zipFile.charset = Charset.forName("GBK")
         }
         Log.d(TAG, "extractSpecificZipFile: ${zipFile.fileHeaders.map { it.fileName }}")
-        
+
         // 尝试多种密码编码
         val passwordToUse = findWorkingPassword(zipFile, password)
         passwordToUse?.let { zipFile.setPassword(it.toCharArray()) }
-        
+
         for (file in files) {
             zipFile.extractFile(file, destDir)
         }
@@ -268,7 +289,7 @@ object ArchiveUtil {
     private fun findWorkingPassword(zipFile: ZipFile, password: String?): String? {
         if (password.isNullOrEmpty()) return password
         if (!zipFile.isEncrypted) return password
-        
+
         // 尝试多种编码
         val passwordVariants = listOfNotNull(
             password,
@@ -278,7 +299,7 @@ object ArchiveUtil {
                 null
             }
         ).distinct()
-        
+
         for (pwd in passwordVariants) {
             try {
                 zipFile.setPassword(pwd.toCharArray())
@@ -292,15 +313,15 @@ object ArchiveUtil {
                 Log.d(TAG, "Password variant failed: ${e.message}")
             }
         }
-        
+
         return password  // 回退到原始密码
     }
 
     // 通过zip4j解压zip获取文件流
     private fun getZipFileInputStream(
-            srcFile: String,
-            fileName: String,
-            password: String?
+        srcFile: String,
+        fileName: String,
+        password: String?
     ): InputStream? {
         var zipFile = ZipFile(srcFile)
         zipFile.charset = Charset.forName("UTF-8")
@@ -310,15 +331,15 @@ object ArchiveUtil {
             zipFile = ZipFile(srcFile)
             zipFile.charset = Charset.forName("GBK")
         }
-        
+
         val fileHeader = zipFile.fileHeaders.find { it.fileName == fileName } ?: return null
-        
+
         // 如果文件未加密或没有密码，直接返回
         if (!fileHeader.isEncrypted || password.isNullOrEmpty()) {
             password?.let { zipFile.setPassword(it.toCharArray()) }
             return zipFile.getInputStream(fileHeader)
         }
-        
+
         // 尝试多种密码编码方式（解决中文密码兼容性问题）
         return tryPasswordWithEncodings(zipFile, fileHeader, password)
     }
@@ -328,19 +349,19 @@ object ArchiveUtil {
      * 不同压缩软件对中文密码使用不同编码（UTF-8、GBK等）
      */
     private fun tryPasswordWithEncodings(
-            zipFile: ZipFile, 
-            fileHeader: FileHeader,
-            password: String
+        zipFile: ZipFile,
+        fileHeader: FileHeader,
+        password: String
     ): InputStream? {
         // 编码尝试顺序：原始 -> UTF-8 显式转换 -> GBK 转换
         val passwordVariants = listOf(
             password,  // 原始密码
             password.toByteArray(Charset.forName("UTF-8")).toString(Charset.forName("UTF-8")),
             // 尝试 GBK 编码的密码（某些 Windows 压缩软件使用）
-            try { 
+            try {
                 String(password.toByteArray(Charset.forName("GBK")), Charset.forName("ISO-8859-1"))
-            } catch (e: Exception) { 
-                null 
+            } catch (e: Exception) {
+                null
             }
         ).filterNotNull().distinct()
 
@@ -357,7 +378,7 @@ object ArchiveUtil {
                 // 继续尝试下一个编码
             }
         }
-        
+
         // 所有尝试都失败，使用原始密码再试一次（让异常抛出）
         zipFile.setPassword(password.toCharArray())
         return zipFile.getInputStream(fileHeader)
@@ -374,7 +395,7 @@ object ArchiveUtil {
 
             for (i in 0 until inArchive.numberOfItems) {
                 var filePath = inArchive.getStringProperty(i, PropID.PATH)
-               // Log.i(TAG, "filePath原名: $filePath")
+                // Log.i(TAG, "filePath原名: $filePath")
                 filePath = formatString(filePath)
                 //Log.i(TAG, "filePath格式化: $filePath")
 
@@ -397,11 +418,11 @@ object ArchiveUtil {
      * @param password 密码
      */
     private fun decompressionBy7z(
-            srcFile: String,
-            destDir: String,
-            password: String?,
-            overwrite: Boolean,
-            onProgress: (progress: Int) -> Unit
+        srcFile: String,
+        destDir: String,
+        password: String?,
+        overwrite: Boolean,
+        onProgress: (progress: Int) -> Unit
     ): Boolean {
         Log.i(TAG, "解压文件: $srcFile---$destDir---$password")
         if (File(destDir).exists() && !overwrite) return true
@@ -418,9 +439,9 @@ object ArchiveUtil {
 
             inArchive = SevenZip.openInArchive(null, RandomAccessFileInStream(randomAccessFile))
             inArchive.extract(
-                    null,
-                    false,
-                    ExtractCallback(inArchive, destDir, password ?: "", onProgress)
+                null,
+                false,
+                ExtractCallback(inArchive, destDir, password ?: "", onProgress)
             )
 
             // 验证解压后的文件是否存在（至少有一个文件）
@@ -472,13 +493,13 @@ object ArchiveUtil {
                         try {
                             // 使用ICryptoGetTextPassword接口提供密码
                             val passwordProvider =
-                                    object : ICryptoGetTextPassword {
-                                        override fun cryptoGetTextPassword(): String = password
-                                    }
+                                object : ICryptoGetTextPassword {
+                                    override fun cryptoGetTextPassword(): String = password
+                                }
                             inArchive.extractSlow(
-                                    i,
-                                    outStream,
-                                    passwordProvider.cryptoGetTextPassword()
+                                i,
+                                outStream,
+                                passwordProvider.cryptoGetTextPassword()
                             )
 
                             // 如果能成功解压，则密码正确
@@ -486,10 +507,10 @@ object ArchiveUtil {
                         } catch (e: Exception) {
                             // 如果解压失败，则密码错误
                             if (e.message?.contains("password", ignoreCase = true) == true ||
-                                            e.message?.contains(
-                                                    "Wrong Password",
-                                                    ignoreCase = true
-                                            ) == true
+                                e.message?.contains(
+                                    "Wrong Password",
+                                    ignoreCase = true
+                                ) == true
                             ) {
                                 return false
                             }
@@ -565,10 +586,10 @@ object ArchiveUtil {
 
     // 7z解压回调
     private class ExtractCallback(
-            private val inArchive: IInArchive?,
-            extractPath: String,
-            private val password: String,
-            private val onProgress: (progress: Int) -> Unit
+        private val inArchive: IInArchive?,
+        extractPath: String,
+        private val password: String,
+        private val onProgress: (progress: Int) -> Unit
     ) : IArchiveExtractCallback, ICryptoGetTextPassword {
 
         private var extractPath: String
@@ -588,11 +609,11 @@ object ArchiveUtil {
 
         override fun setCompleted(complete: Long) {
             val progress =
-                    if (total > 0) {
-                        complete.toDouble() / total.toDouble() * 100
-                    } else {
-                        0.0
-                    }
+                if (total > 0) {
+                    complete.toDouble() / total.toDouble() * 100
+                } else {
+                    0.0
+                }
 
             // progressUpdateListener?.onProgressUpdate("${progress.toInt()}%")
             onProgress(progress.toInt())
@@ -634,12 +655,12 @@ object ArchiveUtil {
 
     // 通过7z获取指定文件的输入流
     fun extractSpecificFileBy7z(
-            srcFile: String,
-            files: List<String>,
-            destDir: String,
-            password: String?,
-            overwrite: Boolean,
-            onProgress: (progress: Int) -> Unit
+        srcFile: String,
+        files: List<String>,
+        destDir: String,
+        password: String?,
+        overwrite: Boolean,
+        onProgress: (progress: Int) -> Unit
     ): Boolean {
         if (files.map { File(destDir, it) }.all { it.exists() } && !overwrite) return true
         var extractPath = destDir
@@ -664,60 +685,62 @@ object ArchiveUtil {
             Log.i(TAG, "indices: $indices")
 
             inArchive.extract(
-                    indices.toIntArray(),
-                    false,
-                    object : IArchiveExtractCallback, ICryptoGetTextPassword {
+                indices.toIntArray(),
+                false,
+                object : IArchiveExtractCallback, ICryptoGetTextPassword {
 
-                        private var total: Long = 0
-                        override fun setTotal(total: Long) {
-                            this.total = total
-                        }
+                    private var total: Long = 0
+                    override fun setTotal(total: Long) {
+                        this.total = total
+                    }
 
-                        override fun setCompleted(complete: Long) {
-                            val progress =
-                                    if (total > 0) {
-                                        complete.toDouble() / total.toDouble() * 100
-                                    } else {
-                                        0.0
-                                    }
-                            // progressUpdateListener?.onProgressUpdate("${progress.toInt()}%")
-                            onProgress(progress.toInt())
-                        }
-
-                        @Throws(SevenZipException::class)
-                        override fun getStream(
-                                index: Int,
-                                extractAskMode: ExtractAskMode
-                        ): ISequentialOutStream {
-                            return ISequentialOutStream { data ->
-                                try {
-                                    var filename = inArchive.getStringProperty(index, PropID.PATH)
-                                    filename = formatString(filename)
-                                    val file = File(extractPath + filename)
-                                    file.parentFile?.mkdirs()
-                                    if (!file.exists()) {
-                                        file.createNewFile()
-                                    }
-                                    FileOutputStream(file, true).use {
-                                        it.write(data)
-                                        it.flush()
-                                    }
-                                } catch (_: IOException) {
-                                    Log.e(TAG, "IOException while extracting")
-                                }
-                                data.size
+                    override fun setCompleted(complete: Long) {
+                        val progress =
+                            if (total > 0) {
+                                complete.toDouble() / total.toDouble() * 100
+                            } else {
+                                0.0
                             }
-                        }
+                        // progressUpdateListener?.onProgressUpdate("${progress.toInt()}%")
+                        onProgress(progress.toInt())
+                    }
 
-                        override fun prepareOperation(extractAskMode: ExtractAskMode) {}
-
-                        override fun setOperationResult(
-                                extractOperationResult: ExtractOperationResult
-                        ) {}
-                        override fun cryptoGetTextPassword(): String {
-                            return password ?: ""
+                    @Throws(SevenZipException::class)
+                    override fun getStream(
+                        index: Int,
+                        extractAskMode: ExtractAskMode
+                    ): ISequentialOutStream {
+                        return ISequentialOutStream { data ->
+                            try {
+                                var filename = inArchive.getStringProperty(index, PropID.PATH)
+                                filename = formatString(filename)
+                                val file = File(extractPath + filename)
+                                file.parentFile?.mkdirs()
+                                if (!file.exists()) {
+                                    file.createNewFile()
+                                }
+                                FileOutputStream(file, true).use {
+                                    it.write(data)
+                                    it.flush()
+                                }
+                            } catch (_: IOException) {
+                                Log.e(TAG, "IOException while extracting")
+                            }
+                            data.size
                         }
                     }
+
+                    override fun prepareOperation(extractAskMode: ExtractAskMode) {}
+
+                    override fun setOperationResult(
+                        extractOperationResult: ExtractOperationResult
+                    ) {
+                    }
+
+                    override fun cryptoGetTextPassword(): String {
+                        return password ?: ""
+                    }
+                }
             )
             return true
         } catch (e: Exception) {
@@ -730,9 +753,9 @@ object ArchiveUtil {
 
     /** 通过7z获取指定文件的输入流 */
     private fun getArchiveItemInputStreamBy7z(
-            archivePath: String,
-            itemName: String,
-            password: String?
+        archivePath: String,
+        itemName: String,
+        password: String?
     ): InputStream? {
         var inArchive: IInArchive? = null
         var randomAccessFile: RandomAccessFile? = null
@@ -741,11 +764,11 @@ object ArchiveUtil {
         try {
             randomAccessFile = RandomAccessFile(File(archivePath), "r")
             inArchive =
-                    SevenZip.openInArchive(
-                            null,
-                            RandomAccessFileInStream(randomAccessFile),
-                            password
-                    )
+                SevenZip.openInArchive(
+                    null,
+                    RandomAccessFileInStream(randomAccessFile),
+                    password
+                )
 
             var itemIndex = -1
             for (i in 0 until inArchive.numberOfItems) {
@@ -811,9 +834,9 @@ object ArchiveUtil {
                 return fileHeader
             } else {
                 val bytes =
-                        fileHeader
-                                .toByteArray(Charset.forName("CP437"))
-                                .toString(Charset.forName(encoding))
+                    fileHeader
+                        .toByteArray(Charset.forName("CP437"))
+                        .toString(Charset.forName(encoding))
                 if (Charset.forName(encoding).newEncoder().canEncode(bytes)) {
                     return bytes
                 }

@@ -3,14 +3,14 @@ package top.laoxin.modmanager.data.service.filetools.impl
 import android.provider.DocumentsContract
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
-import java.io.File
-import java.io.InputStream
-import javax.inject.Inject
-import javax.inject.Singleton
 import top.laoxin.modmanager.App
 import top.laoxin.modmanager.constant.PathConstants
 import top.laoxin.modmanager.data.service.filetools.BaseFileTools
+import java.io.File
 import java.io.FileNotFoundException
+import java.io.InputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** DocumentFile 文件系统操作工具（SAF） 不捕获异常，让异常传播到 FileServiceImpl 统一处理 */
 @Singleton
@@ -188,7 +188,7 @@ class DocumentFileTools @Inject constructor() : BaseFileTools() {
         documentFile?.listFiles()?.forEach { docFile ->
             val filePath = uriToPath(docFile.uri)
             if (filePath.isNotEmpty()) {
-               // Log.d(TAG, "listFiles: $filePath")
+                // Log.d(TAG, "listFiles: $filePath")
                 list.add(File(filePath))
             }
         }

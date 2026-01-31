@@ -1,13 +1,11 @@
 package top.laoxin.modmanager.ui.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,16 +14,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import top.laoxin.modmanager.domain.service.AppInfoService
 import top.laoxin.modmanager.domain.repository.UserPreferencesRepository
+import top.laoxin.modmanager.domain.service.AppInfoService
 import top.laoxin.modmanager.ui.state.SnackbarManager
+import javax.inject.Inject
 
 /** 导航事件 */
 sealed class NavigationEvent {
     /** 导航到设置页面 */
     object NavigateToSettings : NavigationEvent()
+
     /** 导航到控制台页面 */
     object NavigateToConsole : NavigationEvent()
+
     /** 导航到MOD页面 */
     object NavigateToMod : NavigationEvent()
 }
@@ -49,10 +50,10 @@ class MainViewModel @Inject constructor(
     // Game Icon State
     val gameIcon: StateFlow<ImageBitmap?> =
         userPreferencesRepository.selectedGame.map { gameInfo ->
-                withContext(Dispatchers.IO) {
-                    appInfoService.getAppIcon(gameInfo.packageName)
-                }
+            withContext(Dispatchers.IO) {
+                appInfoService.getAppIcon(gameInfo.packageName)
             }
+        }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),

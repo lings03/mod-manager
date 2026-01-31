@@ -14,8 +14,8 @@ data class ModBrowserUiState(
     val isGridView: Boolean = false,
     val currentPath: String = "",
     val currentMods: List<ModBean> = emptyList(),
-    val currentFiles : List<File> = emptyList(),
+    val currentFiles: List<File> = emptyList(),
     val doBackFunction: Boolean = false,
     val isBackPathExist: Boolean = false,
     val currentBrowsingPath: String? = null
-    )
+)

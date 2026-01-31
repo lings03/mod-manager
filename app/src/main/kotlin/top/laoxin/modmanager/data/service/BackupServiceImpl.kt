@@ -1,9 +1,6 @@
 package top.laoxin.modmanager.data.service
 
 import android.util.Log
-import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -19,6 +16,9 @@ import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.service.BackupEvent
 import top.laoxin.modmanager.domain.service.BackupService
 import top.laoxin.modmanager.domain.service.FileService
+import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** 备份服务实现 负责游戏文件的备份和还原，支持流式状态返回 */
 @Singleton

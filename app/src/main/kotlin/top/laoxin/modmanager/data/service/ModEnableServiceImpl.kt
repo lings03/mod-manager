@@ -1,7 +1,5 @@
 package top.laoxin.modmanager.data.service
 
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import top.laoxin.modmanager.domain.bean.GameInfoBean
 import top.laoxin.modmanager.domain.bean.ModBean
@@ -13,14 +11,16 @@ import top.laoxin.modmanager.domain.service.FileService
 import top.laoxin.modmanager.domain.service.ModEnableService
 import top.laoxin.modmanager.domain.service.TraditionalModEnableService
 import top.laoxin.modmanager.domain.service.ValidationResult
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** MOD 开启服务实现（调度器模式） 根据 MOD 形式分发到不同的处理服务 */
 @Singleton
 class ModEnableServiceImpl
 @Inject
 constructor(
-        private val fileService: FileService,
-        private val traditionalModEnableService: TraditionalModEnableService
+    private val fileService: FileService,
+    private val traditionalModEnableService: TraditionalModEnableService
 ) : ModEnableService {
 
     companion object {
@@ -36,13 +36,29 @@ constructor(
                     traditionalModEnableService.enableFolderMod(mod, gameInfo)
                 }
             }
+
             ModForm.ACTIVE -> {
                 // TODO: 主动形式处理
-                kotlinx.coroutines.flow.flow { emit(EnableFileEvent.Complete(false, AppError.ModError.InvalidStructure(mod.name))) }
+                kotlinx.coroutines.flow.flow {
+                    emit(
+                        EnableFileEvent.Complete(
+                            false,
+                            AppError.ModError.InvalidStructure(mod.name)
+                        )
+                    )
+                }
             }
+
             ModForm.PACKAGED -> {
                 // TODO: 打包形式处理
-                kotlinx.coroutines.flow.flow { emit(EnableFileEvent.Complete(false, AppError.ModError.InvalidStructure(mod.name))) }
+                kotlinx.coroutines.flow.flow {
+                    emit(
+                        EnableFileEvent.Complete(
+                            false,
+                            AppError.ModError.InvalidStructure(mod.name)
+                        )
+                    )
+                }
             }
         }
     }
@@ -56,11 +72,27 @@ constructor(
                     traditionalModEnableService.disableFolderMod(mod, gameInfo)
                 }
             }
+
             ModForm.ACTIVE -> {
-                kotlinx.coroutines.flow.flow { emit(EnableFileEvent.Complete(false, AppError.ModError.InvalidStructure(mod.name))) }
+                kotlinx.coroutines.flow.flow {
+                    emit(
+                        EnableFileEvent.Complete(
+                            false,
+                            AppError.ModError.InvalidStructure(mod.name)
+                        )
+                    )
+                }
             }
+
             ModForm.PACKAGED -> {
-                kotlinx.coroutines.flow.flow { emit(EnableFileEvent.Complete(false, AppError.ModError.InvalidStructure(mod.name))) }
+                kotlinx.coroutines.flow.flow {
+                    emit(
+                        EnableFileEvent.Complete(
+                            false,
+                            AppError.ModError.InvalidStructure(mod.name)
+                        )
+                    )
+                }
             }
         }
     }
@@ -88,7 +120,7 @@ constructor(
             for (filePath in modFiles) {
                 val existResult = fileService.isFileExist(filePath)
                 if (existResult is Result.Error ||
-                                (existResult is Result.Success && !existResult.data)
+                    (existResult is Result.Success && !existResult.data)
                 ) {
                     return ValidationResult.FILE_MISSING
                 }

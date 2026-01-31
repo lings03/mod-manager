@@ -45,7 +45,7 @@ class App : Application() {
     private fun setupLifecycleObserver() {
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStop(owner: LifecycleOwner) {
-               // LogTools.flushAll()
+                // LogTools.flushAll()
             }
         })
 

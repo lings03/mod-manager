@@ -15,8 +15,8 @@ class GetGameModsCountUserCase @Inject constructor(
 
 ) {
     operator fun invoke(): Flow<Int> {
-       return userPreferencesRepository.selectedGame.flatMapLatest {
-             modRepository.getModsCountByGamePackageName(it.packageName)
+        return userPreferencesRepository.selectedGame.flatMapLatest {
+            modRepository.getModsCountByGamePackageName(it.packageName)
         }
 
         //return modRepository.getModsCountByGamePackageName(userPreferencesRepository.selectedGameValue.packageName)
@@ -57,7 +57,7 @@ class GetGameAllModsUserCase @Inject constructor(
 
 ) {
     operator fun invoke(): Flow<List<ModBean>> {
-        return userPreferencesRepository.selectedGame.flatMapLatest  {
+        return userPreferencesRepository.selectedGame.flatMapLatest {
             modRepository.getModsByGamePackageName(it.packageName)
         }
         //return modRepository.getModsByGamePackageName(userPreferencesRepository.selectedGameValue.packageName)
@@ -94,6 +94,9 @@ class SearchModsUserCase @Inject constructor(
 
 ) {
     operator fun invoke(searchText: String): Flow<List<ModBean>> {
-        return modRepository.search(searchText, userPreferencesRepository.selectedGameValue.packageName)
+        return modRepository.search(
+            searchText,
+            userPreferencesRepository.selectedGameValue.packageName
+        )
     }
 }

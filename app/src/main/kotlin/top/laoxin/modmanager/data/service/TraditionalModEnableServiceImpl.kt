@@ -1,11 +1,6 @@
 package top.laoxin.modmanager.data.service
 
 import android.util.Log
-import java.io.File
-import java.io.InputStream
-import java.security.MessageDigest
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,6 +13,11 @@ import top.laoxin.modmanager.domain.service.ArchiveService
 import top.laoxin.modmanager.domain.service.EnableFileEvent
 import top.laoxin.modmanager.domain.service.FileService
 import top.laoxin.modmanager.domain.service.TraditionalModEnableService
+import java.io.File
+import java.io.InputStream
+import java.security.MessageDigest
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** 传统形式 MOD 开启服务实现 处理压缩包和文件夹形式的 MOD 文件操作 在复制/提取时计算 MD5 */
 @Singleton
@@ -252,14 +252,14 @@ constructor(private val fileService: FileService, private val archiveService: Ar
             val digest = MessageDigest.getInstance("MD5")
             // 使用 DigestInputStream 包装原始流，在读取时自动计算 MD5
             val digestInputStream = java.security.DigestInputStream(inputStream, digest)
-            
+
             // 直接使用 DigestInputStream 写入文件
             val writeResult = fileService.createFileByStream(
                 path = targetDir,
                 filename = fileName,
                 inputStream = digestInputStream
             )
-            
+
             when (writeResult) {
                 is Result.Success -> {
                     // 写入完成后获取 MD5
@@ -270,6 +270,7 @@ constructor(private val fileService: FileService, private val archiveService: Ar
                         Result.Success(md5)
                     }
                 }
+
                 is Result.Error -> writeResult
             }
         } catch (e: Exception) {

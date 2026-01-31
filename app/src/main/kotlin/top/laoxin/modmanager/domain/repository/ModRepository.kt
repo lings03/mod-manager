@@ -60,11 +60,10 @@ interface ModRepository {
     fun deleteDisableMods(gamePackageName: String)
 
 
-
     /** 更新数据库中一个Mod的启用状态。 */
     suspend fun updateModEnableState(modId: Int, isEnable: Boolean)
 
-    fun getModsByVirtualPath(virtualPath: String) : Flow<List<ModBean>>
+    fun getModsByVirtualPath(virtualPath: String): Flow<List<ModBean>>
 
     /**
      * 备份一个Mod的原始游戏文件。

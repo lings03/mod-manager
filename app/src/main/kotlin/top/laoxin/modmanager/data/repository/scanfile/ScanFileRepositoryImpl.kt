@@ -1,8 +1,8 @@
 package top.laoxin.modmanager.data.repository.scanfile
 
 import kotlinx.coroutines.flow.Flow
-import top.laoxin.modmanager.domain.bean.ScanFileBean
 import top.laoxin.modmanager.data.repository.ModManagerDatabase
+import top.laoxin.modmanager.domain.bean.ScanFileBean
 import top.laoxin.modmanager.domain.repository.ScanFileRepository
 import javax.inject.Inject
 import javax.inject.Singleton

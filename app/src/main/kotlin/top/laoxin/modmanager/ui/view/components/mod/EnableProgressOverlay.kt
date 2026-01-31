@@ -68,40 +68,43 @@ import java.io.File
 /** MOD 开启进度覆盖层 */
 @Composable
 fun EnableProgressOverlay(
-        modifier: Modifier = Modifier,
-        progressState: EnableProgressState?,
-        onCancel: () -> Unit,
-        onDismiss: () -> Unit,
-        onGoSettings: () -> Unit = {},
-        onGrantPermission: () -> Unit = {},
-        onDisableMod: (ModBean) -> Unit = {},
-        onRemoveFromSelection: (ModBean) -> Unit = {},
+    modifier: Modifier = Modifier,
+    progressState: EnableProgressState?,
+    onCancel: () -> Unit,
+    onDismiss: () -> Unit,
+    onGoSettings: () -> Unit = {},
+    onGrantPermission: () -> Unit = {},
+    onDisableMod: (ModBean) -> Unit = {},
+    onRemoveFromSelection: (ModBean) -> Unit = {},
 ) {
     AnimatedVisibility(
-            visible = progressState != null,
-            enter = fadeIn(animationSpec = tween(300)),
-            exit = fadeOut(animationSpec = tween(300))
+        visible = progressState != null,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300))
     ) {
         progressState?.let { state ->
             Box(
-                    modifier =
-                            modifier.fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f))
-                                    .clickable(
-                                            indication = null,
-                                            interactionSource =
-                                                    remember { MutableInteractionSource() }
-                                    ) { /* 消费点击事件 */},
-                    contentAlignment = Alignment.Center
+                modifier =
+                    modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f))
+                        .clickable(
+                            indication = null,
+                            interactionSource =
+                                remember { MutableInteractionSource() }
+                        ) { /* 消费点击事件 */ },
+                contentAlignment = Alignment.Center
             ) {
                 Card(
-                        modifier = Modifier.fillMaxWidth(0.9f).padding(16.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors =
-                                CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface
-                                ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     when {
                         state.error != null -> {
@@ -112,6 +115,7 @@ fun EnableProgressOverlay(
                                 onGrantPermission = onGrantPermission
                             )
                         }
+
                         state.result != null -> {
                             ResultContent(
                                 result = state.result,
@@ -120,6 +124,7 @@ fun EnableProgressOverlay(
                                 onRemoveFromSelection = onRemoveFromSelection
                             )
                         }
+
                         else -> {
                             ProgressContent(state = state, onCancel = onCancel)
                         }
@@ -134,18 +139,18 @@ fun EnableProgressOverlay(
 @Composable
 private fun ProgressContent(state: EnableProgressState, onCancel: () -> Unit) {
     val animatedProgress by
-            animateFloatAsState(
-                    targetValue = state.progress,
-                    animationSpec = tween(durationMillis = 300),
-                    label = "progress"
-            )
+    animateFloatAsState(
+        targetValue = state.progress,
+        animationSpec = tween(durationMillis = 300),
+        label = "progress"
+    )
 
     Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         // 标题
         Text(
-                text = "⚡ " + stringResource(R.string.enable_progress_title),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
+            text = "⚡ " + stringResource(R.string.enable_progress_title),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -153,11 +158,11 @@ private fun ProgressContent(state: EnableProgressState, onCancel: () -> Unit) {
         // 当前 MOD 名称
         if (state.modName.isNotEmpty()) {
             Text(
-                    text = state.modName,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                text = state.modName,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -171,71 +176,66 @@ private fun ProgressContent(state: EnableProgressState, onCancel: () -> Unit) {
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
         } else {*/
-            LinearProgressIndicator(
-                    progress = { animatedProgress },
-                    modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-       // }
+        LinearProgressIndicator(
+            progress = { animatedProgress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .clip(RoundedCornerShape(4.dp)),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+        // }
 
         // 百分比
-        /*if (state.subProgress >= 0) {*/
-            Text(
-                    text = "${(animatedProgress * 100).toInt()}%",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp)
-            )
-   /*     } else {
-            Text(
-                    text = stringResource(R.string.enable_progress_processing),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp)
-            )
-        }*/
+        Text(
+            text = "${(animatedProgress * 100).toInt()}%",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // 步骤详情区域
         Column(
-                modifier =
-                        Modifier.fillMaxWidth()
-                                .background(
-                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                        RoundedCornerShape(12.dp)
-                                )
-                                .padding(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        RoundedCornerShape(12.dp)
+                    )
+                    .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 步骤描述
             Text(
-                    text = getStepText(state.step, state.current, state.total),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
+                text = getStepText(state.step, state.current, state.total),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
             )
 
             // 当前文件名
             if (state.currentFile.isNotEmpty()) {
                 Text(
-                        text = "📄 ${state.currentFile}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 4.dp)
+                    text = "📄 ${state.currentFile}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
 
             // 子进度
             if (state.subProgress >= 0) {
                 Text(
-                        text = "${(state.subProgress * 100).toInt()}%",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 4.dp)
+                    text = "${(state.subProgress * 100).toInt()}%",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
         }
@@ -244,34 +244,35 @@ private fun ProgressContent(state: EnableProgressState, onCancel: () -> Unit) {
 
         // 进度统计
         Row(
-                modifier =
-                        Modifier.fillMaxWidth()
-                                .background(
-                                        MaterialTheme.colorScheme.primaryContainer.copy(
-                                                alpha = 0.3f
-                                        ),
-                                        RoundedCornerShape(12.dp)
-                                )
-                                .padding(12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer.copy(
+                            alpha = 0.3f
+                        ),
+                        RoundedCornerShape(12.dp)
+                    )
+                    .padding(12.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                    imageVector = Icons.Outlined.PlayArrow,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
+                imageVector = Icons.Outlined.PlayArrow,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                    text =
-                            stringResource(
-                                    R.string.enable_progress_count,
-                                    state.current,
-                                    state.total
-                            ),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                text =
+                    stringResource(
+                        R.string.enable_progress_count,
+                        state.current,
+                        state.total
+                    ),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -279,7 +280,11 @@ private fun ProgressContent(state: EnableProgressState, onCancel: () -> Unit) {
 
         // 取消按钮
         ExpressiveOutlinedButton(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
-            Text(if (state.step == EnableStep.CANCELING) stringResource(R.string.enable_progress_canceling) else stringResource(R.string.enable_progress_cancel))
+            Text(
+                if (state.step == EnableStep.CANCELING) stringResource(R.string.enable_progress_canceling) else stringResource(
+                    R.string.enable_progress_cancel
+                )
+            )
         }
     }
 }
@@ -294,21 +299,24 @@ private fun ResultContent(
 ) {
     // 是否展开冲突详情
     var isConflictExpanded by remember { mutableStateOf(false) }
-    
+
     // 追踪已移除的MOD ID（用于从列表中移除已处理的项目）
     var removedMutualConflictIds by remember { mutableStateOf(setOf<Int>()) }
     var removedEnabledConflictIds by remember { mutableStateOf(setOf<Int>()) }
-    
+
     // 过滤掉已移除的MOD
-    val remainingMutualConflictMods = remember(result.mutualConflictMods, removedMutualConflictIds) {
-        result.mutualConflictMods.filter { it.id !in removedMutualConflictIds }
-    }
-    val remainingEnabledConflictMods = remember(result.enabledConflictMods, removedEnabledConflictIds) {
-        result.enabledConflictMods.filter { it.id !in removedEnabledConflictIds }
-    }
-    
-    val hasConflicts = remainingMutualConflictMods.isNotEmpty() || remainingEnabledConflictMods.isNotEmpty()
-    
+    val remainingMutualConflictMods =
+        remember(result.mutualConflictMods, removedMutualConflictIds) {
+            result.mutualConflictMods.filter { it.id !in removedMutualConflictIds }
+        }
+    val remainingEnabledConflictMods =
+        remember(result.enabledConflictMods, removedEnabledConflictIds) {
+            result.enabledConflictMods.filter { it.id !in removedEnabledConflictIds }
+        }
+
+    val hasConflicts =
+        remainingMutualConflictMods.isNotEmpty() || remainingEnabledConflictMods.isNotEmpty()
+
     Column(
         modifier = Modifier
             .padding(24.dp)
@@ -402,7 +410,7 @@ private fun ResultContent(
         // 冲突详情展开区域
         if (hasConflicts) {
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // 展开/折叠按钮
             Row(
                 modifier = Modifier
@@ -428,7 +436,7 @@ private fun ResultContent(
                     modifier = Modifier.size(20.dp)
                 )
             }
-            
+
             AnimatedVisibility(visible = isConflictExpanded) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -447,7 +455,7 @@ private fun ResultContent(
                             }
                         )
                     }
-                    
+
                     // 内部冲突列表
                     if (remainingMutualConflictMods.isNotEmpty()) {
                         ConflictSection(
@@ -506,18 +514,18 @@ private fun ConflictSection(
                 color = MaterialTheme.colorScheme.error
             )
         }
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         // 提示
         Text(
             text = hint,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        
+
         Spacer(modifier = Modifier.height(12.dp))
-        
+
         // MOD列表
         LazyColumn(
             modifier = Modifier
@@ -544,8 +552,13 @@ private fun ConflictModItem(
     onAction: () -> Unit
 ) {
     val iconPath = remember(mod.icon, mod.updateAt) { mod.icon?.takeIf { File(it).exists() } }
-    val imageBitmap by rememberImageBitmap(path = iconPath, reqWidth = 48, reqHeight = 48, key = mod.updateAt)
-    
+    val imageBitmap by rememberImageBitmap(
+        path = iconPath,
+        reqWidth = 48,
+        reqHeight = 48,
+        key = mod.updateAt
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -577,9 +590,9 @@ private fun ConflictModItem(
                 contentScale = ContentScale.Crop
             )
         }
-        
+
         Spacer(modifier = Modifier.width(12.dp))
-        
+
         // MOD信息
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -597,9 +610,9 @@ private fun ConflictModItem(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        
+
         Spacer(modifier = Modifier.width(8.dp))
-        
+
         // 操作按钮
         ExpressiveOutlinedButton(
             onClick = onAction,
@@ -628,16 +641,19 @@ private fun ErrorContent(
             stringResource(R.string.error_action_go_settings),
             onGoSettings
         )
+
         is AppError.GameError.GameNotInstalled -> Triple(
             stringResource(R.string.error_game_not_installed, error.gameName),
             null,
             null
         )
+
         is AppError.PermissionError -> Triple(
             stringResource(R.string.error_permission_denied),
             stringResource(R.string.error_action_grant_permission),
             onGrantPermission
         )
+
         else -> Triple(
             error.toString(),
             null,
@@ -701,33 +717,33 @@ private fun ErrorContent(
 /** 统计行 */
 @Composable
 private fun StatRow(
-        icon: androidx.compose.ui.graphics.vector.ImageVector,
-        label: String,
-        value: String
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    value: String
 ) {
     Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

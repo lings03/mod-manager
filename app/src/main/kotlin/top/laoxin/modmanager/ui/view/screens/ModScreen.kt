@@ -44,9 +44,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import top.laoxin.modmanager.R
 import top.laoxin.modmanager.domain.bean.ModBean
+import top.laoxin.modmanager.ui.theme.ExpressiveOutlinedTextField
+import top.laoxin.modmanager.ui.theme.ExpressiveTextButton
 import top.laoxin.modmanager.ui.view.components.common.DialogCommon
-import java.io.File
-import kotlin.coroutines.cancellation.CancellationException
 import top.laoxin.modmanager.ui.view.components.common.ModernLoadingScreen
 import top.laoxin.modmanager.ui.view.components.common.PermissionHandler
 import top.laoxin.modmanager.ui.view.components.mod.DecryptProgressOverlay
@@ -59,16 +59,17 @@ import top.laoxin.modmanager.ui.view.components.mod.ModernModsBrowser
 import top.laoxin.modmanager.ui.view.components.mod.ScanProgressOverlay
 import top.laoxin.modmanager.ui.view.navigation.ModBrowserRoute
 import top.laoxin.modmanager.ui.view.navigation.ModListRoute
-import top.laoxin.modmanager.ui.viewmodel.ModNavigationEvent
-import top.laoxin.modmanager.ui.viewmodel.ModernModBrowserViewModel
-import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
-import top.laoxin.modmanager.ui.theme.ExpressiveOutlinedTextField
-import top.laoxin.modmanager.ui.theme.ExpressiveTextButton
 import top.laoxin.modmanager.ui.viewmodel.MainViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModDetailViewModel
+import top.laoxin.modmanager.ui.viewmodel.ModNavigationEvent
 import top.laoxin.modmanager.ui.viewmodel.ModOperationViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModScanViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModSearchViewModel
+import top.laoxin.modmanager.ui.viewmodel.ModernModBrowserViewModel
+import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
+import java.io.File
+import kotlin.coroutines.cancellation.CancellationException
+
 enum class NavigationIndex(
     @param:StringRes val title: Int,
     val index: Int,
@@ -79,16 +80,17 @@ enum class NavigationIndex(
     SEARCH_MODS(R.string.mod_page_title_search_mods, 3),
     MODS_BROWSER(R.string.mod_page_title_mods_browser, 4),
 }
+
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun ModernModScreen(
-        modListViewModel: ModernModListViewModel = hiltViewModel(),
-        modBrowserViewModel: ModernModBrowserViewModel = hiltViewModel(),
-        modDetailViewModel: ModDetailViewModel = hiltViewModel(),
-        modOperationViewModel: ModOperationViewModel = hiltViewModel(),
-        modSearchViewModel: ModSearchViewModel = hiltViewModel(),
-        modScanViewModel: ModScanViewModel = hiltViewModel(),
-        mainViewModel: MainViewModel = hiltViewModel()
+    modListViewModel: ModernModListViewModel = hiltViewModel(),
+    modBrowserViewModel: ModernModBrowserViewModel = hiltViewModel(),
+    modDetailViewModel: ModDetailViewModel = hiltViewModel(),
+    modOperationViewModel: ModOperationViewModel = hiltViewModel(),
+    modSearchViewModel: ModSearchViewModel = hiltViewModel(),
+    modScanViewModel: ModScanViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
 
     val modScanUiState by modScanViewModel.uiState.collectAsState()
@@ -98,19 +100,19 @@ fun ModernModScreen(
     val navController = rememberNavController()
 // 扫描权限请求
     PermissionHandler(
-            permissionStateFlow = modScanViewModel.permissionState,
-            onPermissionGranted = modScanViewModel::onPermissionGranted,
-            onPermissionDenied = modScanViewModel::onPermissionDenied,
-            onRequestShizuku = modScanViewModel::requestShizukuPermission,
-            isShizukuAvailable = modScanViewModel.isShizukuAvailable()
+        permissionStateFlow = modScanViewModel.permissionState,
+        onPermissionGranted = modScanViewModel::onPermissionGranted,
+        onPermissionDenied = modScanViewModel::onPermissionDenied,
+        onRequestShizuku = modScanViewModel::requestShizukuPermission,
+        isShizukuAvailable = modScanViewModel.isShizukuAvailable()
     )
 
     PermissionHandler(
-            permissionStateFlow = modOperationViewModel.permissionState,
-            onPermissionGranted = modOperationViewModel::onPermissionGranted,
-            onPermissionDenied = modOperationViewModel::onPermissionDenied,
-            onRequestShizuku = modOperationViewModel::requestShizukuPermission,
-            isShizukuAvailable = modOperationViewModel.isShizukuAvailable()
+        permissionStateFlow = modOperationViewModel.permissionState,
+        onPermissionGranted = modOperationViewModel::onPermissionGranted,
+        onPermissionDenied = modOperationViewModel::onPermissionDenied,
+        onRequestShizuku = modOperationViewModel::requestShizukuPermission,
+        isShizukuAvailable = modOperationViewModel.isShizukuAvailable()
     )
     // 拦截返回实践并处理
     /*BackHandler() {
@@ -131,9 +133,9 @@ fun ModernModScreen(
 
                         // Normalizing paths for comparison just in case
                         val isRoot =
-                                currentPath == null ||
-                                        currentPath == rootPath ||
-                                        currentPath.trimEnd('/') == rootPath.trimEnd('/')
+                            currentPath == null ||
+                                    currentPath == rootPath ||
+                                    currentPath.trimEnd('/') == rootPath.trimEnd('/')
 
                         if (!isRoot) {
                             val parentPath = File(currentPath).parent
@@ -143,7 +145,7 @@ fun ModernModScreen(
                             val previousEntry = navController.previousBackStackEntry
                             // We check if previous destination is Browser Route. If so, check path.
                             val previousIsBrowser =
-                                    previousEntry?.destination?.hasRoute<ModBrowserRoute>() == true
+                                previousEntry?.destination?.hasRoute<ModBrowserRoute>() == true
 
                             var isStackHealthy = false
                             if (previousIsBrowser) {
@@ -155,9 +157,9 @@ fun ModernModScreen(
                                         isStackHealthy = true
                                     }
                                 }
-                                        .onFailure {
-                                            // ignore, treat as unhealthy
-                                        }
+                                    .onFailure {
+                                        // ignore, treat as unhealthy
+                                    }
                             }
 
                             if (isStackHealthy) {
@@ -202,6 +204,7 @@ fun ModernModScreen(
                         navController.popBackStack()
                     }
                 }
+
                 is ModNavigationEvent.NavigateToBrowser -> {
                     val targetPath = event.path
                     val rootPath = modBrowserViewModel.uiState.value.currentGameModPath
@@ -211,13 +214,13 @@ fun ModernModScreen(
                         "Event: NavigateToBrowser. Target: $targetPath, Root: $rootPath"
                     )*/
                     val currentRoute =
-                            navController.currentBackStackEntry?.toRoute<ModBrowserRoute>()
+                        navController.currentBackStackEntry?.toRoute<ModBrowserRoute>()
 
                     // Normalize Target: resolve null/empty to root, trim separators
                     val targetNorm =
-                            (if (targetPath.isNullOrEmpty()) rootPath else targetPath)
-                                    .trimEnd('/')
-                                    .trimEnd('\\')
+                        (if (targetPath.isNullOrEmpty()) rootPath else targetPath)
+                            .trimEnd('/')
+                            .trimEnd('\\')
                     Log.d("ModernModScreen", "Normalized Target: $targetNorm")
                     if (currentRoute?.path != targetNorm) {
                         navController.navigate(ModBrowserRoute(targetNorm)) {
@@ -240,6 +243,7 @@ fun ModernModScreen(
                         }
                     }
                 }
+
                 is ModNavigationEvent.NavigateToList -> {
                     navController.navigate(ModListRoute) {
                         popUpTo(ModListRoute) { inclusive = true }
@@ -260,25 +264,25 @@ fun ModernModScreen(
     val modBrowserUiState by modBrowserViewModel.uiState.collectAsState()
     val initialIsBrowser = remember { mutableStateOf<Boolean?>(null) }
     val initialPath =
-            remember(
-                    modBrowserUiState.currentGameModPath /*, modBrowserUiState.currentBrowsingPath*/
+        remember(
+            modBrowserUiState.currentGameModPath /*, modBrowserUiState.currentBrowsingPath*/
+        ) {
+            if (modBrowserUiState.currentBrowsingPath?.contains(
+                    modBrowserUiState.currentGameModPath.trimEnd('/')
+                ) == true
             ) {
-                if (modBrowserUiState.currentBrowsingPath?.contains(
-                                modBrowserUiState.currentGameModPath.trimEnd('/')
-                        ) == true
-                ) {
-                    modBrowserUiState.currentBrowsingPath
-                } else {
-                    modBrowserUiState.currentGameModPath
-                }
+                modBrowserUiState.currentBrowsingPath
+            } else {
+                modBrowserUiState.currentGameModPath
             }
+        }
 
     if (modScanUiState.isLoading /*|| initialPath.isNullOrEmpty()*/) {
         ModernLoadingScreen()
         return
     }
     val startDestination =
-            if (modListUiState.isBrowser) ModBrowserRoute(initialPath) else ModListRoute
+        if (modListUiState.isBrowser) ModBrowserRoute(initialPath) else ModListRoute
     // Log.d("ModernModScreen", "初始导航页面: $startDestination")
     LaunchedEffect(modListUiState.isLoading) {
         if (!modListUiState.isLoading && initialIsBrowser.value == null) {
@@ -292,132 +296,134 @@ fun ModernModScreen(
             }
         }
     }
-    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)) {
         NavHost(navController = navController, startDestination = startDestination) {
             composable<ModListRoute>(
-                    enterTransition = {
-                        val fromBrowser = initialState.destination.hasRoute<ModBrowserRoute>()
-                        if (fromBrowser) {
-                            // View Mode Switch: Browser -> List (Crossfade)
-                            fadeIn(animationSpec = tween(300))
-                        } else {
-                            // Default / Initial
-                            fadeIn()
-                        }
-                    },
-                    exitTransition = {
-                        val toBrowser = targetState.destination.hasRoute<ModBrowserRoute>()
-                        if (toBrowser) {
-                            // View Mode Switch: List -> Browser (Crossfade)
-                            fadeOut(animationSpec = tween(300))
-                        } else {
-                            slideOutHorizontally(targetOffsetX = { -it / 3 }) + fadeOut()
-                        }
-                    },
-                    popEnterTransition = {
-                        val fromBrowser = initialState.destination.hasRoute<ModBrowserRoute>()
-                        if (fromBrowser) {
-                            fadeIn(animationSpec = tween(300))
-                        } else {
-                            fadeIn()
-                        }
-                    },
-                    popExitTransition = {
-                        val toBrowser = targetState.destination.hasRoute<ModBrowserRoute>()
-                        if (toBrowser) {
-                            fadeOut(animationSpec = tween(300))
-                        } else {
-                            slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
-                        }
+                enterTransition = {
+                    val fromBrowser = initialState.destination.hasRoute<ModBrowserRoute>()
+                    if (fromBrowser) {
+                        // View Mode Switch: Browser -> List (Crossfade)
+                        fadeIn(animationSpec = tween(300))
+                    } else {
+                        // Default / Initial
+                        fadeIn()
                     }
+                },
+                exitTransition = {
+                    val toBrowser = targetState.destination.hasRoute<ModBrowserRoute>()
+                    if (toBrowser) {
+                        // View Mode Switch: List -> Browser (Crossfade)
+                        fadeOut(animationSpec = tween(300))
+                    } else {
+                        slideOutHorizontally(targetOffsetX = { -it / 3 }) + fadeOut()
+                    }
+                },
+                popEnterTransition = {
+                    val fromBrowser = initialState.destination.hasRoute<ModBrowserRoute>()
+                    if (fromBrowser) {
+                        fadeIn(animationSpec = tween(300))
+                    } else {
+                        fadeIn()
+                    }
+                },
+                popExitTransition = {
+                    val toBrowser = targetState.destination.hasRoute<ModBrowserRoute>()
+                    if (toBrowser) {
+                        fadeOut(animationSpec = tween(300))
+                    } else {
+                        slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
+                    }
+                }
             ) {
                 // Sync State: We are in List
                 LaunchedEffect(Unit) { modListViewModel.setIsBrowser(false) }
 
                 ModernAllModPage(
-                        modListViewModel = modListViewModel,
-                        modDetailViewModel = modDetailViewModel,
-                        modOperationViewModel = modOperationViewModel,
-                        modSearchViewModel = modSearchViewModel,
-                        modBrowserViewModel = modBrowserViewModel
+                    modListViewModel = modListViewModel,
+                    modDetailViewModel = modDetailViewModel,
+                    modOperationViewModel = modOperationViewModel,
+                    modSearchViewModel = modSearchViewModel,
+                    modBrowserViewModel = modBrowserViewModel
                 )
             }
             composable<ModBrowserRoute>(
-                    enterTransition = {
-                        val fromList = initialState.destination.hasRoute<ModListRoute>()
-                        if (fromList) {
-                            // View Mode Switch: List -> Browser (Crossfade)
-                            fadeIn(animationSpec = tween(300))
-                        } else {
-                            // Directory Navigation (Smart Slide)
-                            val initialPath =
-                                    runCatching { initialState.toRoute<ModBrowserRoute>().path }
-                                            .getOrNull()
-                            val targetPath =
-                                    runCatching { targetState.toRoute<ModBrowserRoute>().path }
-                                            .getOrNull()
+                enterTransition = {
+                    val fromList = initialState.destination.hasRoute<ModListRoute>()
+                    if (fromList) {
+                        // View Mode Switch: List -> Browser (Crossfade)
+                        fadeIn(animationSpec = tween(300))
+                    } else {
+                        // Directory Navigation (Smart Slide)
+                        val initialPath =
+                            runCatching { initialState.toRoute<ModBrowserRoute>().path }
+                                .getOrNull()
+                        val targetPath =
+                            runCatching { targetState.toRoute<ModBrowserRoute>().path }
+                                .getOrNull()
 
-                            val isGoingUp =
-                                    if (initialPath != null && targetPath != null) {
-                                        initialPath.startsWith(targetPath) &&
-                                                initialPath.length > targetPath.length
-                                    } else {
-                                        false
-                                    }
-
-                            if (isGoingUp) {
-                                scaleIn(initialScale = 0.95f) + fadeIn()
+                        val isGoingUp =
+                            if (initialPath != null && targetPath != null) {
+                                initialPath.startsWith(targetPath) &&
+                                        initialPath.length > targetPath.length
                             } else {
-                                slideInHorizontally(initialOffsetX = { it }) + fadeIn()
+                                false
                             }
-                        }
-                    },
-                    exitTransition = {
-                        val toList = targetState.destination.hasRoute<ModListRoute>()
-                        if (toList) {
-                            // View Mode Switch: Browser -> List (Crossfade)
-                            fadeOut(animationSpec = tween(300))
-                        } else {
-                            // Directory Navigation
-                            val initialPath =
-                                    runCatching { initialState.toRoute<ModBrowserRoute>().path }
-                                            .getOrNull()
-                            val targetPath =
-                                    runCatching { targetState.toRoute<ModBrowserRoute>().path }
-                                            .getOrNull()
 
-                            val isGoingUp =
-                                    if (initialPath != null && targetPath != null) {
-                                        initialPath.startsWith(targetPath) &&
-                                                initialPath.length > targetPath.length
-                                    } else {
-                                        false
-                                    }
-
-                            if (isGoingUp) {
-                                slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
-                            } else {
-                                slideOutHorizontally(targetOffsetX = { -it / 3 }) + fadeOut()
-                            }
-                        }
-                    },
-                    popEnterTransition = {
-                        val fromList = initialState.destination.hasRoute<ModListRoute>()
-                        if (fromList) {
-                            fadeIn(animationSpec = tween(300))
-                        } else {
-                            // Predictive Back / Directory Up
+                        if (isGoingUp) {
                             scaleIn(initialScale = 0.95f) + fadeIn()
-                        }
-                    },
-                    popExitTransition = {
-                        val toList = targetState.destination.hasRoute<ModListRoute>()
-                        if (toList) {
-                            fadeOut(animationSpec = tween(300))
                         } else {
-                            slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                            slideInHorizontally(initialOffsetX = { it }) + fadeIn()
                         }
                     }
+                },
+                exitTransition = {
+                    val toList = targetState.destination.hasRoute<ModListRoute>()
+                    if (toList) {
+                        // View Mode Switch: Browser -> List (Crossfade)
+                        fadeOut(animationSpec = tween(300))
+                    } else {
+                        // Directory Navigation
+                        val initialPath =
+                            runCatching { initialState.toRoute<ModBrowserRoute>().path }
+                                .getOrNull()
+                        val targetPath =
+                            runCatching { targetState.toRoute<ModBrowserRoute>().path }
+                                .getOrNull()
+
+                        val isGoingUp =
+                            if (initialPath != null && targetPath != null) {
+                                initialPath.startsWith(targetPath) &&
+                                        initialPath.length > targetPath.length
+                            } else {
+                                false
+                            }
+
+                        if (isGoingUp) {
+                            slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                        } else {
+                            slideOutHorizontally(targetOffsetX = { -it / 3 }) + fadeOut()
+                        }
+                    }
+                },
+                popEnterTransition = {
+                    val fromList = initialState.destination.hasRoute<ModListRoute>()
+                    if (fromList) {
+                        fadeIn(animationSpec = tween(300))
+                    } else {
+                        // Predictive Back / Directory Up
+                        scaleIn(initialScale = 0.95f) + fadeIn()
+                    }
+                },
+                popExitTransition = {
+                    val toList = targetState.destination.hasRoute<ModListRoute>()
+                    if (toList) {
+                        fadeOut(animationSpec = tween(300))
+                    } else {
+                        slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                    }
+                }
             ) { backStackEntry ->
                 val route = backStackEntry.toRoute<ModBrowserRoute>()
 
@@ -435,9 +441,9 @@ fun ModernModScreen(
 
                 // Normalization for comparison
                 val isRoot =
-                        currentPath == rootPath ||
-                                currentPath.trimEnd('/').trimEnd('\\') ==
-                                        rootPath.trimEnd('/').trimEnd('\\')
+                    currentPath == rootPath ||
+                            currentPath.trimEnd('/').trimEnd('\\') ==
+                            rootPath.trimEnd('/').trimEnd('\\')
 
                 // Only intercept if we need custom logic (Multi-select OR Sub-directory)
 
@@ -446,15 +452,15 @@ fun ModernModScreen(
 
                 // Animated progress for smooth reset on cancel
                 val animatedSwipeProgress by
-                        animateFloatAsState(
-                                targetValue = swipeProgress,
-                                label = "swipeProgress",
-                                animationSpec =
-                                        spring(
-                                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                                stiffness = Spring.StiffnessMediumLow
-                                        )
+                animateFloatAsState(
+                    targetValue = swipeProgress,
+                    label = "swipeProgress",
+                    animationSpec =
+                        spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMediumLow
                         )
+                )
 
                 if (isMultiSelect || isRoot) {
                     BackHandler {
@@ -500,66 +506,70 @@ fun ModernModScreen(
                         val previewBackPath = currentPath.let { File(it).parent } ?: rootPath
 
                         Box(
-                                modifier =
-                                        Modifier.fillMaxSize().graphicsLayer {
-                                            // Parallax Effect: Grow from 95% to 100%
-                                            val scale = 0.95f + (animatedSwipeProgress * 0.05f)
-                                            scaleX = scale
-                                            scaleY = scale
-
-                                            // Fade in from 70% to 100%
-                                            alpha = 0.7f + (animatedSwipeProgress * 0.3f)
-                                        }
-                        ) {
-                            ModernModsBrowser(
-                                    initialPath = previewBackPath,
-                                    modBrowserViewModel = modBrowserViewModel,
-                                    modListViewModel = modListViewModel,
-                                    modDetailViewModel = modDetailViewModel,
-                                    modOperationViewModel = modOperationViewModel,
-                                    modSearchViewModel = modSearchViewModel,
-                                    onNavigateToPath = { /* Disable interaction in preview */}
-                            )
-
-                            // Overlay to darken the background slightly
-                            Box(
-                                    modifier = Modifier.fillMaxSize()
-                                    // .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.3f * (1f - animatedSwipeProgress)))
-                                    )
-                        }
-                    }
-
-                    // --- Layer 2: Foreground (Current Directory) ---
-                    Box(
                             modifier =
-                                    Modifier.fillMaxSize().graphicsLayer {
-                                        val scale =
-                                                1f - (animatedSwipeProgress * 0.1f) // Shrink to 90%
+                                Modifier
+                                    .fillMaxSize()
+                                    .graphicsLayer {
+                                        // Parallax Effect: Grow from 95% to 100%
+                                        val scale = 0.95f + (animatedSwipeProgress * 0.05f)
                                         scaleX = scale
                                         scaleY = scale
 
-                                        // Slight slide to right
-                                        translationX = animatedSwipeProgress * size.width * 0.15f
-
-                                        // Round corners
-                                        val cornerSize = 32.dp.toPx() * animatedSwipeProgress
-                                        shape = RoundedCornerShape(cornerSize)
-                                        clip = true
-
-                                        // Fade slightly
-                                        alpha = 1f - (animatedSwipeProgress * 0.2f)
+                                        // Fade in from 70% to 100%
+                                        alpha = 0.7f + (animatedSwipeProgress * 0.3f)
                                     }
-                    ) {
-                        ModernModsBrowser(
-                                initialPath = route.path,
+                        ) {
+                            ModernModsBrowser(
+                                initialPath = previewBackPath,
                                 modBrowserViewModel = modBrowserViewModel,
                                 modListViewModel = modListViewModel,
                                 modDetailViewModel = modDetailViewModel,
                                 modOperationViewModel = modOperationViewModel,
                                 modSearchViewModel = modSearchViewModel,
-                                onNavigateToPath = { path ->
-                                    navController.navigate(ModBrowserRoute(path))
+                                onNavigateToPath = { /* Disable interaction in preview */ }
+                            )
+
+                            // Overlay to darken the background slightly
+                            Box(
+                                modifier = Modifier.fillMaxSize()
+                                // .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.3f * (1f - animatedSwipeProgress)))
+                            )
+                        }
+                    }
+
+                    // --- Layer 2: Foreground (Current Directory) ---
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .graphicsLayer {
+                                    val scale =
+                                        1f - (animatedSwipeProgress * 0.1f) // Shrink to 90%
+                                    scaleX = scale
+                                    scaleY = scale
+
+                                    // Slight slide to right
+                                    translationX = animatedSwipeProgress * size.width * 0.15f
+
+                                    // Round corners
+                                    val cornerSize = 32.dp.toPx() * animatedSwipeProgress
+                                    shape = RoundedCornerShape(cornerSize)
+                                    clip = true
+
+                                    // Fade slightly
+                                    alpha = 1f - (animatedSwipeProgress * 0.2f)
                                 }
+                    ) {
+                        ModernModsBrowser(
+                            initialPath = route.path,
+                            modBrowserViewModel = modBrowserViewModel,
+                            modListViewModel = modListViewModel,
+                            modDetailViewModel = modDetailViewModel,
+                            modOperationViewModel = modOperationViewModel,
+                            modSearchViewModel = modSearchViewModel,
+                            onNavigateToPath = { path ->
+                                navController.navigate(ModBrowserRoute(path))
+                            }
                         )
                     }
                 }
@@ -568,86 +578,86 @@ fun ModernModScreen(
 
         // Global Overlays (Persist across navigation)
         ScanProgressOverlay(
-                progressState = modScanUiState.scanProgress,
-                onCancel = { modScanViewModel.cancelScan() },
-                onDismiss = { modScanViewModel.dismissScanResult() },
-                onGoSettings = {
-                    modScanViewModel.dismissScanResult()
-                    mainViewModel.navigateToSettings()
-                },
-                onGrantPermission = modScanViewModel::requestPermissionFromError,
-                onDisableMod = { mod ->
-                    modOperationViewModel.switchSelectMods(listOf(mod), false, silent = true)
-                },
-                onDisableAllMods = { mods ->
-                    modOperationViewModel.switchSelectMods(mods, false, silent = true)
-                    modScanViewModel.dismissScanResult()
-                },
-                onSwitchToBackground = { modScanViewModel.switchToBackground() }
+            progressState = modScanUiState.scanProgress,
+            onCancel = { modScanViewModel.cancelScan() },
+            onDismiss = { modScanViewModel.dismissScanResult() },
+            onGoSettings = {
+                modScanViewModel.dismissScanResult()
+                mainViewModel.navigateToSettings()
+            },
+            onGrantPermission = modScanViewModel::requestPermissionFromError,
+            onDisableMod = { mod ->
+                modOperationViewModel.switchSelectMods(listOf(mod), false, silent = true)
+            },
+            onDisableAllMods = { mods ->
+                modOperationViewModel.switchSelectMods(mods, false, silent = true)
+                modScanViewModel.dismissScanResult()
+            },
+            onSwitchToBackground = { modScanViewModel.switchToBackground() }
         )
 
         EnableProgressOverlay(
-                progressState = modOperationUiState.enableProgress,
-                onCancel = { modOperationViewModel.cancelOperation() },
-                onDismiss = { modOperationViewModel.dismissEnableProgress() },
-                onGoSettings = {
-                    modOperationViewModel.dismissEnableProgress()
-                    mainViewModel.navigateToSettings()
-                },
-                onGrantPermission = modOperationViewModel::requestPermissionFromEnableError,
-                onDisableMod = { mod ->
-                    modOperationViewModel.switchSelectMods(listOf(mod), false, silent = true)
-                },
-                onRemoveFromSelection = { mod -> modListViewModel.removeModSelection(mod.id) }
+            progressState = modOperationUiState.enableProgress,
+            onCancel = { modOperationViewModel.cancelOperation() },
+            onDismiss = { modOperationViewModel.dismissEnableProgress() },
+            onGoSettings = {
+                modOperationViewModel.dismissEnableProgress()
+                mainViewModel.navigateToSettings()
+            },
+            onGrantPermission = modOperationViewModel::requestPermissionFromEnableError,
+            onDisableMod = { mod ->
+                modOperationViewModel.switchSelectMods(listOf(mod), false, silent = true)
+            },
+            onRemoveFromSelection = { mod -> modListViewModel.removeModSelection(mod.id) }
         )
 
         DecryptProgressOverlay(
-                progressState = modOperationUiState.decryptProgress,
-                onCancel = { modOperationViewModel.cancelDecrypt() },
-                onConfirm = { modOperationViewModel.confirmDecryptSuccess() },
-                onDismiss = { modOperationViewModel.dismissDecryptProgress() }
+            progressState = modOperationUiState.decryptProgress,
+            onCancel = { modOperationViewModel.cancelDecrypt() },
+            onConfirm = { modOperationViewModel.confirmDecryptSuccess() },
+            onDismiss = { modOperationViewModel.dismissDecryptProgress() }
         )
 
         // MOD 删除进度覆盖层
         DeleteProgressOverlay(
-                progressState = modOperationUiState.deleteProgress,
-                onCancel = { modOperationViewModel.cancelDelete() },
-                onDismiss = { modOperationViewModel.dismissDeleteProgress() },
-                onDisableMod = { mod ->
-                    modOperationViewModel.switchSelectMods(
-                            listOf(mod),
-                            enable = false,
-                            silent = true
-                    )
-                },
-                onDisableAllMods = { mods ->
-                    modOperationViewModel.switchSelectMods(mods, enable = false, silent = true)
-                }
+            progressState = modOperationUiState.deleteProgress,
+            onCancel = { modOperationViewModel.cancelDelete() },
+            onDismiss = { modOperationViewModel.dismissDeleteProgress() },
+            onDisableMod = { mod ->
+                modOperationViewModel.switchSelectMods(
+                    listOf(mod),
+                    enable = false,
+                    silent = true
+                )
+            },
+            onDisableAllMods = { mods ->
+                modOperationViewModel.switchSelectMods(mods, enable = false, silent = true)
+            }
         )
 
         // 删除检测结果覆盖层
         DeleteCheckConfirmDialog(
-                checkState = modOperationUiState.deleteCheckState,
-                onCancel = { modOperationViewModel.dismissDeleteCheck() },
-                onSkipIntegrated = { modOperationViewModel.confirmDeleteSkipIntegrated() },
-                onDeleteAll = { modOperationViewModel.confirmDeleteAll() },
-                onDisableMod = { mod ->
-                    modOperationViewModel.switchSelectMods(
-                            listOf(mod),
-                            enable = false,
-                            silent = true
-                    )
-                },
-                onDisableAllMods = { mods ->
-                    modOperationViewModel.switchSelectMods(mods, enable = false, silent = true)
-                },
+            checkState = modOperationUiState.deleteCheckState,
+            onCancel = { modOperationViewModel.dismissDeleteCheck() },
+            onSkipIntegrated = { modOperationViewModel.confirmDeleteSkipIntegrated() },
+            onDeleteAll = { modOperationViewModel.confirmDeleteAll() },
+            onDisableMod = { mod ->
+                modOperationViewModel.switchSelectMods(
+                    listOf(mod),
+                    enable = false,
+                    silent = true
+                )
+            },
+            onDisableAllMods = { mods ->
+                modOperationViewModel.switchSelectMods(mods, enable = false, silent = true)
+            },
         )
 
         // Dialogs
 
         ForceUpdateDialog(
-                showDialog = modScanUiState.showForceScanDialog,
-                modScanViewModel = modScanViewModel
+            showDialog = modScanUiState.showForceScanDialog,
+            modScanViewModel = modScanViewModel
         )
 
         /*            if (modOperationUiState.showDisEnableModsDialog) {
@@ -666,29 +676,29 @@ fun ModernModScreen(
 
         if (modOperationUiState.showPasswordDialog) {
             PasswordInputDialog(
-                    mod = modOperationUiState.passwordRequestMod,
-                    errorMessage = modOperationUiState.passwordError,
-                    onDismiss = { modOperationViewModel.dismissPasswordDialog() },
-                    onSubmit = { password -> modOperationViewModel.submitPassword(password) }
+                mod = modOperationUiState.passwordRequestMod,
+                errorMessage = modOperationUiState.passwordError,
+                onDismiss = { modOperationViewModel.dismissPasswordDialog() },
+                onSubmit = { password -> modOperationViewModel.submitPassword(password) }
             )
         }
 
         if (modOperationUiState.showDelSelectModsDialog) {
             DeleteCheckConfirmDialog(
-                    checkState = modOperationUiState.deleteCheckState,
-                    onCancel = { modOperationViewModel.dismissDeleteCheck() },
-                    onSkipIntegrated = { modOperationViewModel.confirmDeleteSkipIntegrated() },
-                    onDeleteAll = { modOperationViewModel.confirmDeleteAll() },
-                    onDisableMod = { mod ->
-                        modOperationViewModel.switchSelectMods(
-                                listOf(mod),
-                                enable = false,
-                                silent = true
-                        )
-                    },
-                    onDisableAllMods = { mods ->
-                        modOperationViewModel.switchSelectMods(mods, enable = false, silent = true)
-                    },
+                checkState = modOperationUiState.deleteCheckState,
+                onCancel = { modOperationViewModel.dismissDeleteCheck() },
+                onSkipIntegrated = { modOperationViewModel.confirmDeleteSkipIntegrated() },
+                onDeleteAll = { modOperationViewModel.confirmDeleteAll() },
+                onDisableMod = { mod ->
+                    modOperationViewModel.switchSelectMods(
+                        listOf(mod),
+                        enable = false,
+                        silent = true
+                    )
+                },
+                onDisableAllMods = { mods ->
+                    modOperationViewModel.switchSelectMods(mods, enable = false, silent = true)
+                },
             )
         }
 
@@ -697,17 +707,18 @@ fun ModernModScreen(
         if (showModDetail) {
             modDetailUiState.mod?.let { mod ->
                 ModDetailPartialBottomSheet(
-                        showDialog = showModDetail,
-                        mod = mod,
-                        modDetailViewModel = modDetailViewModel,
-                        modScanViewModel = modScanViewModel,
-                        modOperationViewModel = modOperationViewModel,
-                        onDismiss = { modDetailViewModel.setShowModDetail(false) }
+                    showDialog = showModDetail,
+                    mod = mod,
+                    modDetailViewModel = modDetailViewModel,
+                    modScanViewModel = modScanViewModel,
+                    modOperationViewModel = modOperationViewModel,
+                    onDismiss = { modDetailViewModel.setShowModDetail(false) }
                 )
             }
         }
     }
 }
+
 @Composable
 fun PasswordInputDialog(
     mod: ModBean? = null,

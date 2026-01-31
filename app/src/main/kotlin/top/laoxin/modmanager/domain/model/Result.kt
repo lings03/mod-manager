@@ -33,24 +33,24 @@ sealed class Result<out T> {
 
     /** 获取成功数据，失败时抛出异常 */
     fun getOrThrow(): T =
-            when (this) {
-                is Success -> data
-                is Error -> throw error.toException()
-            }
+        when (this) {
+            is Success -> data
+            is Error -> throw error.toException()
+        }
 
     /** 转换成功数据 */
     inline fun <R> map(transform: (T) -> R): Result<R> =
-            when (this) {
-                is Success -> Success(transform(data))
-                is Error -> this
-            }
+        when (this) {
+            is Success -> Success(transform(data))
+            is Error -> this
+        }
 
     /** 转换成功数据（支持返回 Result） */
     inline fun <R> flatMap(transform: (T) -> Result<R>): Result<R> =
-            when (this) {
-                is Success -> transform(data)
-                is Error -> this
-            }
+        when (this) {
+            is Success -> transform(data)
+            is Error -> this
+        }
 
     /** 处理成功情况 */
     inline fun onSuccess(action: (T) -> Unit): Result<T> {

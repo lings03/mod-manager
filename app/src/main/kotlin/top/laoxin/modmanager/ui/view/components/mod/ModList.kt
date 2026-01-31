@@ -2,6 +2,8 @@ package top.laoxin.modmanager.ui.view.components.mod
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,8 +24,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,14 +48,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import top.laoxin.modmanager.R
 import top.laoxin.modmanager.domain.bean.ModBean
+import top.laoxin.modmanager.ui.theme.ExpressiveSwitch
 import top.laoxin.modmanager.ui.viewmodel.ModDetailViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModListViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModOperationViewModel
-import top.laoxin.modmanager.ui.theme.ExpressiveSwitch
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import java.io.File
+
 // import top.laoxin.modmanager.ui.view.modView.rememberImageBitmap // Removed as it is in the same package now
 
 @Composable
@@ -62,6 +68,7 @@ fun ModList(
     enableMod: (ModBean, Boolean) -> Unit,
     onLongClick: (ModBean) -> Unit,
     onMultiSelectClick: (ModBean) -> Unit,
+    onUnlockClick: (ModBean) -> Unit,
     modListViewModel: ModListViewModel,
     modOperationViewModel: ModOperationViewModel,
     modDetailViewModel: ModDetailViewModel
@@ -91,6 +98,7 @@ fun ModList(
                     modSwitchEnable = modSwitchEnable,
                     openModDetail = { showDialog(mod) },
                     enableMod = enableMod,
+                    onUnlockClick = onUnlockClick,
                     modDetailViewModel = modDetailViewModel
                 )
             }
@@ -117,6 +125,7 @@ fun ModList(
                     modSwitchEnable = modSwitchEnable,
                     openModDetail = { showDialog(mod) },
                     enableMod = enableMod,
+                    onUnlockClick = onUnlockClick,
                     modDetailViewModel = modDetailViewModel
                 )
             }
@@ -136,8 +145,11 @@ fun ModListItem(
     modSwitchEnable: Boolean,
     openModDetail: (ModBean) -> Unit,
     enableMod: (ModBean, Boolean) -> Unit,
+    onUnlockClick: (ModBean) -> Unit,
     modDetailViewModel: ModDetailViewModel
 ) {
+    // 判断是否需要解锁（加密且没有密码）
+    val needsUnlock = mod.isEncrypted && mod.password.isEmpty()
     // 使用 updateAt 作为 key，刷新后 updateAt 变化会触发重新检测和加载
     val iconPath = remember(mod.icon, mod.updateAt) {
         mod.icon?.takeIf { File(it).exists() }
@@ -162,15 +174,18 @@ fun ModListItem(
     }
     val onCheckedChange = remember(mod) {
         { isChecked: Boolean ->
-           // localIsEnable = isChecked
+            // localIsEnable = isChecked
             enableMod(mod, isChecked)
         }
     }
 
-    // 如果图标路径不存在但 mod.icon 不为空，触发重新解压
-    // 使用 key 参数确保只在 icon 变化时触发
-    LaunchedEffect(key1 = mod.icon, key2 = iconPath) {
-        if (mod.icon != null && iconPath == null) {
+    // 如果图标路径不存在但 mod.icon 不为空，或者 description 需要加载，触发重新解压
+    val needsRefresh = remember(mod.icon, iconPath, mod.description) {
+        (mod.icon != null && iconPath == null) || mod.description.contains("正在读取中")
+    }
+
+    LaunchedEffect(needsRefresh, mod.id) {
+        if (needsRefresh) {
             modDetailViewModel.refreshModDetail(mod)
         }
     }
@@ -239,14 +254,15 @@ fun ModListItem(
                     )
                 }
                 Spacer(Modifier.height(8.dp))
-                var description = mod.description.ifEmpty { stringResource(R.string.mod_bean_no_readme) }
+                var description =
+                    mod.description.ifEmpty { stringResource(R.string.mod_bean_no_readme) }
                 if (mod.description.contains("加密")) {
                     description = stringResource(R.string.mod_bean_encrypted_desc)
                 }
                 if (mod.description.contains("正在")) {
                     description = stringResource(R.string.mod_bean_loading_desc)
 
-                    }
+                }
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
@@ -257,11 +273,33 @@ fun ModListItem(
             Box(
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
-                ExpressiveSwitch(
-                    checked = mod.isEnable,
-                    onCheckedChange = onCheckedChange,
-                    enabled = modSwitchEnable
-                )
+                if (needsUnlock) {
+                    // 显示解锁按钮
+                    FilledTonalButton(
+                        onClick = { onUnlockClick(mod) },
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.mod_unlock),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                } else {
+                    ExpressiveSwitch(
+                        checked = mod.isEnable,
+                        onCheckedChange = onCheckedChange,
+                        enabled = modSwitchEnable
+                    )
+                }
             }
         }
     }
@@ -280,15 +318,24 @@ fun ModGridItem(
     modSwitchEnable: Boolean,
     openModDetail: (ModBean) -> Unit,
     enableMod: (ModBean, Boolean) -> Unit,
+    onUnlockClick: (ModBean) -> Unit,
     modDetailViewModel: ModDetailViewModel
 ) {
+    // 判断是否需要解锁（加密且没有密码）
+    val needsUnlock = mod.isEncrypted && mod.password.isEmpty()
+
     // 使用 updateAt 作为 key，刷新后 updateAt 变化会触发重新检测和加载
     val iconPath = remember(mod.icon, mod.updateAt) {
         mod.icon?.takeIf { File(it).exists() }
     }
 
     // 使用新的图片加载器，自动处理缓存，updateAt 变化时重新加载
-    val imageBitmap by rememberImageBitmap(path = iconPath, reqWidth = 300, reqHeight = 400, key = mod.updateAt)
+    val imageBitmap by rememberImageBitmap(
+        path = iconPath,
+        reqWidth = 300,
+        reqHeight = 400,
+        key = mod.updateAt
+    )
 
     val onClick = remember(mod, isMultiSelect) {
         { if (isMultiSelect) onMultiSelectClick(mod) else openModDetail(mod) }
@@ -299,9 +346,13 @@ fun ModGridItem(
         }
     }
 
-    // 如果图标路径不存在但 mod.icon 不为空，触发重新解压
-    LaunchedEffect(key1 = mod.icon, key2 = iconPath) {
-        if (mod.icon != null && iconPath == null) {
+    // 如果图标路径不存在但 mod.icon 不为空，或者 description 需要加载，触发重新解压
+    val needsRefresh = remember(mod.icon, iconPath, mod.description) {
+        (mod.icon != null && iconPath == null) || mod.description.contains("正在读取中")
+    }
+
+    LaunchedEffect(needsRefresh, mod.id) {
+        if (needsRefresh) {
             modDetailViewModel.refreshModDetail(mod)
         }
     }
@@ -380,27 +431,47 @@ fun ModGridItem(
                     modifier = Modifier.weight(1f)
                 )
 
-                // 标签式开关
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = if (mod.isEnable)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(6.dp)
+                // 标签式开关或解锁按钮
+                if (needsUnlock) {
+                    // 显示解锁按钮
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.tertiaryContainer,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .clickable { onUnlockClick(mod) }
+                            .padding(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer
                         )
-                        .clickable(enabled = modSwitchEnable) { onCheckedChange(!mod.isEnable) }
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
-                ) {
-                    Text(
-                        text = if (mod.isEnable) "ON" else "OFF",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = if (mod.isEnable)
-                            MaterialTheme.colorScheme.onPrimary
-                        else
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = if (mod.isEnable)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .clickable(enabled = modSwitchEnable) { onCheckedChange(!mod.isEnable) }
+                            .padding(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = if (mod.isEnable) "ON" else "OFF",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (mod.isEnable)
+                                MaterialTheme.colorScheme.onPrimary
+                            else
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }

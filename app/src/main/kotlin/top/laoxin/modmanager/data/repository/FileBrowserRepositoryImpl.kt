@@ -2,12 +2,12 @@ package top.laoxin.modmanager.data.repository
 
 import android.util.Log
 import top.laoxin.modmanager.domain.model.AppError
-import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
 import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.repository.FileBrowserRepository
 import top.laoxin.modmanager.domain.service.ArchiveService
+import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class FileBrowserRepositoryImpl @Inject constructor(
@@ -46,27 +46,26 @@ class FileBrowserRepositoryImpl @Inject constructor(
                 }*/
 
 
-
             } else {
                 // Inside Zip / Virtual Path logic
                 // Try to find if path is inside a zip or reuse cache
                 if (currentZipPath.isNotEmpty() && path.contains(currentZipPath)) {
-                     if (currentArchiveFiles.isEmpty()) {
-                        getArchiveFiles(currentZipPath).onSuccess { 
+                    if (currentArchiveFiles.isEmpty()) {
+                        getArchiveFiles(currentZipPath).onSuccess {
                             // method getArchiveFiles updates currentArchiveFiles as side effect or returns it?
                             // let's make it return it and update cache.
                         }
                     }
                     filesToShow = currentArchiveFiles.filter { it.parent == path }
                 } else {
-                     val zipParent = findZipParent(path)
-                     if (zipParent != null) {
-                         currentZipPath = zipParent
-                         getArchiveFiles(currentZipPath)
-                         filesToShow = currentArchiveFiles.filter { it.parent == path }
-                     } else {
-                         filesToShow = emptyList()
-                     }
+                    val zipParent = findZipParent(path)
+                    if (zipParent != null) {
+                        currentZipPath = zipParent
+                        getArchiveFiles(currentZipPath)
+                        filesToShow = currentArchiveFiles.filter { it.parent == path }
+                    } else {
+                        filesToShow = emptyList()
+                    }
                 }
             }
 
@@ -75,7 +74,7 @@ class FileBrowserRepositoryImpl @Inject constructor(
                     it.name.lowercase().contains(searchQuery.lowercase())
                 }
             }
-            
+
             Result.Success(filesToShow)
 
         } catch (e: Exception) {
@@ -97,9 +96,9 @@ class FileBrowserRepositoryImpl @Inject constructor(
 
     private suspend fun getArchiveFiles(path: String): Result<List<File>> {
         return archiveService.listFiles(path).map { fileHeaders ->
-             val files = fileHeaders.map { File("$path/$it") }
-             currentArchiveFiles = files
-             files
+            val files = fileHeaders.map { File("$path/$it") }
+            currentArchiveFiles = files
+            files
         }
     }
 }

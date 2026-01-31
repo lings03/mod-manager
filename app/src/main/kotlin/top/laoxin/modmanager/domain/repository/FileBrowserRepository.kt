@@ -1,7 +1,7 @@
 package top.laoxin.modmanager.domain.repository
 
-import java.io.File
 import top.laoxin.modmanager.domain.model.Result
+import java.io.File
 
 interface FileBrowserRepository {
     /**

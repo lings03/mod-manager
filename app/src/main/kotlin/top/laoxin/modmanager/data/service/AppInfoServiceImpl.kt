@@ -12,14 +12,14 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 import top.laoxin.modmanager.R
 import top.laoxin.modmanager.domain.bean.GameInfoBean
 import top.laoxin.modmanager.domain.model.AppError
 import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.service.AppInfoService
 import top.laoxin.modmanager.domain.service.SpecialGameService
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** 应用信息服务实现 封装 Android PackageManager 相关 API */
 @Singleton
@@ -59,7 +59,7 @@ constructor(
     override fun getVersionName(packageName: String): Result<String> {
         return try {
             val packageInfo = context.packageManager.getPackageInfo(packageName, 0)
-           // Log.i("AppInfoService", "getVersionName: packageName: $packageName, versionName: ${packageInfo.versionName}")
+            // Log.i("AppInfoService", "getVersionName: packageName: $packageName, versionName: ${packageInfo.versionName}")
             Result.Success(packageInfo.versionName ?: "unknown")
         } catch (_: PackageManager.NameNotFoundException) {
             Result.Error(AppError.FileError.FileNotFound("packageName not found: $packageName"))
@@ -75,14 +75,17 @@ constructor(
      */
     override fun getAppIcon(packageName: String): ImageBitmap {
         Log.i("AppInfoService", "getAppIcon: packageName: $packageName")
-         try {
+        try {
             val packageInfo = context.packageManager.getPackageInfo(packageName, 0)
             var drawable = packageInfo.applicationInfo?.loadIcon(context.packageManager)
             val bitmap =
                 when (drawable) {
                     is BitmapDrawable -> drawable.bitmap
                     is AdaptiveIconDrawable -> {
-                        createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight).also { bitmap ->
+                        createBitmap(
+                            drawable.intrinsicWidth,
+                            drawable.intrinsicHeight
+                        ).also { bitmap ->
                             val canvas = Canvas(bitmap)
                             drawable.setBounds(0, 0, canvas.width, canvas.height)
                             drawable.draw(canvas)
@@ -112,7 +115,6 @@ constructor(
 //        context.stopService(intent)
 //        context.startForegroundService(intent)
     }
-
 
 
     /**

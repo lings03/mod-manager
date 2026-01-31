@@ -15,10 +15,12 @@ interface ModDao {
     // ==================== 查询操作 ====================
 
     /** 获取所有 MOD */
-    @Query("SELECT * FROM mods") fun getAll(): Flow<List<ModBean>>
+    @Query("SELECT * FROM mods")
+    fun getAll(): Flow<List<ModBean>>
 
     /** 通过 ID 查询 MOD */
-    @Query("SELECT * FROM mods WHERE id = :id") suspend fun getModById(id: Int): ModBean?
+    @Query("SELECT * FROM mods WHERE id = :id")
+    suspend fun getModById(id: Int): ModBean?
 
     /** 通过 IDs 列表查询 MODs */
     @Query("SELECT * FROM mods WHERE id IN (:ids)")
@@ -58,7 +60,7 @@ interface ModDao {
 
     /** 通过 gamePackageName 和 name 模糊搜索 */
     @Query(
-            "SELECT * FROM mods WHERE gamePackageName = :gamePackageName AND name LIKE '%' || :name || '%'"
+        "SELECT * FROM mods WHERE gamePackageName = :gamePackageName AND name LIKE '%' || :name || '%'"
     )
     fun getModsByGamePackageNameAndName(gamePackageName: String, name: String): Flow<List<ModBean>>
 
@@ -72,15 +74,18 @@ interface ModDao {
     suspend fun insert(mod: ModBean)
 
     /** 批量插入 MODs（冲突时替换） */
-    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertAll(mods: List<ModBean>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(mods: List<ModBean>)
 
     // ==================== 更新操作 ====================
 
     /** 更新单个 MOD */
-    @Update suspend fun update(mod: ModBean)
+    @Update
+    suspend fun update(mod: ModBean)
 
     /** 批量更新 MODs */
-    @Update suspend fun updateMods(mods: List<ModBean>)
+    @Update
+    suspend fun updateMods(mods: List<ModBean>)
 
     /** 更新 MOD 启用状态 */
     @Query("UPDATE mods SET isEnable = :isEnable WHERE id = :modId")
@@ -89,15 +94,16 @@ interface ModDao {
     // ==================== 删除操作 ====================
 
     /** 删除单个 MOD */
-    @Delete suspend fun delete(mod: ModBean)
+    @Delete
+    suspend fun delete(mod: ModBean)
 
     /** 批量删除 MODs */
-    @Delete suspend fun deleteMods(mods: List<ModBean>)
+    @Delete
+    suspend fun deleteMods(mods: List<ModBean>)
 
     /** 删除指定 gamePackageName 下所有未启用的 MODs */
     @Query("DELETE FROM mods WHERE gamePackageName = :gamePackageName AND isEnable = 0")
     fun deleteDisableMods(gamePackageName: String)
-
 
 
 }

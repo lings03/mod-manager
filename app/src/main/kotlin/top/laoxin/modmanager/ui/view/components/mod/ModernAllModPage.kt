@@ -12,21 +12,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import top.laoxin.modmanager.R
-import top.laoxin.modmanager.ui.view.components.common.fuzzyContains
-import top.laoxin.modmanager.ui.viewmodel.ModernModBrowserViewModel
-import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
 import top.laoxin.modmanager.ui.state.ModListFilter
+import top.laoxin.modmanager.ui.view.components.common.fuzzyContains
 import top.laoxin.modmanager.ui.viewmodel.ModDetailViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModOperationViewModel
 import top.laoxin.modmanager.ui.viewmodel.ModSearchViewModel
+import top.laoxin.modmanager.ui.viewmodel.ModernModBrowserViewModel
+import top.laoxin.modmanager.ui.viewmodel.ModernModListViewModel
 
 @Composable
 fun ModernAllModPage(
-        modListViewModel: ModernModListViewModel,
-        modDetailViewModel: ModDetailViewModel,
-        modOperationViewModel: ModOperationViewModel,
-        modSearchViewModel: ModSearchViewModel,
-        modBrowserViewModel: ModernModBrowserViewModel
+    modListViewModel: ModernModListViewModel,
+    modDetailViewModel: ModDetailViewModel,
+    modOperationViewModel: ModOperationViewModel,
+    modSearchViewModel: ModSearchViewModel,
+    modBrowserViewModel: ModernModBrowserViewModel
 ) {
     // 收集列表状态
     val modListUiState by modListViewModel.uiState.collectAsState()
@@ -43,7 +43,7 @@ fun ModernAllModPage(
 
     // 收集浏览器状态 (主要为了网格视图设置)
     val modBrowserState by modBrowserViewModel.uiState.collectAsState()
-    
+
     // 收集操作状态
     val modOperationUiState by modOperationViewModel.uiState.collectAsState()
     val modSwitchEnable = modOperationUiState.modSwitchEnable
@@ -54,16 +54,16 @@ fun ModernAllModPage(
     }
 
     val currentMods =
-            when (filter) {
-                ModListFilter.ALL -> modList
-                ModListFilter.ENABLE -> enableModList
-                ModListFilter.DISABLE -> disableModList
-            }
-            
+        when (filter) {
+            ModListFilter.ALL -> modList
+            ModListFilter.ENABLE -> enableModList
+            ModListFilter.DISABLE -> disableModList
+        }
+
     val currentModList =
-            remember(currentMods, searchQuery) {
-                currentMods.filter { searchQuery.isBlank() || it.name.fuzzyContains(searchQuery) }
-            }
+        remember(currentMods, searchQuery) {
+            currentMods.filter { searchQuery.isBlank() || it.name.fuzzyContains(searchQuery) }
+        }
 
     if (currentModList.isEmpty()) {
         NoMod()
@@ -79,19 +79,19 @@ fun ModernAllModPage(
     // Let's assume for now we use a compatible ModernModList component or we refactor ModList to interface.
     // But modifying ModList breaks old code.
     // So we need ModernModList.kt.
-    
+
     // For this step, I will create ModernModList content inline or assume generic lists.
     // However, looking at ModList implementation (not visible in previous turns but imported in AllMod.kt),
     // It's likely complex (Grid/List toggle etc).
-    
+
     // Wait, ModList isn't shown in the file view of AllMod.kt, it's imported?
     // No, ModList is likely in ModList.kt.
     // I need to check ModList.kt before I can finish this file properly.
     // But I will write a placeholder or better yet, modify this file to use a new ModernModList which I will create.
-    
+
     // Scroll State Management
     val filterKey = filter.name // "ALL", "ENABLE", "DISABLE"
-    
+
     val (listInitIndex, listInitOffset) = remember(filterKey) {
         modListViewModel.getScrollState("${filterKey}_LIST")
     }
@@ -125,20 +125,19 @@ fun ModernAllModPage(
     }
 
     ModernModList(
-            mods = currentModList,
-            modsSelected = modsSelected,
-            modSwitchEnable = modSwitchEnable,
-            isMultiSelect = isMultiSelect,
-            isGridView = modBrowserState.isGridView,
-            showDialog = { mod -> modDetailViewModel.openModDetail(mod, true) },
-            enableMod = { mod, enable -> modOperationViewModel.switchMod(mod, enable) },
-            onLongClick = { mod -> modListViewModel.modLongClick(mod) },
-            onMultiSelectClick = { mod -> modListViewModel.modMultiSelectClick(mod) },
-            modOperationViewModel = modOperationViewModel,
-            modDetailViewModel = modDetailViewModel,
-            modListViewModel = modListViewModel,
-            listState = listState,
-            gridState = gridState
+        mods = currentModList,
+        modsSelected = modsSelected,
+        modSwitchEnable = modSwitchEnable,
+        isMultiSelect = isMultiSelect,
+        isGridView = modBrowserState.isGridView,
+        showDialog = { mod -> modDetailViewModel.openModDetail(mod, true) },
+        enableMod = { mod, enable -> modOperationViewModel.switchMod(mod, enable) },
+        onLongClick = { mod -> modListViewModel.modLongClick(mod) },
+        onMultiSelectClick = { mod -> modListViewModel.modMultiSelectClick(mod) },
+        onUnlockClick = { mod -> modOperationViewModel.requestUnlockMod(mod) },
+        modDetailViewModel = modDetailViewModel,
+        listState = listState,
+        gridState = gridState
     )
 }
 

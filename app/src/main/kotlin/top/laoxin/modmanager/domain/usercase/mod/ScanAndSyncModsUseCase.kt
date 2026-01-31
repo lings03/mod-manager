@@ -1,7 +1,6 @@
 package top.laoxin.modmanager.domain.usercase.mod
 
 import android.util.Log
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -23,6 +22,7 @@ import top.laoxin.modmanager.domain.service.ModSourcePrepareService
 import top.laoxin.modmanager.domain.service.PermissionService
 import top.laoxin.modmanager.domain.service.TransferEvent
 import top.laoxin.modmanager.domain.service.TransferResult
+import javax.inject.Inject
 
 /** 扫描状态密封类 使用 Flow 发射各个扫描阶段的状态 */
 sealed class ScanState {
@@ -543,7 +543,7 @@ constructor(
                 if (existing.isEncrypted)
                     (existing.icon != scanned.icon || existing.description != scanned.description)
                             && existing.password.isEmpty()
-                else existing.icon != scanned.icon 
+                else existing.icon != scanned.icon
 
     }
 
@@ -556,7 +556,7 @@ constructor(
         if (lastModifyResult is Result.Error) return false
         val lastModify = (lastModifyResult as Result.Success).data
         // 快速检查：modifyTime 和 size
-        val fileLengthResult : Result<Long> = fileService.getFileLength(absolutePath)
+        val fileLengthResult: Result<Long> = fileService.getFileLength(absolutePath)
         if (fileLengthResult is Result.Error) return false
         val fileLength = (fileLengthResult as Result.Success).data
         if (existingRecord.modifyTime == lastModify && existingRecord.size == fileLength
@@ -584,8 +584,8 @@ constructor(
             ScanFileBean(
                 path = absolutePath,
                 name = fileService.getFileName(absolutePath),
-                modifyTime =lastModified,
-                size =fileLength,
+                modifyTime = lastModified,
+                size = fileLength,
                 isDirectory = !isFile,
                 md5 = md5,
                 gamePackageName = gamePackageName
@@ -602,11 +602,11 @@ constructor(
      * @return 清理的记录数量
      */
     private suspend fun cleanupNonExistentScanRecords(): Int {
-       val skippedFiles = scanFileRepository.getAll().first()
+        val skippedFiles = scanFileRepository.getAll().first()
         var cleanedCount = 0
         for (skippedFile in skippedFiles) {
             //Log.d(TAG, "Checking file exist: ${skippedFile.path}")
-            val result = fileService.isFileExist( skippedFile.path)
+            val result = fileService.isFileExist(skippedFile.path)
             if (result is Result.Error) {
                 Log.e(TAG, "Failed to check file exist: ${result.error}")
                 continue

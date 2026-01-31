@@ -170,6 +170,7 @@
     <string name="mod_bean_no_author">Unknown</string>
     <string name="mod_bean_encrypted_version">Encrypted</string>
     <string name="mod_bean_encrypted_desc">MOD file is encrypted, please click the switch and enter the password to decrypt</string>
+    <string name="mod_unlock">Unlock</string>
     <string name="mod_page_mod_detail_dialog_detali_modNums">Number of MOD files: %1$s</string>
     <string name="console_info_title">Notification</string>
     <string name="setting_page_about_info">View Notifications</string>

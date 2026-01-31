@@ -23,7 +23,7 @@ data class ModListUiState(
     val modsSelected: Set<Int> = emptySet(),
     val isLoading: Boolean = true,
     // 开关状态是否可点击
-    val modSwitchEnable : Boolean = true,
+    val modSwitchEnable: Boolean = true,
     // 当前过滤状态
     val filter: ModListFilter = ModListFilter.ALL,
     val isBrowser: Boolean = false

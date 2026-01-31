@@ -1,9 +1,9 @@
 package top.laoxin.modmanager.data.repository
 
 import android.util.Log
+import top.laoxin.modmanager.data.network.ModManagerApi
 import top.laoxin.modmanager.domain.bean.InfoBean
 import top.laoxin.modmanager.domain.bean.ThanksBean
-import top.laoxin.modmanager.data.network.ModManagerApi
 import top.laoxin.modmanager.domain.model.AppError
 import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.repository.AppDataRepository

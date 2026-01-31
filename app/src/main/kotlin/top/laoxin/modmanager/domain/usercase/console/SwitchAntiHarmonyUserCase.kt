@@ -1,9 +1,7 @@
 package top.laoxin.modmanager.domain.usercase.console
 
-import kotlinx.coroutines.flow.first
 import top.laoxin.modmanager.domain.model.Result
 import top.laoxin.modmanager.domain.repository.AntiHarmonyRepository
-import top.laoxin.modmanager.domain.repository.GameInfoRepository
 import top.laoxin.modmanager.domain.repository.UserPreferencesRepository
 import javax.inject.Inject
 import javax.inject.Singleton
