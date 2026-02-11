@@ -7,16 +7,16 @@ serialization = "2.2.21"
 foojay-resolver = "0.8.0"
 
 # Compose
-composeUi = "1.10.2"
-composeFoundation = "1.10.2"
-composeRuntime = "1.10.2"
-composeAnimation = "1.10.2"
+composeUi = "1.10.3"
+composeFoundation = "1.10.3"
+composeRuntime = "1.10.3"
+composeAnimation = "1.10.3"
 material3 = "1.4.0"
 material3Adaptive = "1.2.0"
 material3AdaptiveNavigationSuite = "1.4.0"
 materialIcon = "1.7.8"
 materialIconExtended = "1.7.8"
-uiTooling = "1.10.2"
+uiTooling = "1.10.3"
 
 # Accompanist
 accompanistPager = "0.36.0"
@@ -24,8 +24,8 @@ accompanistPermissions = "0.37.3"
 accompanistSystemuicontroller = "0.36.0"
 
 # AndroidX
-activityCompose = "1.12.3"
-androidxRuntimeLivedata = "1.10.2"
+activityCompose = "1.12.4"
+androidxRuntimeLivedata = "1.10.3"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.0"
 documentfile = "1.1.0"
@@ -33,8 +33,8 @@ lifecycleViewmodelCompose = "2.10.0"
 lifecycleProcess = "2.10.0"
 navigationCompose = "2.9.7"
 navigationRuntimeKtx = "2.9.7"
-navigation3 = "1.0.0"
-nav3Material = "1.3.0-alpha07"
+navigation3 = "1.0.1"
+nav3Material = "1.3.0-alpha08"
 rules = "1.7.0"
 
 # Room
@@ -67,7 +67,7 @@ hiltNavigationCompose = "1.3.0"
 # Compression & Archives
 commonsCompress = "1.28.0"
 xz = "1.11"
-zip4j = "2.11.5"
+zip4j = "2.11.6"
 xZipJbindingXandroid = "2025.06.13"
 
 # Shizuku
@@ -80,9 +80,9 @@ aboutLibraries = "13.1.0"
 
 # Testing
 junit = "4.13.2"
-securityStateProvider = "1.0.0-alpha01"
-animation = "1.10.2"
-foundationLayout = "1.10.2"
+securityStateProvider = "1.0.0-alpha02"
+animation = "1.10.3"
+foundationLayout = "1.10.3"
 
 [libraries]
 # Coroutines
