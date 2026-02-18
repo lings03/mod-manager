@@ -2,7 +2,7 @@
 # Build Tools
 agp = "8.13.2"
 kotlin = "2.2.21"
-ksp = "2.3.5"
+ksp = "2.3.6"
 serialization = "2.2.21"
 foojay-resolver = "0.8.0"
 
