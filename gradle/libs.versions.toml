@@ -7,16 +7,16 @@ serialization = "2.2.21"
 foojay-resolver = "0.8.0"
 
 # Compose
-composeUi = "1.10.5"
-composeFoundation = "1.10.5"
-composeRuntime = "1.10.5"
-composeAnimation = "1.10.5"
+composeUi = "1.10.6"
+composeFoundation = "1.10.6"
+composeRuntime = "1.10.6"
+composeAnimation = "1.10.6"
 material3 = "1.4.0"
 material3Adaptive = "1.2.0"
 material3AdaptiveNavigationSuite = "1.4.0"
 materialIcon = "1.7.8"
 materialIconExtended = "1.7.8"
-uiTooling = "1.10.5"
+uiTooling = "1.10.6"
 
 # Accompanist
 accompanistPager = "0.36.0"
@@ -25,7 +25,7 @@ accompanistSystemuicontroller = "0.36.0"
 
 # AndroidX
 activityCompose = "1.12.4"
-androidxRuntimeLivedata = "1.10.5"
+androidxRuntimeLivedata = "1.10.6"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"
 documentfile = "1.1.0"
@@ -80,9 +80,9 @@ aboutLibraries = "13.1.0"
 
 # Testing
 junit = "4.13.2"
-securityStateProvider = "1.0.0-alpha02"
-animation = "1.10.5"
-foundationLayout = "1.10.5"
+securityStateProvider = "1.0.0-alpha03"
+animation = "1.10.6"
+foundationLayout = "1.10.6"
 
 [libraries]
 # Coroutines
