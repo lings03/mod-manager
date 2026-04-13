@@ -1,10 +1,10 @@
 [versions]
 # Build Tools
-agp = "8.13.2"
+agp = "9.1.1"
 kotlin = "2.2.21"
 ksp = "2.3.6"
 serialization = "2.2.21"
-foojay-resolver = "0.8.0"
+foojay-resolver = "1.0.0"
 
 # Compose
 composeUi = "1.10.6"
@@ -76,7 +76,7 @@ provider = "13.1.5"
 
 # UI & Markdown
 markwon = "0.5.8"
-aboutLibraries = "13.1.0"
+aboutLibraries = "14.0.1"
 
 # Testing
 junit = "4.13.2"
