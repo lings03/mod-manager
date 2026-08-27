@@ -2,7 +2,7 @@
 # Build Tools
 agp = "8.13.2"
 kotlin = "2.2.21"
-ksp = "2.3.6"
+ksp = "2.3.11"
 serialization = "2.2.21"
 foojay-resolver = "0.8.0"
 
@@ -34,7 +34,7 @@ lifecycleProcess = "2.10.0"
 navigationCompose = "2.9.7"
 navigationRuntimeKtx = "2.9.7"
 navigation3 = "1.0.1"
-nav3Material = "1.3.0-alpha09"
+nav3Material = "1.3.0"
 rules = "1.7.0"
 
 # Room
@@ -58,7 +58,7 @@ gson = "2.13.2"
 
 # Image Loading
 coilCompose = "2.7.0"
-glide = "5.0.5"
+glide = "5.0.9"
 
 # Dependency Injection
 hilt = "2.57.2"
@@ -80,7 +80,7 @@ aboutLibraries = "13.1.0"
 
 # Testing
 junit = "4.13.2"
-securityStateProvider = "1.0.0-alpha03"
+securityStateProvider = "1.0.0-rc01"
 animation = "1.10.6"
 foundationLayout = "1.10.6"
 
